@@ -1,0 +1,607 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Progress - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px;
+            max-width: 1200px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+            border-color: var(--border-hover);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .icon-purple { background: var(--primary-lighter); color: var(--primary); }
+        .icon-blue { background: #eff6ff; color: #3b82f6; }
+        .icon-green { background: #ecfdf5; color: var(--success); }
+        .icon-orange { background: #fffbeb; color: var(--warning); }
+
+        .stat-info h4 {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .stat-info p {
+            color: var(--text-main);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .view-all {
+            font-size: 14px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .view-all:hover {
+            text-decoration: underline;
+        }
+
+        /* Progress List */
+        .progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .progress-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .progress-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .course-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .course-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            background: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .course-details h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .course-details p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            max-width: 300px;
+            margin: 0 40px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .progress-info .label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .progress-track {
+            height: 8px;
+            background-color: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 4px;
+            transition: width 1s ease-in-out;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            background: var(--primary-lighter);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Achievements Grid */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .achievement-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .achievement-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .badge-gold { background: #fffbeb; color: var(--warning); border: 2px solid #fde68a; }
+        .badge-silver { background: #f3f4f6; color: #9ca3af; border: 2px solid #e5e7eb; }
+        .badge-bronze { background: #fff7ed; color: #d97706; border: 2px solid #fed7aa; }
+
+        .achievement-card h5 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .achievement-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Responsive adjustments */
+        media (max-width: 1024px) {
+            .progress-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            .progress-bar-container {
+                max-width: 100%;
+                margin: 0;
+                width: 100%;
+            }
+            .action-btn {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
+            Edu<span>Nexus</span>
+        </div>
+        <nav>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-book-open"></i> All Courses
+            </a>
+            <a href="#" class="nav-item active">
+                <i class="fa-solid fa-bullseye"></i> Personal Progress
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-users"></i> Community
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-gear"></i> Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <header class="header">
+            <div class="header-title">
+                <h1>My Learning Progress</h1>
+                <p>Track your courses, achievements, and daily learning streaks</p>
+            </div>
+            <button class="btn btn-outline">
+                <i class="fa-solid fa-download"></i> Download Report
+            </button>
+        </header>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-purple">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Courses Enrolled</h4>
+                    <p>12</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-blue">
+                    <i class="fa-solid fa-check-double"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Courses Completed</h4>
+                    <p>4</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-green">
+                    <i class="fa-solid fa-stopwatch"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Learning Hours</h4>
+                    <p>86h</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-orange">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Current Streak</h4>
+                    <p>7 Days</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ongoing Courses -->
+        <div class="section-title">
+            <span>Ongoing Courses</span>
+            <a href="#" class="view-all">View All</a>
+        </div>
+        
+        <div class="progress-list">
+            
+            <!-- Course 1 -->
+            <div class="progress-card">
+                <div class="course-info">
+                    <div class="course-icon">
+                        <i class="fa-brands fa-react"></i>
+                    </div>
+                    <div class="course-details">
+                        <h4>Advanced Full-Stack Development</h4>
+                        <p>Module 4: React & Redux Deep Dive</p>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-info">
+                        <span class="label">Progress</span>
+                        <span>65%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: 65%;"></div>
+                    </div>
+                </div>
+
+                <a href="#" class="action-btn">Continue Learning</a>
+            </div>
+
+            <!-- Course 2 -->
+            <div class="progress-card">
+                <div class="course-info">
+                    <div class="course-icon" style="color: #10b981;">
+                        <i class="fa-brands fa-node-js"></i>
+                    </div>
+                    <div class="course-details">
+                        <h4>Backend Masterclass with Node.js</h4>
+                        <p>Module 2: Building RESTful APIs</p>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-info">
+                        <span class="label">Progress</span>
+                        <span>32%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: 32%;"></div>
+                    </div>
+                </div>
+
+                <a href="#" class="action-btn">Continue Learning</a>
+            </div>
+
+            <!-- Course 3 -->
+            <div class="progress-card">
+                <div class="course-info">
+                    <div class="course-icon" style="color: #3b82f6;">
+                        <i class="fa-brands fa-docker"></i>
+                    </div>
+                    <div class="course-details">
+                        <h4>Docker & Kubernetes for Beginners</h4>
+                        <p>Module 1: Containerization Basics</p>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-info">
+                        <span class="label">Progress</span>
+                        <span>10%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: 10%;"></div>
+                    </div>
+                </div>
+
+                <a href="#" class="action-btn">Continue Learning</a>
+            </div>
+
+        </div>
+
+        <!-- Recent Achievements -->
+        <div class="section-title">
+            <span>Recent Achievements</span>
+        </div>
+
+        <div class="achievements-grid">
+            <div class="achievement-card">
+                <div class="achievement-icon badge-gold">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h5>Fast Learner</h5>
+                <p>Completed 5 modules in a single week</p>
+            </div>
+            
+            <div class="achievement-card">
+                <div class="achievement-icon badge-silver">
+                    <i class="fa-solid fa-medal"></i>
+                </div>
+                <h5>Quiz Master</h5>
+                <p>Scored 100% on 3 consecutive quizzes</p>
+            </div>
+
+            <div class="achievement-card">
+                <div class="achievement-icon badge-bronze">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <h5>7-Day Streak</h5>
+                <p>Learned for 7 consecutive days</p>
+            </div>
+
+            <div class="achievement-card">
+                <div class="achievement-icon badge-gold" style="color: var(--primary); border-color: var(--primary-light);">
+                    <i class="fa-solid fa-certificate"></i>
+                </div>
+                <h5>Course Graduate</h5>
+                <p>Completed the UI/UX Design Basics course</p>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

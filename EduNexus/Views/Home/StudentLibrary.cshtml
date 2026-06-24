@@ -1,0 +1,542 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Library - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px;
+            max-width: 1200px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Search and Filter Area */
+        .toolbar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            color: var(--text-light);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px var(--primary-lighter);
+        }
+
+        .filter-select {
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: 0.2s;
+            min-width: 160px;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px var(--primary-lighter);
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Library Grid */
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .resource-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .resource-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-4px);
+            border-color: var(--primary-light);
+        }
+
+        .resource-type-badge {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-pdf { background: #fef2f2; color: #ef4444; }
+        .badge-video { background: #eff6ff; color: #3b82f6; }
+        .badge-link { background: #f0fdf4; color: #10b981; }
+        .badge-zip { background: #fffbeb; color: #f59e0b; }
+
+        .resource-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .icon-pdf { background: #fef2f2; color: #ef4444; }
+        .icon-video { background: #eff6ff; color: #3b82f6; }
+        .icon-link { background: #f0fdf4; color: #10b981; }
+        .icon-zip { background: #fffbeb; color: #f59e0b; }
+
+        .resource-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .resource-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .resource-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .resource-size {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            background: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: 0.2s;
+            border: 1px solid var(--border);
+        }
+
+        .btn-action:hover {
+            background: var(--primary-lighter);
+            color: var(--primary);
+            border-color: var(--primary-light);
+        }
+
+        /* Categories Tags */
+        .categories-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        
+        /* Hide scrollbar for category container */
+        .categories-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .category-tag {
+            padding: 8px 16px;
+            border-radius: 100px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+        .category-tag:hover {
+            background: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .category-tag.active {
+            background: var(--primary-lighter);
+            color: var(--primary);
+            border-color: var(--primary-light);
+        }
+
+        /* Responsive adjustments */
+        media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+            }
+            .filter-select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
+            Edu<span>Nexus</span>
+        </div>
+        <nav>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-book-open"></i> All Courses
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-bullseye"></i> Personal Progress
+            </a>
+            <a href="#" class="nav-item active">
+                <i class="fa-solid fa-folder-open"></i> Library
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-users"></i> Community
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-gear"></i> Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <header class="header">
+            <div class="header-title">
+                <h1>Library & Resources</h1>
+                <p>Access course materials, e-books, cheat sheets, and references</p>
+            </div>
+            <button class="btn btn-primary">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Resource
+            </button>
+        </header>
+
+        <!-- Search & Filter -->
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="search-input" placeholder="Search for documents, videos, cheat sheets...">
+            </div>
+            <select class="filter-select">
+                <option value="all">All Formats</option>
+                <option value="pdf">PDF Documents</option>
+                <option value="video">Videos</option>
+                <option value="link">External Links</option>
+                <option value="zip">Archives (ZIP)</option>
+            </select>
+            <select class="filter-select">
+                <option value="recent">Recently Added</option>
+                <option value="popular">Most Popular</option>
+                <option value="a-z">Alphabetical (A-Z)</option>
+            </select>
+        </div>
+
+        <!-- Categories -->
+        <div class="categories-container">
+            <div class="category-tag active">All Resources</div>
+            <div class="category-tag">Web Development</div>
+            <div class="category-tag">UI/UX Design</div>
+            <div class="category-tag">Data Science</div>
+            <div class="category-tag">Mobile Apps</div>
+            <div class="category-tag">Cybersecurity</div>
+            <div class="category-tag">Cheat Sheets</div>
+        </div>
+
+        <!-- Recommended / Trending Section -->
+        <div class="section-title">
+            <span>Trending Resources</span>
+        </div>
+
+        <div class="library-grid">
+            
+            <!-- Resource Item 1 -->
+            <div class="resource-card">
+                <div class="resource-type-badge badge-pdf">PDF</div>
+                <div class="resource-icon icon-pdf">
+                    <i class="fa-regular fa-file-pdf"></i>
+                </div>
+                <h3>ASP.NET Core 8 Cheat Sheet</h3>
+                <p>A comprehensive guide to the latest features in ASP.NET Core 8, including minimal APIs and Blazor updates.</p>
+                
+                <div class="resource-meta">
+                    <div class="resource-size">
+                        <i class="fa-solid fa-database"></i> 2.4 MB
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="#" class="btn-action" title="View"><i class="fa-regular fa-eye"></i></a>
+                        <a href="#" class="btn-action" title="Download"><i class="fa-solid fa-download"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource Item 2 -->
+            <div class="resource-card">
+                <div class="resource-type-badge badge-video">MP4</div>
+                <div class="resource-icon icon-video">
+                    <i class="fa-solid fa-video"></i>
+                </div>
+                <h3>React Hooks Masterclass</h3>
+                <p>Deep dive into useState, useEffect, useMemo, and custom hooks with practical examples.</p>
+                
+                <div class="resource-meta">
+                    <div class="resource-size">
+                        <i class="fa-regular fa-clock"></i> 45 mins
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="#" class="btn-action" title="Watch"><i class="fa-solid fa-play"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource Item 3 -->
+            <div class="resource-card">
+                <div class="resource-type-badge badge-zip">ZIP</div>
+                <div class="resource-icon icon-zip">
+                    <i class="fa-regular fa-file-zipper"></i>
+                </div>
+                <h3>UI/UX Starter Kit</h3>
+                <p>A collection of Figma templates, icons, and color palettes to kickstart your next design project.</p>
+                
+                <div class="resource-meta">
+                    <div class="resource-size">
+                        <i class="fa-solid fa-database"></i> 156 MB
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="#" class="btn-action" title="Download"><i class="fa-solid fa-download"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resource Item 4 -->
+            <div class="resource-card">
+                <div class="resource-type-badge badge-link">LINK</div>
+                <div class="resource-icon icon-link">
+                    <i class="fa-solid fa-link"></i>
+                </div>
+                <h3>Tailwind CSS Official Docs</h3>
+                <p>Quick access to the official documentation for utility-first CSS framework.</p>
+                
+                <div class="resource-meta">
+                    <div class="resource-size">
+                        <i class="fa-solid fa-globe"></i> External
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <a href="#" class="btn-action" title="Open Link"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

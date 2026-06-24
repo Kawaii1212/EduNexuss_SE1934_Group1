@@ -1,0 +1,560 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taking Quiz - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #f3f4f6; /* Slightly darker to make white cards pop */
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .exit-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+        }
+
+        .exit-btn:hover {
+            background-color: #fef2f2;
+            color: var(--danger);
+        }
+
+        .quiz-title {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quiz-title span {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 14px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        /* Timer */
+        .timer-badge {
+            background: #fffbeb;
+            color: var(--warning);
+            border: 1px solid #fde68a;
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-badge.warning {
+            background: #fef2f2;
+            color: var(--danger);
+            border-color: #fecaca;
+            animation: pulse 1s infinite alternate;
+        }
+
+        keyframes pulse {
+            from { opacity: 1; }
+            to { opacity: 0.7; }
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+        }
+
+        /* Main Content Layout */
+        .quiz-container {
+            flex: 1;
+            display: flex;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 32px;
+        }
+
+        .question-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .nav-col {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 40px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .question-number {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .question-pts {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .question-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        /* Answer Options */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--surface);
+        }
+
+        .option-label:hover {
+            border-color: var(--primary-light);
+            background: var(--bg-color);
+        }
+
+        .option-input {
+            display: none;
+        }
+
+        .radio-custom {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            margin-right: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: 0.2s;
+        }
+
+        .option-input:checked + .option-label {
+            border-color: var(--primary);
+            background-color: var(--primary-lighter);
+        }
+
+        .option-input:checked + .option-label .radio-custom {
+            border-color: var(--primary);
+        }
+
+        .option-input:checked + .option-label .radio-custom::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary);
+            border-radius: 50%;
+        }
+
+        .option-text {
+            font-size: 15px;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        /* Question Navigation Buttons */
+        .question-nav-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-flag {
+            color: var(--warning);
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+        }
+        
+        .btn-flag:hover {
+            background: #fef3c7;
+        }
+
+        /* Right Sidebar Navigator */
+        .navigator-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 100px;
+        }
+
+        .navigator-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navigator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .nav-btn {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            background: var(--surface);
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--primary-light);
+        }
+
+        .nav-btn.answered {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .nav-btn.active {
+            border-color: var(--text-main);
+            transform: scale(1.1);
+            z-index: 2;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-btn.flagged::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 10px;
+            height: 10px;
+            background: var(--warning);
+            border-radius: 50%;
+            border: 2px solid var(--surface);
+        }
+
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .legend-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 2px solid var(--border);
+        }
+
+        .legend-box.answered {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .legend-box.flagged {
+            position: relative;
+        }
+        .legend-box.flagged::after {
+            content: '';
+            position: absolute;
+            top: -3px; right: -3px; width: 6px; height: 6px;
+            background: var(--warning); border-radius: 50%;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Topbar (Distraction Free) -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Home/CourseStructure" class="exit-btn">
+                <i class="fa-solid fa-xmark"></i> Exit
+            </a>
+            <div class="quiz-title">
+                1.3 Module 1 Knowledge Check
+                <span>| Advanced Full-Stack Development</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="timer-badge">
+                <i class="fa-regular fa-clock"></i> 12:45
+            </div>
+            <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Quiz</button>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="quiz-container">
+        
+        <!-- Left: Question Area -->
+        <div class="question-col">
+            
+            <div class="question-card">
+                <div class="question-meta">
+                    <div class="question-number">
+                        Question 4 of 10
+                    </div>
+                    <div class="question-pts">
+                        <i class="fa-solid fa-star" style="color: var(--warning);"></i> 5 Points
+                    </div>
+                </div>
+
+                <div class="question-text">
+                    What is the correct way to inject a dependency (like an ILogger or ApplicationDbContext) into an ASP.NET Core Controller?
+                </div>
+
+                <div class="options-grid">
+                    
+                    <input type="radio" name="q4" id="opt1" class="option-input">
+                    <label for="opt1" class="option-label">
+                        <div class="radio-custom"></div>
+                        <div class="option-text">By instantiating it directly inside the Action method using the `new` keyword.</div>
+                    </label>
+
+                    <input type="radio" name="q4" id="opt2" class="option-input" checked>
+                    <label for="opt2" class="option-label">
+                        <div class="radio-custom"></div>
+                        <div class="option-text">Through Constructor Injection by declaring it as a parameter in the controller's constructor.</div>
+                    </label>
+
+                    <input type="radio" name="q4" id="opt3" class="option-input">
+                    <label for="opt3" class="option-label">
+                        <div class="radio-custom"></div>
+                        <div class="option-text">By reading it from the `appsettings.json` file inside the Action method.</div>
+                    </label>
+
+                    <input type="radio" name="q4" id="opt4" class="option-input">
+                    <label for="opt4" class="option-label">
+                        <div class="radio-custom"></div>
+                        <div class="option-text">Using a global static variable initialized in `Program.cs`.</div>
+                    </label>
+
+                </div>
+
+                <div class="question-nav-actions">
+                    <button class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Previous</button>
+                    <button class="btn btn-flag"><i class="fa-regular fa-flag"></i> Flag for Review</button>
+                    <button class="btn btn-primary">Next Question <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right: Quiz Navigator -->
+        <div class="nav-col">
+            
+            <div class="navigator-card">
+                <div class="navigator-title">
+                    Quiz Navigation
+                    <span style="font-size: 13px; color: var(--text-muted); font-weight: 400;">3/10 Answered</span>
+                </div>
+
+                <div class="navigator-grid">
+                    <a href="#" class="nav-btn answered">1</a>
+                    <a href="#" class="nav-btn answered flagged">2</a>
+                    <a href="#" class="nav-btn answered">3</a>
+                    <a href="#" class="nav-btn active">4</a>
+                    <a href="#" class="nav-btn">5</a>
+                    <a href="#" class="nav-btn">6</a>
+                    <a href="#" class="nav-btn">7</a>
+                    <a href="#" class="nav-btn">8</a>
+                    <a href="#" class="nav-btn flagged">9</a>
+                    <a href="#" class="nav-btn">10</a>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-box answered"></div> Answered
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box"></div> Unanswered
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box flagged"></div> Flagged for Review
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px;">
+                    Submit Quiz
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

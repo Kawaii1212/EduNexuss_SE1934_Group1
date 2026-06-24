@@ -1,0 +1,593 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Question Staging - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --ai-gradient: linear-gradient(135deg, #5c24ff 0%, #d946ef 100%);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        .ai-status-badge {
+            background: var(--primary-lighter);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Layout */
+        .staging-container {
+            flex: 1;
+            display: flex;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 32px;
+        }
+
+        .editor-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .ai-col {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Notice Banner */
+        .ai-banner {
+            background: #faf5ff;
+            border: 1px solid #e9d5ff;
+            border-radius: var(--radius-lg);
+            padding: 16px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .ai-banner-icon {
+            font-size: 24px;
+            background: var(--ai-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ai-banner-content h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #6b21a8;
+            margin-bottom: 4px;
+        }
+
+        .ai-banner-content p {
+            font-size: 14px;
+            color: #7e22ce;
+            line-height: 1.5;
+        }
+
+        /* Original Question Box */
+        .question-context {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .student-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .student-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        .question-text {
+            font-size: 14px;
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-left: 16px;
+            border-left: 3px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        /* Answer Editor */
+        .editor-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            min-height: 350px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .editor-header {
+            padding: 16px 24px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .editor-toolbar {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--surface);
+        }
+
+        .toolbar-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .toolbar-btn:hover {
+            background-color: #e5e7eb;
+            color: var(--text-main);
+        }
+
+        .editor-content {
+            padding: 24px;
+            flex: 1;
+            outline: none;
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-main);
+        }
+
+        .editor-content pre {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            margin: 16px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        /* AI Assistant Sidebar */
+        .assistant-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: sticky;
+            top: 110px;
+        }
+
+        .assistant-header {
+            padding: 20px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .assistant-header i {
+            background: var(--ai-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 20px;
+        }
+
+        .prompt-info {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .prompt-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .context-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .context-badge i {
+            color: var(--primary);
+        }
+
+        .suggestions-list {
+            padding: 20px;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: #fafafa;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            border-color: var(--primary-light);
+            background: var(--surface);
+        }
+
+        .suggestion-item i {
+            color: #d946ef;
+            margin-top: 2px;
+        }
+
+        .suggestion-text {
+            font-size: 13px;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .ai-chat-input {
+            padding: 20px;
+            background: #fafafa;
+            border-top: 1px solid var(--border);
+        }
+
+        .chat-box {
+            position: relative;
+        }
+
+        .chat-textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 12px 48px 12px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            resize: none;
+            height: 80px;
+            transition: 0.2s;
+        }
+
+        .chat-textarea:focus {
+            border-color: #d946ef;
+            box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.1);
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            width: 32px;
+            height: 32px;
+            background: var(--ai-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Home/QuestionDetail" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Cancel
+            </a>
+            <div class="ai-status-badge">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Generated Answer
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="btn btn-outline"><i class="fa-solid fa-rotate-left"></i> Discard Draft</button>
+            <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Approve & Post Answer</button>
+        </div>
+    </header>
+
+    <main class="staging-container">
+        
+        <!-- Left: Editor Content -->
+        <div class="editor-col">
+            
+            <div class="ai-banner">
+                <div class="ai-banner-icon"><i class="fa-solid fa-sparkles"></i></div>
+                <div class="ai-banner-content">
+                    <h4>Review AI Answer Draft</h4>
+                    <p>The Copilot has analyzed the student's question against your course materials (Module 4 Transcript) and generated this response. Please review, ensure technical accuracy, and adjust the tone before posting it as an Instructor Endorsed answer.</p>
+                </div>
+            </div>
+
+            <!-- Original Question Context -->
+            <div class="question-context">
+                <div class="question-header">
+                    <div class="avatar">JD</div>
+                    <div>
+                        <div class="student-name">John Doe</div>
+                        <div class="student-meta">Asked in React Hooks • 2 hours ago</div>
+                    </div>
+                </div>
+                <div class="question-title">Why does my useEffect run infinitely when I update state inside it?</div>
+                <div class="question-text">
+                    I'm building a simple counter component. I want to fetch some data every time the count changes, but my browser keeps freezing and the console logs thousands of times per second. I'm calling setCount inside the useEffect unconditionally. What am I doing wrong?
+                </div>
+            </div>
+
+            <!-- Answer Editor -->
+            <div class="editor-box">
+                <div class="editor-header">
+                    <i class="fa-solid fa-pen-to-square"></i> Draft Answer
+                </div>
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn active"><i class="fa-solid fa-bold"></i></button>
+                    <button class="toolbar-btn"><i class="fa-solid fa-italic"></i></button>
+                    <button class="toolbar-btn"><i class="fa-solid fa-code"></i></button>
+                    <button class="toolbar-btn"><i class="fa-solid fa-list-ul"></i></button>
+                    <button class="toolbar-btn"><i class="fa-solid fa-link"></i></button>
+                </div>
+                <div class="editor-content" contenteditable="true">
+                    <p>Great question, John! You are encountering a classic infinite loop in React.</p>
+                    <br>
+                    <p>By default, <code>useEffect</code> runs after <em>every</em> render. Inside your <code>useEffect</code>, you are calling <code>setCount</code>, which updates the state. Updating state triggers a re-render. After the re-render, <code>useEffect</code> runs again, which updates the state again, causing an infinite loop.</p>
+                    <br>
+                    <p>To fix this, you need to provide a <strong>dependency array</strong> as the second argument to <code>useEffect</code>. If you only want it to run when certain variables change, you list them there.</p>
+                    <pre>useEffect(() => {
+  console.log("This runs when count changes");
+  // Don't call setCount here unconditionally!
+}, [count]); // &lt;--- Dependency array</pre>
+                    <p>Hope this clarifies things for you. Let me know if you have any other questions!</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right: AI Assistant Panel -->
+        <div class="ai-col">
+            
+            <div class="assistant-card">
+                <div class="assistant-header">
+                    <i class="fa-solid fa-robot"></i> EduNexus Copilot
+                </div>
+
+                <div class="prompt-info">
+                    <div class="prompt-label">Knowledge Base Used</div>
+                    <div class="context-badge">
+                        <i class="fa-solid fa-file-video"></i> Module 4 Transcript
+                    </div>
+                    <div class="context-badge">
+                        <i class="fa-solid fa-book"></i> React Docs Database
+                    </div>
+                </div>
+
+                <div class="suggestions-list">
+                    <div class="prompt-label" style="margin-bottom: 12px;">Refinement Actions</div>
+                    
+                    <div class="suggestion-item">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <div class="suggestion-text">
+                            <strong>Make it more academic</strong><br>
+                            Use more formal terminology and cite official documentation.
+                        </div>
+                    </div>
+
+                    <div class="suggestion-item">
+                        <i class="fa-solid fa-handshake-angle"></i>
+                        <div class="suggestion-text">
+                            <strong>Be more encouraging</strong><br>
+                            Add more positive reinforcement for the student.
+                        </div>
+                    </div>
+
+                    <div class="suggestion-item">
+                        <i class="fa-solid fa-code"></i>
+                        <div class="suggestion-text">
+                            <strong>Add a CodePen Link</strong><br>
+                            Generate a working example and link to it.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ai-chat-input">
+                    <div class="prompt-label" style="margin-bottom: 8px;">Talk to Copilot</div>
+                    <div class="chat-box">
+                        <textarea class="chat-textarea" placeholder="E.g. Also mention the eslint-plugin-react-hooks rule..."></textarea>
+                        <button class="send-btn"><i class="fa-solid fa-arrow-up"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

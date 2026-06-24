@@ -1,0 +1,521 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Lesson - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --success: #10b981;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        .breadcrumbs {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumbs span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+            border-color: var(--border-hover);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Main Content Layout */
+        .editor-container {
+            flex: 1;
+            display: flex;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 32px;
+        }
+
+        .main-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .side-col {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Inputs & Editor */
+        .title-input {
+            width: 100%;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-main);
+            border: none;
+            background: transparent;
+            outline: none;
+            padding: 10px 0;
+            border-bottom: 1px solid transparent;
+            transition: 0.2s;
+        }
+
+        .title-input::placeholder {
+            color: #d1d5db;
+        }
+
+        .title-input:focus {
+            border-bottom: 1px solid var(--primary-light);
+        }
+
+        .editor-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .editor-toolbar {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #fafafa;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .toolbar-btn:hover {
+            background-color: #e5e7eb;
+            color: var(--text-main);
+        }
+
+        .toolbar-btn.active {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        .toolbar-divider {
+            width: 1px;
+            height: 24px;
+            background-color: var(--border);
+            margin: 0 8px;
+        }
+
+        .editor-content {
+            padding: 24px;
+            flex: 1;
+            outline: none;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-main);
+            overflow-y: auto;
+        }
+
+        .editor-content[placeholder]:empty:before {
+            content: attr(placeholder);
+            color: #9ca3af;
+            cursor: text;
+        }
+
+        /* Sidebar Cards */
+        .settings-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-light);
+            background-color: var(--surface);
+            box-shadow: 0 0 0 3px var(--primary-lighter);
+        }
+
+        /* File Upload Area */
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 32px 20px;
+            text-align: center;
+            background-color: #fafafa;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-light);
+            background-color: var(--primary-lighter);
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            color: var(--primary-light);
+            margin-bottom: 12px;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .upload-subtext {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .attached-file {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-top: 16px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #fef2f2;
+            color: #ef4444; /* PDF color */
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .file-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .file-size {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .btn-remove {
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .btn-remove:hover {
+            color: var(--danger);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Home/CourseStructure" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </a>
+            <div class="breadcrumbs">
+                Course Structure <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> Module 1 <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> <span>Edit Lesson</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <span style="color: var(--text-muted); font-size: 13px; margin-right: 12px;">Saved a few seconds ago</span>
+            <button class="btn btn-outline">Preview</button>
+            <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Publish</button>
+        </div>
+    </header>
+
+    <!-- Main Editor Area -->
+    <main class="editor-container">
+        
+        <!-- Left: Editor Column -->
+        <div class="main-col">
+            <input type="text" class="title-input" placeholder="Lesson Title..." value="1.2 Environment Setup Guide">
+            
+            <div class="editor-box">
+                <!-- Rich Text Toolbar Mockup -->
+                <div class="editor-toolbar">
+                    <select class="form-select" style="width: auto; padding: 6px 12px; font-size: 13px; border-color: transparent; background-color: transparent;">
+                        <option>Normal text</option>
+                        <option>Heading 1</option>
+                        <option>Heading 2</option>
+                        <option>Heading 3</option>
+                    </select>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn active" title="Bold"><i class="fa-solid fa-bold"></i></button>
+                    <button class="toolbar-btn" title="Italic"><i class="fa-solid fa-italic"></i></button>
+                    <button class="toolbar-btn" title="Underline"><i class="fa-solid fa-underline"></i></button>
+                    <button class="toolbar-btn" title="Strikethrough"><i class="fa-solid fa-strikethrough"></i></button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+                    <button class="toolbar-btn" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+                    <button class="toolbar-btn" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+                    <button class="toolbar-btn" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn" title="Insert Link"><i class="fa-solid fa-link"></i></button>
+                    <button class="toolbar-btn" title="Insert Image"><i class="fa-regular fa-image"></i></button>
+                    <button class="toolbar-btn" title="Insert Code Block"><i class="fa-solid fa-code"></i></button>
+                </div>
+
+                <!-- Editable Content Area -->
+                <div class="editor-content" contenteditable="true" placeholder="Start typing your lesson content here...">
+                    <h2>Prerequisites</h2>
+                    <p>Before we begin developing with ASP.NET Core, you need to ensure your local environment is correctly configured. Please follow the steps below carefully.</p>
+                    <br>
+                    <ul>
+                        <li>Download and install the latest <strong>.NET 8 SDK</strong>.</li>
+                        <li>Install <strong>Visual Studio 2022</strong> (Community edition is fine) or <strong>Visual Studio Code</strong>.</li>
+                        <li>If using VS Code, make sure to install the C# Dev Kit extension.</li>
+                    </ul>
+                    <br>
+                    <p>Once installed, open your terminal and run <code>dotnet --version</code> to verify.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Settings & Attachments Column -->
+        <div class="side-col">
+            
+            <!-- Lesson Settings -->
+            <div class="settings-card">
+                <div class="card-title"><i class="fa-solid fa-sliders"></i> Lesson Settings</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Lesson Type</label>
+                    <select class="form-select">
+                        <option value="video">Video Lesson</option>
+                        <option value="document" selected>Reading / Document</option>
+                        <option value="quiz">Quiz</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Estimated Duration (minutes)</label>
+                    <input type="number" class="form-control" value="10">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Video URL (Optional)</label>
+                    <input type="url" class="form-control" placeholder="https://youtube.com/...">
+                </div>
+            </div>
+
+            <!-- Study Materials / Attachments -->
+            <div class="settings-card">
+                <div class="card-title"><i class="fa-solid fa-paperclip"></i> Study Materials</div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Attach PDFs, slides, or zip files for students to download.</p>
+                
+                <div class="upload-area">
+                    <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                    <div class="upload-text">Click to upload or drag & drop</div>
+                    <div class="upload-subtext">SVG, PNG, JPG, PDF or ZIP (max. 10MB)</div>
+                </div>
+
+                <!-- Uploaded File Mockup -->
+                <div class="attached-file">
+                    <div class="file-info">
+                        <div class="file-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div>
+                            <div class="file-name">DotNet_CheatSheet.pdf</div>
+                            <div class="file-size">1.2 MB</div>
+                        </div>
+                    </div>
+                    <button class="btn-remove" title="Remove attachment"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,659 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Flashcard Staging - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --ai-gradient: linear-gradient(135deg, #5c24ff 0%, #d946ef 100%);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        .ai-status-badge {
+            background: var(--primary-lighter);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Layout */
+        .staging-container {
+            flex: 1;
+            display: flex;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 32px;
+        }
+
+        .editor-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .ai-col {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Notice Banner */
+        .ai-banner {
+            background: #faf5ff;
+            border: 1px solid #e9d5ff;
+            border-radius: var(--radius-lg);
+            padding: 16px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .ai-banner-icon {
+            font-size: 24px;
+            background: var(--ai-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ai-banner-content h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #6b21a8;
+            margin-bottom: 4px;
+        }
+
+        .ai-banner-content p {
+            font-size: 14px;
+            color: #7e22ce;
+            line-height: 1.5;
+        }
+
+        /* Deck Header Settings */
+        .deck-header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: 0.2s;
+            background: var(--bg-color);
+        }
+
+        .form-input.title {
+            font-size: 24px;
+            font-weight: 700;
+            padding: 16px 20px;
+            color: var(--text-main);
+        }
+
+        .form-input:focus {
+            border-color: #d946ef;
+            background: var(--surface);
+        }
+
+        /* Flashcard List Area */
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .fc-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: 0.2s;
+            position: relative;
+        }
+        
+        .fc-item::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--ai-gradient);
+        }
+
+        .fc-header {
+            padding: 12px 20px 12px 24px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fc-number {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .fc-number i {
+            color: #d946ef;
+        }
+
+        .fc-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .fc-action-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        .fc-action-btn:hover {
+            color: #d946ef;
+        }
+
+        .fc-action-btn.delete:hover {
+            color: var(--danger);
+        }
+
+        /* Front / Back Layout */
+        .fc-body {
+            display: flex;
+        }
+
+        .fc-side {
+            flex: 1;
+            padding: 24px;
+        }
+
+        .fc-side:first-child {
+            border-right: 1px solid var(--border);
+        }
+
+        .side-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .side-input {
+            width: 100%;
+            min-height: 80px;
+            border: none;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-main);
+            background: transparent;
+        }
+
+        /* AI Assistant Sidebar */
+        .assistant-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: sticky;
+            top: 110px;
+        }
+
+        .assistant-header {
+            padding: 20px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .assistant-header i {
+            background: var(--ai-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 20px;
+        }
+
+        .prompt-info {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .prompt-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .context-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .context-badge i {
+            color: #ef4444; /* PDF color */
+        }
+
+        .suggestions-list {
+            padding: 20px;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: #fafafa;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            border-color: #d946ef;
+            background: var(--surface);
+        }
+
+        .suggestion-item i {
+            color: #d946ef;
+            margin-top: 2px;
+        }
+
+        .suggestion-text {
+            font-size: 13px;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .ai-chat-input {
+            padding: 20px;
+            background: #fafafa;
+            border-top: 1px solid var(--border);
+        }
+
+        .chat-box {
+            position: relative;
+        }
+
+        .chat-textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 12px 48px 12px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            resize: none;
+            height: 80px;
+            transition: 0.2s;
+        }
+
+        .chat-textarea:focus {
+            border-color: #d946ef;
+            box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.1);
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            width: 32px;
+            height: 32px;
+            background: var(--ai-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Home/FlashcardLibrary" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Cancel
+            </a>
+            <div class="ai-status-badge">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Generated Deck
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="btn btn-outline"><i class="fa-solid fa-rotate-left"></i> Discard Draft</button>
+            <button class="btn btn-primary"><i class="fa-solid fa-check"></i> Approve & Save Deck</button>
+        </div>
+    </header>
+
+    <main class="staging-container">
+        
+        <!-- Left: Editor Content -->
+        <div class="editor-col">
+            
+            <div class="ai-banner">
+                <div class="ai-banner-icon"><i class="fa-solid fa-sparkles"></i></div>
+                <div class="ai-banner-content">
+                    <h4>Review Generated Flashcards</h4>
+                    <p>The AI has extracted key concepts and terms from your uploaded document. Please review the cards, edit definitions if needed, or ask Copilot to generate more cards.</p>
+                </div>
+            </div>
+
+            <!-- Deck Settings -->
+            <div class="deck-header">
+                <div class="form-group">
+                    <label class="form-label">Deck Title</label>
+                    <input type="text" class="form-input title" value="Biology 101: Cell Structure">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description (Optional)</label>
+                    <textarea class="form-input" style="height: 60px; resize: vertical;">Extracted concepts from Chapter 4 of the Biology Textbook.</textarea>
+                </div>
+            </div>
+
+            <!-- Cards List -->
+            <div class="cards-list">
+                
+                <!-- Card 1 -->
+                <div class="fc-item">
+                    <div class="fc-header">
+                        <div class="fc-number"><i class="fa-solid fa-sparkles"></i> Card 1</div>
+                        <div class="fc-actions">
+                            <button class="fc-action-btn" title="Regenerate this card"><i class="fa-solid fa-rotate"></i></button>
+                            <button class="fc-action-btn delete" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                    <div class="fc-body">
+                        <div class="fc-side">
+                            <div class="side-label">Front (Term)</div>
+                            <textarea class="side-input">Mitochondria</textarea>
+                        </div>
+                        <div class="fc-side">
+                            <div class="side-label">Back (Definition)</div>
+                            <textarea class="side-input">Organelles known as the "powerhouses" of the cell, responsible for generating most of the cell's supply of adenosine triphosphate (ATP).</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="fc-item">
+                    <div class="fc-header">
+                        <div class="fc-number"><i class="fa-solid fa-sparkles"></i> Card 2</div>
+                        <div class="fc-actions">
+                            <button class="fc-action-btn" title="Regenerate this card"><i class="fa-solid fa-rotate"></i></button>
+                            <button class="fc-action-btn delete" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                    <div class="fc-body">
+                        <div class="fc-side">
+                            <div class="side-label">Front (Term)</div>
+                            <textarea class="side-input">Nucleus</textarea>
+                        </div>
+                        <div class="fc-side">
+                            <div class="side-label">Back (Definition)</div>
+                            <textarea class="side-input">A membrane-bound organelle that contains the cell's chromosomes. It controls and regulates the activities of the cell.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="fc-item">
+                    <div class="fc-header">
+                        <div class="fc-number"><i class="fa-solid fa-sparkles"></i> Card 3</div>
+                        <div class="fc-actions">
+                            <button class="fc-action-btn" title="Regenerate this card"><i class="fa-solid fa-rotate"></i></button>
+                            <button class="fc-action-btn delete" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                    <div class="fc-body">
+                        <div class="fc-side">
+                            <div class="side-label">Front (Term)</div>
+                            <textarea class="side-input">Ribosomes</textarea>
+                        </div>
+                        <div class="fc-side">
+                            <div class="side-label">Back (Definition)</div>
+                            <textarea class="side-input">Macromolecular machines found within all living cells that perform biological protein synthesis (mRNA translation).</textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Right: AI Assistant Panel -->
+        <div class="ai-col">
+            
+            <div class="assistant-card">
+                <div class="assistant-header">
+                    <i class="fa-solid fa-robot"></i> EduNexus Copilot
+                </div>
+
+                <div class="prompt-info">
+                    <div class="prompt-label">Source Document</div>
+                    <div class="context-badge">
+                        <i class="fa-solid fa-file-pdf"></i> ch4_cells_structure.pdf
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">Analyzed 12 pages and extracted 15 key terms.</p>
+                </div>
+
+                <div class="suggestions-list">
+                    <div class="prompt-label" style="margin-bottom: 12px;">Refinement Actions</div>
+                    
+                    <div class="suggestion-item">
+                        <i class="fa-solid fa-compress"></i>
+                        <div class="suggestion-text">
+                            <strong>Make definitions shorter</strong><br>
+                            Condense the back of the cards to be punchier and easier to memorize.
+                        </div>
+                    </div>
+
+                    <div class="suggestion-item">
+                        <i class="fa-solid fa-plus-square"></i>
+                        <div class="suggestion-text">
+                            <strong>Generate 5 more cards</strong><br>
+                            Extract more terms from the document.
+                        </div>
+                    </div>
+
+                    <div class="suggestion-item">
+                        <i class="fa-solid fa-language"></i>
+                        <div class="suggestion-text">
+                            <strong>Translate to Vietnamese</strong><br>
+                            Translate all terms and definitions.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ai-chat-input">
+                    <div class="prompt-label" style="margin-bottom: 8px;">Talk to Copilot</div>
+                    <div class="chat-box">
+                        <textarea class="chat-textarea" placeholder="E.g. Also include terms related to plant cells..."></textarea>
+                        <button class="send-btn"><i class="fa-solid fa-arrow-up"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

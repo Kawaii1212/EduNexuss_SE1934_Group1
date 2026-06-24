@@ -1,0 +1,580 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Essay - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        .breadcrumbs {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumbs span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* Layout */
+        .submit-container {
+            flex: 1;
+            display: flex;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 32px;
+        }
+
+        .main-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .side-col {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Assignment Info Card */
+        .assignment-info {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .assignment-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .assignment-course {
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .assignment-meta-list {
+            display: flex;
+            gap: 32px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .meta-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .meta-value.due-soon {
+            color: var(--danger);
+        }
+
+        .instructions-content {
+            font-size: 15px;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .instructions-content h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .instructions-content ul {
+            margin-left: 20px;
+            margin-bottom: 16px;
+            color: #374151;
+        }
+
+        /* Submission Area */
+        .submission-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .submission-header {
+            background: #fafafa;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            gap: 24px;
+        }
+
+        .sub-tab {
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+            padding-bottom: 16px;
+            margin-bottom: -17px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .sub-tab:hover {
+            color: var(--text-main);
+        }
+
+        .sub-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .submission-body {
+            padding: 32px;
+        }
+
+        /* Upload File Style */
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 60px 20px;
+            text-align: center;
+            background-color: #fafafa;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-light);
+            background-color: var(--primary-lighter);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: var(--primary-light);
+            margin-bottom: 16px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .upload-subtext {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Text Editor Style */
+        .editor-box {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            display: none; /* hidden by default, shown if text tab selected */
+        }
+
+        .editor-toolbar {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #fafafa;
+        }
+
+        .toolbar-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .toolbar-btn:hover {
+            background-color: #e5e7eb;
+            color: var(--text-main);
+        }
+
+        .editor-content {
+            padding: 24px;
+            min-height: 250px;
+            outline: none;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Sidebar Cards */
+        .status-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .status-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .status-row:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .badge-status {
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #f3f4f6;
+            color: var(--text-muted);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 24px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            margin-top: 12px;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+        }
+
+        /* Rubric Link */
+        .rubric-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--primary-lighter);
+            border: 1px solid var(--primary-light);
+            border-radius: var(--radius-md);
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .rubric-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Home/CourseStructure" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <div class="breadcrumbs">
+                Advanced Full-Stack Development <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> Module 3 <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> <span>Final Essay</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="submit-container">
+        
+        <!-- Left Column: Assignment Details & Submission Area -->
+        <div class="main-col">
+            
+            <div class="assignment-info">
+                <div class="assignment-header">
+                    <div>
+                        <div class="assignment-course">Software Architecture Patterns</div>
+                        <h1 class="assignment-title">Midterm Essay: Microservices vs Monoliths</h1>
+                    </div>
+                    <div class="assignment-meta-list">
+                        <div class="meta-item">
+                            <span class="meta-label">Due Date</span>
+                            <span class="meta-value due-soon">Oct 28, 2026 11:59 PM</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Points</span>
+                            <span class="meta-value">100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="instructions-content">
+                    <h3>Instructions</h3>
+                    <p>In this essay, you are required to critically analyze the trade-offs between Microservices and Monolithic architectures. Your essay should cover the following points:</p>
+                    <ul>
+                        <li>Deployment complexity and CI/CD pipelines.</li>
+                        <li>Scalability characteristics of both approaches.</li>
+                        <li>Data consistency and distributed transactions.</li>
+                        <li>A real-world case study of a company that successfully migrated from one to another.</li>
+                    </ul>
+                    <p><strong>Formatting Requirements:</strong> Minimum 1500 words, APA formatting for citations. Acceptable file formats are PDF or DOCX.</p>
+                </div>
+            </div>
+
+            <div class="submission-card">
+                <div class="submission-header">
+                    <div class="sub-tab active"><i class="fa-solid fa-file-arrow-up"></i> File Upload</div>
+                    <div class="sub-tab"><i class="fa-solid fa-keyboard"></i> Text Entry</div>
+                    <div class="sub-tab"><i class="fa-brands fa-google-drive"></i> Google Drive</div>
+                </div>
+
+                <div class="submission-body">
+                    <!-- File Upload View -->
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <div class="upload-text">Click to upload or drag your file here</div>
+                        <div class="upload-subtext">Supported formats: PDF, DOCX, TXT (Max 20MB)</div>
+                    </div>
+
+                    <!-- Text Entry View (Hidden by default, shown for completeness) -->
+                    <div class="editor-box" id="textEntryArea">
+                        <div class="editor-toolbar">
+                            <button class="toolbar-btn"><i class="fa-solid fa-bold"></i></button>
+                            <button class="toolbar-btn"><i class="fa-solid fa-italic"></i></button>
+                            <button class="toolbar-btn"><i class="fa-solid fa-list-ul"></i></button>
+                            <button class="toolbar-btn"><i class="fa-solid fa-list-ol"></i></button>
+                            <button class="toolbar-btn"><i class="fa-solid fa-link"></i></button>
+                        </div>
+                        <div class="editor-content" contenteditable="true" placeholder="Type your essay here..."></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Comment section -->
+            <div class="submission-card">
+                <div class="submission-header" style="border-bottom: none; background: transparent; padding-bottom: 0;">
+                    Add Comments (Optional)
+                </div>
+                <div class="submission-body" style="padding-top: 16px;">
+                    <textarea placeholder="Any additional notes for your instructor..." style="width: 100%; min-height: 80px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); font-family: inherit; font-size: 14px; outline: none; resize: vertical;"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Status & Actions -->
+        <div class="side-col">
+            
+            <div class="status-card">
+                <div class="status-title"><i class="fa-solid fa-circle-info"></i> Submission Status</div>
+                
+                <div class="status-row">
+                    <span class="status-label">Attempt</span>
+                    <span class="status-value">Attempt 1</span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">Status</span>
+                    <span class="status-value"><span class="badge-status">Not Submitted</span></span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">Grading Status</span>
+                    <span class="status-value">Not Graded</span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">Time Remaining</span>
+                    <span class="status-value" style="color: var(--danger);">3 Days, 4 Hours</span>
+                </div>
+
+                <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Assignment</button>
+                <button class="btn btn-outline">Cancel</button>
+            </div>
+
+            <div class="status-card">
+                <div class="status-title"><i class="fa-solid fa-clipboard-check"></i> Grading Rubric</div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Review the rubric before submitting to ensure you meet all criteria.</p>
+                
+                <a href="#" class="rubric-link">
+                    <i class="fa-solid fa-table-list"></i> View Detailed Rubric
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        // Simple mock interaction for tabs
+        const tabs = document.querySelectorAll('.sub-tab');
+        const uploadArea = document.getElementById('uploadArea');
+        const textEntryArea = document.getElementById('textEntryArea');
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                if (index === 0) {
+                    uploadArea.style.display = 'block';
+                    textEntryArea.style.display = 'none';
+                } else if (index === 1) {
+                    uploadArea.style.display = 'none';
+                    textEntryArea.style.display = 'block';
+                } else {
+                    uploadArea.style.display = 'block'; // Google drive mock
+                    textEntryArea.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

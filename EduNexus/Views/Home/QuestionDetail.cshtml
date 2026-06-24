@@ -1,0 +1,684 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Detail - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px;
+            max-width: 1200px;
+            display: flex;
+            gap: 32px;
+        }
+
+        .qa-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .side-col {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Back Link & Title */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text-main);
+        }
+
+        .question-header {
+            margin-bottom: 24px;
+        }
+
+        .question-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .question-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 100px;
+            background: var(--primary-lighter);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* Post Block (Question / Answer) */
+        .post-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Highlighted Answer (Instructor/Endorsed) */
+        .post-card.instructor-answer {
+            border: 2px solid var(--success);
+            background: #f0fdf4; /* Very light green */
+            position: relative;
+        }
+
+        .instructor-badge {
+            position: absolute;
+            top: -12px;
+            right: 24px;
+            background: var(--success);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Voting Side */
+        .vote-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 40px;
+            flex-shrink: 0;
+        }
+
+        .vote-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .vote-btn:hover, .vote-btn.active {
+            color: var(--primary);
+        }
+
+        .vote-count {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Content Side */
+        .post-content-col {
+            flex: 1;
+        }
+
+        .post-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-main);
+            margin-bottom: 24px;
+        }
+
+        .post-text pre {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .post-text code {
+            font-family: monospace;
+        }
+
+        /* Author Info */
+        .author-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-color);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .avatar.student { background: #eff6ff; color: #3b82f6; }
+        .avatar.instructor { background: var(--success); color: white; }
+
+        .author-details h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .author-details p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .action-link {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+
+        .action-link:hover {
+            color: var(--primary);
+        }
+
+        /* Comments Section (Replies to an answer) */
+        .comments-list {
+            margin-top: 16px;
+            padding-left: 20px;
+            border-left: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .comment-item {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-main);
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .comment-meta {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .comment-meta a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Editor for new reply */
+        .reply-editor {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .editor-header {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .textarea-box {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            min-height: 150px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            margin-bottom: 16px;
+        }
+
+        .textarea-box:focus {
+            border-color: var(--primary-light);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Sidebar Widgets */
+        .widget {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .widget-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .related-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .related-item {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .related-item a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .related-item a:hover {
+            text-decoration: underline;
+        }
+
+        .course-context {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-color);
+            border-radius: var(--radius-md);
+        }
+
+        .course-icon {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .course-text h4 {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .course-text p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
+            Edu<span>Nexus</span>
+        </div>
+        <nav>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-book-open"></i> All Courses
+            </a>
+            <a href="#" class="nav-item active">
+                <i class="fa-regular fa-comments"></i> Q&A Forum
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-list-check"></i> Assignments
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-gear"></i> Settings
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        
+        <div class="qa-col">
+            <a href="#" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to All Questions</a>
+
+            <div class="question-header">
+                <h1 class="question-title">Why does my useEffect run infinitely when I update state inside it?</h1>
+                <div class="question-meta">
+                    <span>Asked 2 hours ago</span>
+                    <span><i class="fa-regular fa-eye"></i> 142 views</span>
+                    <span class="tag">React Hooks</span>
+                    <span class="tag">Debugging</span>
+                </div>
+            </div>
+
+            <!-- The Question -->
+            <div class="post-card">
+                <div class="vote-col">
+                    <button class="vote-btn active"><i class="fa-solid fa-caret-up"></i></button>
+                    <span class="vote-count">12</span>
+                    <button class="vote-btn"><i class="fa-solid fa-caret-down"></i></button>
+                </div>
+                <div class="post-content-col">
+                    <div class="post-text">
+                        <p>I'm building a simple counter component. I want to fetch some data every time the count changes, but my browser keeps freezing and the console logs thousands of times per second.</p>
+                        <p>Here is my code:</p>
+                        <pre><code>import { useState, useEffect } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log("Fetching data for count:", count);
+    setCount(count + 1); // <--- I think the issue is here
+  });
+
+  return (
+    &lt;div&gt;{count}&lt;/div&gt;
+  );
+}</code></pre>
+                        <p>What am I doing wrong? Any help is appreciated!</p>
+                    </div>
+
+                    <div class="author-box">
+                        <div class="post-actions">
+                            <a href="#" class="action-link"><i class="fa-solid fa-share"></i> Share</a>
+                            <a href="#" class="action-link"><i class="fa-solid fa-flag"></i> Report</a>
+                        </div>
+                        <div class="author-info">
+                            <div class="avatar student">JD</div>
+                            <div class="author-details">
+                                <h4>John Doe</h4>
+                                <p>Student</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answers Header -->
+            <div style="font-size: 20px; font-weight: 700; margin-top: 16px;">
+                2 Answers
+            </div>
+
+            <!-- Answer 1 (Instructor Endorsed) -->
+            <div class="post-card instructor-answer">
+                <div class="instructor-badge">
+                    <i class="fa-solid fa-check-circle"></i> Instructor Endorsed
+                </div>
+                <div class="vote-col">
+                    <button class="vote-btn active"><i class="fa-solid fa-caret-up"></i></button>
+                    <span class="vote-count">45</span>
+                    <button class="vote-btn"><i class="fa-solid fa-caret-down"></i></button>
+                </div>
+                <div class="post-content-col">
+                    <div class="post-text">
+                        <p>Great question! You are encountering a classic infinite loop in React.</p>
+                        <p>By default, <code>useEffect</code> runs after every render. Inside your <code>useEffect</code>, you are calling <code>setCount</code>, which updates the state. Updating state triggers a re-render. After the re-render, <code>useEffect</code> runs again, which updates the state again, causing an infinite loop.</p>
+                        <p>To fix this, you need to provide a <strong>dependency array</strong> as the second argument to <code>useEffect</code>. If you only want it to run when certain variables change, you list them there. If you don't want it to run indefinitely, don't update the dependencies inside the effect itself unconditionally.</p>
+                        <pre><code>useEffect(() => {
+  console.log("This runs when component mounts or count changes");
+  // Don't call setCount here unconditionally!
+}, [count]); // <--- Dependency array</code></pre>
+                    </div>
+
+                    <div class="author-box">
+                        <div class="post-actions">
+                            <a href="#" class="action-link"><i class="fa-solid fa-share"></i> Share</a>
+                        </div>
+                        <div class="author-info">
+                            <div class="avatar instructor">AS</div>
+                            <div class="author-details">
+                                <h4>Dr. Alan Smith</h4>
+                                <p>Lead Instructor</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comments-list">
+                        <div class="comment-item">
+                            Thanks Dr. Smith! I added the dependency array and removed the setCount and it stopped crashing. <span class="comment-meta">– <a href="#">John Doe</a> 1 hour ago</span>
+                        </div>
+                        <div class="comment-item">
+                            Just to add to this, if you only want it to run exactly once when the component loads, you can pass an empty array <code>[]</code>. <span class="comment-meta">– <a href="#">Sarah Connor</a> 45 mins ago</span>
+                        </div>
+                        <div style="font-size: 13px; margin-top: 8px;">
+                            <a href="#" style="color: var(--text-muted); text-decoration: none;">Add a comment...</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answer 2 (Student) -->
+            <div class="post-card">
+                <div class="vote-col">
+                    <button class="vote-btn"><i class="fa-solid fa-caret-up"></i></button>
+                    <span class="vote-count">3</span>
+                    <button class="vote-btn"><i class="fa-solid fa-caret-down"></i></button>
+                </div>
+                <div class="post-content-col">
+                    <div class="post-text">
+                        <p>As the instructor said, use the dependency array. Also, if you use <code>eslint-plugin-react-hooks</code> in your project, it will actually warn you in your code editor when you forget dependencies or create infinite loops!</p>
+                    </div>
+
+                    <div class="author-box">
+                        <div class="post-actions">
+                            <a href="#" class="action-link"><i class="fa-solid fa-share"></i> Share</a>
+                        </div>
+                        <div class="author-info">
+                            <div class="avatar student" style="background: #fdf4ff; color: #d946ef;">MW</div>
+                            <div class="author-details">
+                                <h4>Mike Wheeler</h4>
+                                <p>Student</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reply Box -->
+            <div class="reply-editor">
+                <div class="editor-header">Your Answer</div>
+                <textarea class="textarea-box" placeholder="Type your answer here... Support for markdown is enabled."></textarea>
+                <button class="btn btn-primary">Post Answer</button>
+            </div>
+
+        </div>
+
+        <div class="side-col">
+            
+            <div class="widget">
+                <div class="widget-title">Course Context</div>
+                <div class="course-context">
+                    <div class="course-icon"><i class="fa-brands fa-react"></i></div>
+                    <div class="course-text">
+                        <h4>Advanced Full-Stack</h4>
+                        <p>Module 4: React Lifecycle & Hooks</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-title">Related Questions</div>
+                <div class="related-list">
+                    <div class="related-item">
+                        <a href="#">Difference between useEffect and useLayoutEffect?</a>
+                    </div>
+                    <div class="related-item">
+                        <a href="#">How to fetch data safely inside useEffect without memory leaks?</a>
+                    </div>
+                    <div class="related-item">
+                        <a href="#">useState not updating immediately</a>
+                    </div>
+                    <div class="related-item">
+                        <a href="#">Cannot read property 'map' of undefined in React component</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

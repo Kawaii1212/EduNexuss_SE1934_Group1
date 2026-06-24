@@ -1,0 +1,686 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment Details - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        .breadcrumbs {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumbs span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Container Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* Assignment Header Card */
+        .info-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: 40px;
+        }
+
+        .info-main {
+            flex: 2;
+            border-right: 1px solid var(--border);
+            padding-right: 40px;
+        }
+
+        .info-stats {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .course-tag {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .assignment-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 20px;
+        }
+
+        .meta-grid {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .meta-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .instructions-btn {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .instructions-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Progress Rings / Stats */
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .progress-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 65%, var(--border) 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-inner {
+            width: 84px;
+            height: 84px;
+            background: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        .progress-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .stat-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .stat-name {
+            color: var(--text-muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .stat-count {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Submissions Table Section */
+        .submissions-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 16px;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            color: var(--text-light);
+        }
+
+        .search-input {
+            width: 280px;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg-color);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-light);
+            background: var(--surface);
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg-color);
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Table */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #fafafa;
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #fafafa;
+        }
+
+        .student-cell {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-lighter);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .student-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .student-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-graded { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
+        .badge-needs-grading { background: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
+        .badge-late { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+        .badge-missing { background: #f3f4f6; color: var(--text-muted); border: 1px solid var(--border); }
+
+        .score-cell {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        .score-cell.empty {
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .btn-text {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            transition: 0.2s;
+        }
+
+        .btn-text:hover {
+            background: var(--primary-lighter);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Home/CourseStructure" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Course
+            </a>
+            <div class="breadcrumbs">
+                Advanced Full-Stack Development <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> <span>Assignment Details</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="btn btn-outline"><i class="fa-solid fa-pen"></i> Edit Assignment</button>
+            <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Export Grades</button>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <!-- Assignment Info -->
+        <div class="info-card">
+            <div class="info-main">
+                <div class="course-tag">Module 3: Software Architecture</div>
+                <h1 class="assignment-title">Midterm Essay: Microservices vs Monoliths</h1>
+                
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">Due Date</span>
+                        <span class="meta-value">Oct 28, 2026 at 11:59 PM</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Total Points</span>
+                        <span class="meta-value">100 Pts</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Total Students</span>
+                        <span class="meta-value">42 Enrolled</span>
+                    </div>
+                </div>
+
+                <button class="instructions-btn">
+                    <i class="fa-regular fa-file-lines"></i> View Prompt & Instructions
+                </button>
+            </div>
+            
+            <div class="info-stats">
+                <div class="progress-container">
+                    <div class="progress-circle">
+                        <div class="progress-inner">
+                            <div class="progress-value">27</div>
+                            <div class="progress-label">Submitted</div>
+                        </div>
+                    </div>
+                    <div class="stat-rows">
+                        <div class="stat-row">
+                            <span class="stat-name"><div class="stat-dot" style="background: var(--success);"></div> Graded</span>
+                            <span class="stat-count">15</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name"><div class="stat-dot" style="background: var(--warning);"></div> Needs Grading</span>
+                            <span class="stat-count">12</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name"><div class="stat-dot" style="background: var(--border);"></div> Not Submitted</span>
+                            <span class="stat-count">15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submissions List -->
+        <div class="submissions-card">
+            <div class="card-header">
+                <h2>Student Submissions</h2>
+                <div class="toolbar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="search-input" placeholder="Search by student name...">
+                    </div>
+                    <select class="filter-select">
+                        <option value="all">All Statuses</option>
+                        <option value="needs-grading">Needs Grading</option>
+                        <option value="graded">Graded</option>
+                        <option value="missing">Missing</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Submitted On</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <!-- Row 1: Needs Grading -->
+                        <tr>
+                            <td>
+                                <div class="student-cell">
+                                    <div class="avatar">JD</div>
+                                    <div class="student-info">
+                                        <h4>John Doe</h4>
+                                        <p>john.doe@student.edu</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="font-size: 14px; color: var(--text-main);">
+                                Oct 27, 2026<br>
+                                <span style="font-size: 12px; color: var(--text-muted);">09:15 AM</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-needs-grading">Needs Grading</span>
+                            </td>
+                            <td>
+                                <span class="score-cell empty">-- / 100</span>
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">Grade Now</a>
+                            </td>
+                        </tr>
+
+                        <!-- Row 2: Graded -->
+                        <tr>
+                            <td>
+                                <div class="student-cell">
+                                    <div class="avatar" style="background: #eff6ff; color: #3b82f6;">AS</div>
+                                    <div class="student-info">
+                                        <h4>Alice Smith</h4>
+                                        <p>alice.smith@student.edu</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="font-size: 14px; color: var(--text-main);">
+                                Oct 26, 2026<br>
+                                <span style="font-size: 12px; color: var(--text-muted);">04:45 PM</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-graded">Graded</span>
+                            </td>
+                            <td>
+                                <span class="score-cell" style="color: var(--success);">95 / 100</span>
+                            </td>
+                            <td>
+                                <a href="#" class="btn-text">Edit Grade</a>
+                            </td>
+                        </tr>
+
+                        <!-- Row 3: Late Submission -->
+                        <tr>
+                            <td>
+                                <div class="student-cell">
+                                    <div class="avatar" style="background: #fef2f2; color: #ef4444;">RJ</div>
+                                    <div class="student-info">
+                                        <h4>Robert Johnson</h4>
+                                        <p>robert.j@student.edu</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="font-size: 14px; color: var(--danger); font-weight: 500;">
+                                Oct 29, 2026<br>
+                                <span style="font-size: 12px; color: var(--danger);">10:30 AM (Late)</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-needs-grading">Needs Grading</span>
+                            </td>
+                            <td>
+                                <span class="score-cell empty">-- / 100</span>
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">Grade Now</a>
+                            </td>
+                        </tr>
+
+                        <!-- Row 4: Missing -->
+                        <tr>
+                            <td>
+                                <div class="student-cell">
+                                    <div class="avatar" style="background: #f3f4f6; color: #6b7280;">EW</div>
+                                    <div class="student-info">
+                                        <h4>Emma Wilson</h4>
+                                        <p>emma.w@student.edu</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="font-size: 14px; color: var(--text-muted);">
+                                Not Submitted
+                            </td>
+                            <td>
+                                <span class="badge badge-missing">Missing</span>
+                            </td>
+                            <td>
+                                <span class="score-cell empty">0 / 100</span>
+                            </td>
+                            <td>
+                                <a href="#" class="btn-text" style="color: var(--text-muted);">Enter Zero</a>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

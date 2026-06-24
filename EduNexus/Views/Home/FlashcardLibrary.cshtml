@@ -1,0 +1,724 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Library - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px;
+            max-width: 1200px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+            border-color: var(--border-hover);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Review Banner */
+        .review-banner {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            border-radius: var(--radius-lg);
+            padding: 24px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px -5px rgba(92, 36, 255, 0.3);
+        }
+
+        .review-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .review-info p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .btn-review-now {
+            background: white;
+            color: var(--primary);
+            padding: 12px 24px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-review-now:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            min-width: 250px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            color: var(--text-light);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px var(--primary-lighter);
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px var(--primary-lighter);
+        }
+
+        /* Decks Grid */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .decks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        /* Flashcard Deck Card */
+        .deck-card-container {
+            position: relative;
+            padding-bottom: 12px;
+            padding-right: 12px;
+        }
+
+        /* Stacked paper effect */
+        .deck-card-container::before,
+        .deck-card-container::after {
+            content: '';
+            position: absolute;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .deck-card-container::before {
+            top: 6px;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            z-index: 1;
+        }
+
+        .deck-card-container::after {
+            top: 12px;
+            left: 12px;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+
+        .deck-card {
+            position: relative;
+            z-index: 2;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .deck-card-container:hover .deck-card {
+            transform: translate(-4px, -4px);
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-md);
+        }
+
+        .deck-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .deck-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .icon-blue { background: #eff6ff; color: #3b82f6; }
+        .icon-purple { background: var(--primary-lighter); color: var(--primary); }
+        .icon-green { background: #ecfdf5; color: #10b981; }
+        .icon-orange { background: #fffbeb; color: #f59e0b; }
+
+        .deck-info {
+            flex: 1;
+        }
+
+        .deck-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .deck-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .deck-stats {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: var(--bg-color);
+            border-radius: var(--radius-md);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .deck-progress {
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .progress-track {
+            height: 6px;
+            background-color: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--success);
+            border-radius: 3px;
+        }
+
+        .deck-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .btn-study {
+            flex: 1;
+            padding: 10px;
+            border-radius: var(--radius-md);
+            background: var(--primary-lighter);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 13px;
+            text-align: center;
+            text-decoration: none;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-study:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-study.due {
+            background: #fffbeb;
+            color: #d97706;
+            border-color: #fde68a;
+        }
+
+        .btn-study.due:hover {
+            background: #f59e0b;
+            color: white;
+            border-color: #f59e0b;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
+            Edu<span>Nexus</span>
+        </div>
+        <nav>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-book-open"></i> All Courses
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-folder-open"></i> Library
+            </a>
+            <a href="#" class="nav-item active">
+                <i class="fa-solid fa-layer-group"></i> Flashcards
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-bullseye"></i> Personal Progress
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-gear"></i> Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <header class="header">
+            <div class="header-title">
+                <h1>Flashcard Decks</h1>
+                <p>Master concepts efficiently with spaced repetition learning</p>
+            </div>
+            <button class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Create New Deck
+            </button>
+        </header>
+
+        <!-- Daily Review Banner -->
+        <div class="review-banner">
+            <div class="review-info">
+                <h2>Ready for your daily review?</h2>
+                <p>You have <strong>45 cards</strong> due today across 3 different decks.</p>
+            </div>
+            <a href="#" class="btn-review-now">Review Now</a>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="search-input" placeholder="Search for decks (e.g. C# Syntax, React Hooks)...">
+            </div>
+            <select class="filter-select">
+                <option value="all">All Categories</option>
+                <option value="programming">Programming</option>
+                <option value="design">Design</option>
+                <option value="softskills">Soft Skills</option>
+            </select>
+            <select class="filter-select">
+                <option value="recent">Recently Studied</option>
+                <option value="due">Review Due</option>
+                <option value="a-z">Alphabetical</option>
+            </select>
+        </div>
+
+        <div class="section-title">
+            <i class="fa-solid fa-layer-group" style="color: var(--primary);"></i> My Decks
+        </div>
+
+        <div class="decks-grid">
+            
+            <!-- Deck 1 -->
+            <div class="deck-card-container">
+                <div class="deck-card">
+                    <div class="deck-header">
+                        <div class="deck-icon icon-purple">
+                            <i class="fa-brands fa-microsoft"></i>
+                        </div>
+                        <div class="deck-info">
+                            <h3>C# & .NET Core Basics</h3>
+                            <p>Programming</p>
+                        </div>
+                    </div>
+
+                    <div class="deck-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">120</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: var(--success);">85</div>
+                            <div class="stat-label">Mastered</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: var(--warning);">12</div>
+                            <div class="stat-label">Due</div>
+                        </div>
+                    </div>
+
+                    <div class="deck-progress">
+                        <div class="progress-header">
+                            <span>Mastery</span>
+                            <span>70%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 70%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="deck-actions">
+                        <a href="#" class="btn-study due"><i class="fa-solid fa-brain"></i> Review 12 Due</a>
+                        <button class="btn btn-outline" style="padding: 10px;"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deck 2 -->
+            <div class="deck-card-container">
+                <div class="deck-card">
+                    <div class="deck-header">
+                        <div class="deck-icon icon-blue">
+                            <i class="fa-brands fa-react"></i>
+                        </div>
+                        <div class="deck-info">
+                            <h3>React Custom Hooks</h3>
+                            <p>Web Development</p>
+                        </div>
+                    </div>
+
+                    <div class="deck-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">45</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: var(--success);">45</div>
+                            <div class="stat-label">Mastered</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: var(--text-muted);">0</div>
+                            <div class="stat-label">Due</div>
+                        </div>
+                    </div>
+
+                    <div class="deck-progress">
+                        <div class="progress-header">
+                            <span>Mastery</span>
+                            <span>100%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="deck-actions">
+                        <a href="#" class="btn-study"><i class="fa-solid fa-rotate-right"></i> Practice Again</a>
+                        <button class="btn btn-outline" style="padding: 10px;"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deck 3 -->
+            <div class="deck-card-container">
+                <div class="deck-card">
+                    <div class="deck-header">
+                        <div class="deck-icon icon-green">
+                            <i class="fa-solid fa-database"></i>
+                        </div>
+                        <div class="deck-info">
+                            <h3>SQL Server Indexing</h3>
+                            <p>Database</p>
+                        </div>
+                    </div>
+
+                    <div class="deck-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">60</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: var(--success);">15</div>
+                            <div class="stat-label">Mastered</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: var(--warning);">33</div>
+                            <div class="stat-label">Due</div>
+                        </div>
+                    </div>
+
+                    <div class="deck-progress">
+                        <div class="progress-header">
+                            <span>Mastery</span>
+                            <span>25%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 25%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="deck-actions">
+                        <a href="#" class="btn-study due"><i class="fa-solid fa-brain"></i> Review 33 Due</a>
+                        <button class="btn btn-outline" style="padding: 10px;"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deck 4 -->
+            <div class="deck-card-container">
+                <div class="deck-card">
+                    <div class="deck-header">
+                        <div class="deck-icon icon-orange">
+                            <i class="fa-brands fa-figma"></i>
+                        </div>
+                        <div class="deck-info">
+                            <h3>UI/UX Design Principles</h3>
+                            <p>Design</p>
+                        </div>
+                    </div>
+
+                    <div class="deck-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">85</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: var(--success);">0</div>
+                            <div class="stat-label">Mastered</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" style="color: var(--text-muted);">0</div>
+                            <div class="stat-label">Due</div>
+                        </div>
+                    </div>
+
+                    <div class="deck-progress">
+                        <div class="progress-header">
+                            <span>Mastery</span>
+                            <span>0%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 0%; background-color: var(--border);"></div>
+                        </div>
+                    </div>
+
+                    <div class="deck-actions">
+                        <a href="#" class="btn-study" style="background: var(--primary); color: white;"><i class="fa-solid fa-play"></i> Start Learning</a>
+                        <button class="btn btn-outline" style="padding: 10px;"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

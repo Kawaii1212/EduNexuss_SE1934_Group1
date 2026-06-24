@@ -1,0 +1,628 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Builder - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --success: #10b981;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        .breadcrumbs {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumbs span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+            border-color: var(--border-hover);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Main Content Layout */
+        .builder-container {
+            flex: 1;
+            display: flex;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 32px;
+        }
+
+        .main-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .side-col {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Inputs & Title */
+        .title-input {
+            width: 100%;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-main);
+            border: none;
+            background: transparent;
+            outline: none;
+            padding: 10px 0;
+            border-bottom: 1px solid transparent;
+            transition: 0.2s;
+        }
+
+        .title-input:focus {
+            border-bottom: 1px solid var(--primary-light);
+        }
+
+        .builder-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .question-number {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .drag-handle {
+            color: var(--text-light);
+            cursor: grab;
+        }
+
+        .question-settings {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .pts-input {
+            width: 60px;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            text-align: right;
+            outline: none;
+        }
+
+        .pts-input:focus {
+            border-color: var(--primary-light);
+        }
+
+        .form-select, .form-control {
+            padding: 10px 14px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            width: 100%;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: var(--primary-light);
+            background-color: var(--surface);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Answer Options */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-color);
+        }
+
+        .option-item.correct {
+            border-color: var(--success);
+            background-color: #ecfdf5;
+        }
+
+        .radio-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-item.correct .radio-custom {
+            border-color: var(--success);
+        }
+
+        .option-item.correct .radio-custom::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: var(--success);
+            border-radius: 50%;
+        }
+
+        .option-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .btn-icon {
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .btn-icon:hover {
+            color: var(--danger);
+        }
+
+        .add-option-btn {
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 500;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            align-self: flex-start;
+        }
+
+        .add-option-btn:hover {
+            color: var(--primary-hover);
+        }
+
+        /* Sidebar Settings */
+        .settings-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Home/CourseStructure" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </a>
+            <div class="breadcrumbs">
+                Course Structure <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> Module 1 <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> <span>Quiz Builder</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <span style="color: var(--text-muted); font-size: 13px; margin-right: 12px;">Total: 10 Points</span>
+            <button class="btn btn-outline">Preview Quiz</button>
+            <button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Quiz</button>
+        </div>
+    </header>
+
+    <!-- Main Builder Area -->
+    <main class="builder-container">
+        
+        <!-- Left: Questions Area -->
+        <div class="main-col">
+            <input type="text" class="title-input" value="1.3 Module 1 Knowledge Check" placeholder="Quiz Title">
+            
+            <div class="builder-actions">
+                <p style="color: var(--text-muted); font-size: 14px;">Add questions manually or import from your question bank.</p>
+                <button class="btn btn-outline"><i class="fa-solid fa-box-archive"></i> Import from Bank</button>
+            </div>
+
+            <!-- Question 1 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">
+                        <i class="fa-solid fa-grip-vertical drag-handle"></i> Q1
+                    </div>
+                    <div class="question-settings">
+                        <select class="form-select" style="width: 200px; padding: 6px 10px;">
+                            <option value="multiple-choice" selected>Multiple Choice</option>
+                            <option value="checkboxes">Checkboxes</option>
+                            <option value="true-false">True / False</option>
+                            <option value="short-answer">Short Answer</option>
+                        </select>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="number" class="pts-input" value="5"> <span style="font-size: 14px; color: var(--text-muted)">pts</span>
+                        </div>
+                        <button class="btn-icon" style="margin-left: 8px;"><i class="fa-regular fa-copy"></i></button>
+                        <button class="btn-icon" style="color: var(--danger);"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                </div>
+
+                <div class="question-body">
+                    <textarea class="form-control" placeholder="Type your question here...">What is the primary language used for ASP.NET Core backend development?</textarea>
+                </div>
+
+                <div class="options-list">
+                    <div class="option-item correct">
+                        <div class="radio-custom"></div>
+                        <input type="text" class="option-input" value="C#">
+                        <span style="color: var(--success); font-size: 12px; font-weight: 600; margin-right: 12px;">Correct Answer</span>
+                        <button class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="option-item">
+                        <div class="radio-custom"></div>
+                        <input type="text" class="option-input" value="JavaScript">
+                        <button class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="option-item">
+                        <div class="radio-custom"></div>
+                        <input type="text" class="option-input" value="Python">
+                        <button class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="option-item">
+                        <div class="radio-custom"></div>
+                        <input type="text" class="option-input" value="Java">
+                        <button class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+
+                <button class="add-option-btn">
+                    <i class="fa-solid fa-plus"></i> Add Option
+                </button>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">
+                        <i class="fa-solid fa-grip-vertical drag-handle"></i> Q2
+                    </div>
+                    <div class="question-settings">
+                        <select class="form-select" style="width: 200px; padding: 6px 10px;">
+                            <option value="multiple-choice">Multiple Choice</option>
+                            <option value="checkboxes">Checkboxes</option>
+                            <option value="true-false" selected>True / False</option>
+                            <option value="short-answer">Short Answer</option>
+                        </select>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="number" class="pts-input" value="5"> <span style="font-size: 14px; color: var(--text-muted)">pts</span>
+                        </div>
+                        <button class="btn-icon" style="margin-left: 8px;"><i class="fa-regular fa-copy"></i></button>
+                        <button class="btn-icon" style="color: var(--danger);"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                </div>
+
+                <div class="question-body">
+                    <textarea class="form-control" placeholder="Type your question here...">ASP.NET Core is cross-platform and can run on Windows, macOS, and Linux.</textarea>
+                </div>
+
+                <div class="options-list">
+                    <div class="option-item correct">
+                        <div class="radio-custom"></div>
+                        <input type="text" class="option-input" value="True" readonly>
+                        <span style="color: var(--success); font-size: 12px; font-weight: 600; margin-right: 12px;">Correct Answer</span>
+                    </div>
+                    <div class="option-item">
+                        <div class="radio-custom"></div>
+                        <input type="text" class="option-input" value="False" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" style="align-self: center; margin-top: 10px; padding: 14px 24px;">
+                <i class="fa-solid fa-plus"></i> Add New Question
+            </button>
+        </div>
+
+        <!-- Right: Settings Area -->
+        <div class="side-col">
+            
+            <div class="settings-card">
+                <div class="card-title"><i class="fa-solid fa-gear"></i> Quiz Settings</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Time Limit (Minutes)</label>
+                    <input type="number" class="form-control" value="15" placeholder="Leave empty for no limit">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Passing Score (%)</label>
+                    <input type="number" class="form-control" value="80">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Attempts Allowed</label>
+                    <select class="form-select">
+                        <option value="1">1 Attempt</option>
+                        <option value="2">2 Attempts</option>
+                        <option value="3" selected>3 Attempts</option>
+                        <option value="unlimited">Unlimited</option>
+                    </select>
+                </div>
+
+                <div class="form-group toggle-switch" style="margin-top: 30px;">
+                    <div>
+                        <div class="form-label" style="margin-bottom: 2px;">Shuffle Questions</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Randomize order for each student</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="form-group toggle-switch" style="margin-top: 20px;">
+                    <div>
+                        <div class="form-label" style="margin-bottom: 2px;">Show Answers</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">After quiz completion</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="card-title"><i class="fa-solid fa-server"></i> Question Bank</div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Save these questions to your bank to reuse them in other courses.</p>
+                <button class="btn btn-outline" style="width: 100%; justify-content: center;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Save to Bank
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,645 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson View - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #f3f4f6; /* Slightly darker bg for focus */
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .back-btn {
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--border);
+        }
+
+        .course-title-top {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .course-title-top span {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 14px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .course-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .progress-bar-mini {
+            width: 100px;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill-mini {
+            height: 100%;
+            background: var(--primary);
+            width: 45%;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+            border-color: var(--border-hover);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+        }
+
+        /* Main Layout */
+        .layout-container {
+            display: flex;
+            flex: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 32px;
+            gap: 32px;
+        }
+
+        /* Video / Main Content Area */
+        .main-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0; /* Prevent flex overflow */
+        }
+
+        .video-container {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            border-radius: var(--radius-lg);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .play-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            transition: 0.3s;
+            padding-left: 8px; /* Optical centering */
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-hover);
+        }
+
+        .content-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .lesson-header-left h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .lesson-header-left p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 32px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 12px 0;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-main);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .tab-content h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            margin-top: 24px;
+        }
+
+        .tab-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .tab-content p {
+            margin-bottom: 16px;
+            color: #374151;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+        }
+
+        .attachment-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .attachment-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #fef2f2;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .attachment-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .attachment-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .nav-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Sidebar Syllabus */
+        .syllabus-col {
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            height: calc(100vh - 134px);
+            position: sticky;
+            top: 102px;
+            overflow: hidden;
+        }
+
+        .syllabus-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .syllabus-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .module-group {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .module-title {
+            padding: 16px 24px;
+            background: #fcfcfc;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .module-title:hover {
+            background: #f3f4f6;
+        }
+
+        .lesson-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lesson-item {
+            padding: 12px 24px 12px 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            transition: 0.2s;
+        }
+
+        .lesson-item:hover {
+            background: #f9fafb;
+        }
+
+        .lesson-item.active {
+            background: var(--primary-lighter);
+            border-left-color: var(--primary);
+            font-weight: 500;
+        }
+
+        .lesson-status {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .lesson-item.completed .lesson-status {
+            color: var(--success);
+        }
+
+        .lesson-item.active .lesson-title {
+            color: var(--primary);
+        }
+
+        .lesson-duration {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        media (max-width: 1024px) {
+            .layout-container {
+                flex-direction: column;
+            }
+            .syllabus-col {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Home/CourseStructure" class="back-btn" title="Back to Course">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <div class="course-title-top">
+                Advanced Full-Stack Development
+                <span>|</span>
+                <span>Module 2: Entity Framework Core</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="course-progress">
+                <span>45% Complete</span>
+                <div class="progress-bar-mini">
+                    <div class="progress-fill-mini"></div>
+                </div>
+            </div>
+            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;">
+                <i class="fa-regular fa-star"></i> Leave Rating
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="layout-container">
+        
+        <!-- Left: Video & Details -->
+        <main class="main-col">
+            
+            <div class="video-container">
+                <img src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1200&auto=format&fit=crop" alt="Video Thumbnail" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
+                <div class="video-overlay">
+                    <div class="play-btn">
+                        <i class="fa-solid fa-play"></i>
+                    </div>
+                </div>
+                <!-- Progress bar overlay for video -->
+                <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.3);">
+                    <div style="width: 35%; height: 100%; background: var(--primary);"></div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="lesson-header">
+                    <div class="lesson-header-left">
+                        <h1>2.1 Code-First vs Database-First Approach</h1>
+                        <p><i class="fa-regular fa-clock"></i> 25 Mins • Lesson 1 of 6 in Module 2</p>
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="fa-solid fa-check"></i> Mark as Complete
+                    </button>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active">Overview</div>
+                    <div class="tab">Attachments (2)</div>
+                    <div class="tab">Q&A Discussion</div>
+                    <div class="tab">Notes</div>
+                </div>
+
+                <div class="tab-content">
+                    <h3>About this Lesson</h3>
+                    <p>In this lesson, we will explore the two primary methodologies for working with Entity Framework Core: Code-First and Database-First. You will learn the pros and cons of each approach and when to use them in real-world enterprise applications.</p>
+                    
+                    <h3>Key Takeaways</h3>
+                    <ul>
+                        <li style="margin-left: 20px; margin-bottom: 8px;">Understanding migrations in Code-First.</li>
+                        <li style="margin-left: 20px; margin-bottom: 8px;">Scaffolding models from an existing database.</li>
+                        <li style="margin-left: 20px; margin-bottom: 8px;">Handling schema changes safely in production.</li>
+                    </ul>
+
+                    <!-- Mock Attachments (Visible if Attachment tab was active, shown here for design completeness) -->
+                    <h3 style="margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border);">Downloadable Resources</h3>
+                    <div class="attachment-item">
+                        <div class="attachment-left">
+                            <div class="attachment-icon">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </div>
+                            <div class="attachment-info">
+                                <h4>Lesson_Slides_2.1.pdf</h4>
+                                <p>PDF Document • 1.2 MB</p>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn-outline"><i class="fa-solid fa-download"></i> Download</a>
+                    </div>
+                    <div class="attachment-item">
+                        <div class="attachment-left">
+                            <div class="attachment-icon" style="background: #fffbeb; color: #f59e0b;">
+                                <i class="fa-solid fa-file-zipper"></i>
+                            </div>
+                            <div class="attachment-info">
+                                <h4>Starter_Code_2.1.zip</h4>
+                                <p>Source Code • 4.5 MB</p>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn-outline"><i class="fa-solid fa-download"></i> Download</a>
+                    </div>
+
+                    <div class="nav-actions">
+                        <a href="#" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Previous Lesson</a>
+                        <a href="#" class="btn btn-primary">Next Lesson <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Right: Syllabus Sidebar -->
+        <aside class="syllabus-col">
+            <div class="syllabus-header">
+                Course Content
+            </div>
+            <div class="syllabus-content">
+                
+                <!-- Module 1 -->
+                <div class="module-group">
+                    <div class="module-title">
+                        <span>Module 1: Introduction</span>
+                        <i class="fa-solid fa-chevron-down" style="font-size: 12px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="lesson-list">
+                        <a href="#" class="lesson-item completed">
+                            <i class="fa-solid fa-circle-check lesson-status"></i>
+                            <span class="lesson-title">1.1 Welcome to the Course</span>
+                            <span class="lesson-duration">15:00</span>
+                        </a>
+                        <a href="#" class="lesson-item completed">
+                            <i class="fa-solid fa-circle-check lesson-status"></i>
+                            <span class="lesson-title">1.2 Environment Setup</span>
+                            <span class="lesson-duration">10:00</span>
+                        </a>
+                        <a href="#" class="lesson-item completed">
+                            <i class="fa-solid fa-circle-check lesson-status"></i>
+                            <span class="lesson-title">1.3 Knowledge Check</span>
+                            <span class="lesson-duration">Quiz</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="module-group">
+                    <div class="module-title">
+                        <span>Module 2: Entity Framework</span>
+                        <i class="fa-solid fa-chevron-up" style="font-size: 12px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="lesson-list">
+                        <a href="#" class="lesson-item active">
+                            <i class="fa-regular fa-circle-play lesson-status"></i>
+                            <span class="lesson-title">2.1 Code-First vs DB-First</span>
+                            <span class="lesson-duration">25:00</span>
+                        </a>
+                        <a href="#" class="lesson-item">
+                            <i class="fa-regular fa-circle-play lesson-status"></i>
+                            <span class="lesson-title">2.2 Creating Models</span>
+                            <span class="lesson-duration">18:30</span>
+                        </a>
+                        <a href="#" class="lesson-item">
+                            <i class="fa-regular fa-file-lines lesson-status"></i>
+                            <span class="lesson-title">2.3 Migrations Guide</span>
+                            <span class="lesson-duration">Reading</span>
+                        </a>
+                        <a href="#" class="lesson-item">
+                            <i class="fa-regular fa-circle-play lesson-status"></i>
+                            <span class="lesson-title">2.4 Seeding Data</span>
+                            <span class="lesson-duration">12:15</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="module-group">
+                    <div class="module-title">
+                        <span>Module 3: Authentication</span>
+                        <i class="fa-solid fa-chevron-down" style="font-size: 12px; color: var(--text-muted);"></i>
+                    </div>
+                    <!-- lessons hidden -->
+                </div>
+
+            </div>
+        </aside>
+
+    </div>
+
+</body>
+</html>

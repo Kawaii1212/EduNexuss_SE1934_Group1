@@ -1,0 +1,619 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment List - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px;
+            max-width: 1200px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .icon-blue { background: #eff6ff; color: #3b82f6; }
+        .icon-green { background: #ecfdf5; color: var(--success); }
+        .icon-orange { background: #fffbeb; color: var(--warning); }
+        .icon-red { background: #fef2f2; color: var(--danger); }
+
+        .stat-info h4 {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .stat-info p {
+            color: var(--text-main);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* Tabs & Filters */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 600;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background: var(--surface);
+            border-color: var(--border);
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            color: var(--text-light);
+        }
+
+        .search-input {
+            width: 250px;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-light);
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface);
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Assignment List */
+        .assignment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .assignment-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.2s;
+        }
+
+        .assignment-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* Left Side: Info */
+        .info-col {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .type-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .type-icon.quiz { color: var(--primary); background: var(--primary-lighter); border-color: var(--primary-light); }
+        .type-icon.essay { color: var(--warning); background: #fffbeb; border-color: #fde68a; }
+        .type-icon.project { color: #3b82f6; background: #eff6ff; border-color: #bfdbfe; }
+
+        .details h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .details p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .meta-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Status Colors */
+        .badge-todo { background: #f3f4f6; color: var(--text-muted); border: 1px solid var(--border); }
+        .badge-due-soon { background: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
+        .badge-submitted { background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; }
+        .badge-graded { background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
+        .badge-late { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+
+        /* Right Side: Action & Due Date */
+        .action-col {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+            width: 200px;
+        }
+
+        .due-date {
+            font-size: 13px;
+            color: var(--text-main);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .due-date span {
+            display: block;
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 4px 12px rgba(92, 36, 255, 0.3);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
+            Edu<span>Nexus</span>
+        </div>
+        <nav>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-book-open"></i> All Courses
+            </a>
+            <a href="#" class="nav-item active">
+                <i class="fa-solid fa-list-check"></i> Assignments
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-layer-group"></i> Flashcards
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-bullseye"></i> Personal Progress
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-gear"></i> Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <header class="header">
+            <div class="header-title">
+                <h1>My Assignments</h1>
+                <p>Track your upcoming deadlines, submissions, and grades</p>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-blue">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>To Do</h4>
+                    <p>5</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-orange">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Due This Week</h4>
+                    <p>2</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-green">
+                    <i class="fa-solid fa-check-double"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Completed</h4>
+                    <p>18</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-red">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>Overdue</h4>
+                    <p>1</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="tabs">
+                <button class="tab-btn active">All Assignments</button>
+                <button class="tab-btn">Pending</button>
+                <button class="tab-btn">Submitted</button>
+                <button class="tab-btn">Graded</button>
+            </div>
+
+            <div class="filters">
+                <select class="filter-select">
+                    <option value="all">All Courses</option>
+                    <option value="c1">Advanced Full-Stack</option>
+                    <option value="c2">UI/UX Design</option>
+                </select>
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="search-input" placeholder="Search assignments...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignment List -->
+        <div class="assignment-list">
+            
+            <!-- Item 1: Essay Due Soon -->
+            <div class="assignment-card">
+                <div class="info-col">
+                    <div class="type-icon essay"><i class="fa-solid fa-file-lines"></i></div>
+                    <div class="details">
+                        <h3>Midterm Essay: Microservices vs Monoliths</h3>
+                        <p>Advanced Full-Stack Development <i class="fa-solid fa-circle" style="font-size: 4px;"></i> Module 3</p>
+                        <div class="meta-tags">
+                            <span class="badge badge-due-soon">Due Soon</span>
+                            <span class="badge badge-todo">Essay • 100 Pts</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-col">
+                    <div class="due-date">
+                        Tomorrow, 11:59 PM
+                        <span style="color: var(--danger);"><i class="fa-regular fa-clock"></i> 26 Hours Left</span>
+                    </div>
+                    <a href="/Home/EssaySubmit" class="btn btn-primary">Start Assignment</a>
+                </div>
+            </div>
+
+            <!-- Item 2: Quiz Pending -->
+            <div class="assignment-card">
+                <div class="info-col">
+                    <div class="type-icon quiz"><i class="fa-solid fa-list-check"></i></div>
+                    <div class="details">
+                        <h3>Module 4 Knowledge Check</h3>
+                        <p>React Native Masterclass <i class="fa-solid fa-circle" style="font-size: 4px;"></i> Module 4</p>
+                        <div class="meta-tags">
+                            <span class="badge badge-todo">To Do</span>
+                            <span class="badge badge-todo">Quiz • 50 Pts</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-col">
+                    <div class="due-date">
+                        Oct 30, 2026
+                        <span>11:59 PM</span>
+                    </div>
+                    <a href="/Home/QuizTaking" class="btn btn-primary">Take Quiz</a>
+                </div>
+            </div>
+
+            <!-- Item 3: Project Submitted -->
+            <div class="assignment-card">
+                <div class="info-col">
+                    <div class="type-icon project"><i class="fa-solid fa-laptop-code"></i></div>
+                    <div class="details">
+                        <h3>Build a Weather Dashboard App</h3>
+                        <p>Advanced Full-Stack Development <i class="fa-solid fa-circle" style="font-size: 4px;"></i> Final Project</p>
+                        <div class="meta-tags">
+                            <span class="badge badge-submitted">Submitted</span>
+                            <span class="badge badge-todo">Project • 200 Pts</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-col">
+                    <div class="due-date">
+                        Submitted On
+                        <span>Oct 24, 2026 (On Time)</span>
+                    </div>
+                    <a href="#" class="btn btn-outline">View Submission</a>
+                </div>
+            </div>
+
+            <!-- Item 4: Graded Quiz -->
+            <div class="assignment-card">
+                <div class="info-col">
+                    <div class="type-icon quiz"><i class="fa-solid fa-list-check"></i></div>
+                    <div class="details">
+                        <h3>Entity Framework Core Final</h3>
+                        <p>Advanced Full-Stack Development <i class="fa-solid fa-circle" style="font-size: 4px;"></i> Module 2</p>
+                        <div class="meta-tags">
+                            <span class="badge badge-graded">Graded</span>
+                            <span class="badge badge-todo">Score: 85/100</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-col">
+                    <div class="due-date">
+                        Completed On
+                        <span>Oct 15, 2026</span>
+                    </div>
+                    <a href="/Home/QuizResults" class="btn btn-outline">View Results</a>
+                </div>
+            </div>
+
+            <!-- Item 5: Overdue -->
+            <div class="assignment-card">
+                <div class="info-col">
+                    <div class="type-icon essay"><i class="fa-solid fa-file-lines"></i></div>
+                    <div class="details">
+                        <h3>Color Theory Case Study</h3>
+                        <p>UI/UX Design Masterclass <i class="fa-solid fa-circle" style="font-size: 4px;"></i> Module 1</p>
+                        <div class="meta-tags">
+                            <span class="badge badge-late">Overdue</span>
+                            <span class="badge badge-todo">Essay • 50 Pts</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-col">
+                    <div class="due-date" style="color: var(--danger);">
+                        Past Due
+                        <span>Oct 10, 2026</span>
+                    </div>
+                    <a href="/Home/EssaySubmit" class="btn btn-primary">Submit Late</a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

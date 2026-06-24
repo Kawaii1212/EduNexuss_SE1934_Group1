@@ -1,0 +1,581 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Editor - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus */
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        .breadcrumbs {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumbs span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(92, 36, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* Deck Header Settings */
+        .deck-header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: 0.2s;
+            background: var(--bg-color);
+        }
+
+        .form-input.title {
+            font-size: 24px;
+            font-weight: 700;
+            padding: 16px 20px;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-light);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px var(--primary-lighter);
+        }
+
+        .deck-settings-row {
+            display: flex;
+            gap: 24px;
+        }
+
+        .deck-settings-row .form-group {
+            flex: 1;
+        }
+
+        select.form-input {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+        }
+
+        /* Flashcard List Area */
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .fc-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: 0.2s;
+        }
+
+        .fc-item:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-md);
+        }
+
+        .fc-header {
+            padding: 12px 20px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fc-number {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        .fc-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .fc-action-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        .fc-action-btn:hover {
+            color: var(--primary);
+        }
+
+        .fc-action-btn.delete:hover {
+            color: var(--danger);
+        }
+
+        /* Front / Back Layout */
+        .fc-body {
+            display: flex;
+        }
+
+        .fc-side {
+            flex: 1;
+            padding: 24px;
+        }
+
+        .fc-side:first-child {
+            border-right: 1px solid var(--border);
+        }
+
+        .side-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .side-input {
+            width: 100%;
+            min-height: 100px;
+            border: none;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-main);
+            background: transparent;
+        }
+
+        .side-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .side-toolbar {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .tool-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+
+        .tool-btn:hover {
+            color: var(--primary);
+        }
+
+        /* Image preview area mockup */
+        .image-preview {
+            width: 100px;
+            height: 80px;
+            border-radius: var(--radius-md);
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 24px;
+            margin-top: 12px;
+            position: relative;
+        }
+
+        .remove-img-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        /* Add Card Area */
+        .add-card-area {
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 60px;
+        }
+
+        .add-card-area:hover {
+            border-color: var(--primary-light);
+            background: var(--primary-lighter);
+        }
+
+        .add-card-area i {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .add-card-area h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .add-card-area p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Home/FlashcardLibrary" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Flashcard Library
+            </a>
+            <div class="breadcrumbs">
+                <span>Create New Deck</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="btn btn-outline"><i class="fa-solid fa-play"></i> Preview Deck</button>
+            <button class="btn btn-primary"><i class="fa-solid fa-check"></i> Save & Close</button>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <!-- Deck Settings -->
+        <div class="deck-header">
+            <div class="form-group">
+                <label class="form-label">Deck Title</label>
+                <input type="text" class="form-input title" placeholder="Enter a descriptive title, e.g. Biology 101: Cells..." value="React Hooks Mastery">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Description (Optional)</label>
+                <textarea class="form-input" style="height: 80px; resize: vertical;" placeholder="Add a short description about what this deck covers...">A comprehensive deck covering all built-in React hooks, their use cases, and common pitfalls.</textarea>
+            </div>
+
+            <div class="deck-settings-row">
+                <div class="form-group">
+                    <label class="form-label">Course Subject</label>
+                    <select class="form-input">
+                        <option>Computer Science</option>
+                        <option selected>Web Development</option>
+                        <option>UI/UX Design</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Visibility</label>
+                    <select class="form-input">
+                        <option>Public (Visible to everyone)</option>
+                        <option selected>Class Only (Visible to enrolled students)</option>
+                        <option>Private (Only me)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards List -->
+        <div class="cards-list">
+            
+            <!-- Card 1 -->
+            <div class="fc-item">
+                <div class="fc-header">
+                    <div class="fc-number">1</div>
+                    <div class="fc-actions">
+                        <button class="fc-action-btn" title="Duplicate"><i class="fa-regular fa-copy"></i></button>
+                        <button class="fc-action-btn delete" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                </div>
+                <div class="fc-body">
+                    <!-- Front -->
+                    <div class="fc-side">
+                        <div class="side-label">Front (Term)</div>
+                        <textarea class="side-input" placeholder="Enter term or concept...">useState</textarea>
+                        <div class="side-toolbar">
+                            <button class="tool-btn"><i class="fa-solid fa-image"></i> Image</button>
+                            <button class="tool-btn"><i class="fa-solid fa-microphone"></i> Audio</button>
+                            <button class="tool-btn"><i class="fa-solid fa-code"></i> Code</button>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="fc-side">
+                        <div class="side-label">Back (Definition)</div>
+                        <textarea class="side-input" placeholder="Enter definition or answer...">A React Hook that allows you to add state variables to functional components. It returns an array with two values: the current state and a function to update it.</textarea>
+                        <div class="side-toolbar">
+                            <button class="tool-btn"><i class="fa-solid fa-image"></i> Image</button>
+                            <button class="tool-btn"><i class="fa-solid fa-microphone"></i> Audio</button>
+                            <button class="tool-btn"><i class="fa-solid fa-code"></i> Code</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="fc-item">
+                <div class="fc-header">
+                    <div class="fc-number">2</div>
+                    <div class="fc-actions">
+                        <button class="fc-action-btn" title="Duplicate"><i class="fa-regular fa-copy"></i></button>
+                        <button class="fc-action-btn delete" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                </div>
+                <div class="fc-body">
+                    <!-- Front -->
+                    <div class="fc-side">
+                        <div class="side-label">Front (Term)</div>
+                        <textarea class="side-input" placeholder="Enter term or concept...">useEffect</textarea>
+                        <div class="side-toolbar">
+                            <button class="tool-btn"><i class="fa-solid fa-image"></i> Image</button>
+                            <button class="tool-btn"><i class="fa-solid fa-microphone"></i> Audio</button>
+                            <button class="tool-btn"><i class="fa-solid fa-code"></i> Code</button>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="fc-side">
+                        <div class="side-label">Back (Definition)</div>
+                        <textarea class="side-input" placeholder="Enter definition or answer...">A React Hook used to perform side effects in functional components. It can mimic lifecycle methods like componentDidMount, componentDidUpdate, and componentWillUnmount.</textarea>
+                        <div class="side-toolbar">
+                            <button class="tool-btn"><i class="fa-solid fa-image"></i> Image</button>
+                            <button class="tool-btn"><i class="fa-solid fa-microphone"></i> Audio</button>
+                            <button class="tool-btn"><i class="fa-solid fa-code"></i> Code</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Example with Image -->
+            <div class="fc-item" style="border-color: var(--primary-light); box-shadow: 0 0 0 1px var(--primary-light);">
+                <div class="fc-header">
+                    <div class="fc-number">3</div>
+                    <div class="fc-actions">
+                        <button class="fc-action-btn" title="Duplicate"><i class="fa-regular fa-copy"></i></button>
+                        <button class="fc-action-btn delete" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                </div>
+                <div class="fc-body">
+                    <!-- Front -->
+                    <div class="fc-side">
+                        <div class="side-label">Front (Term)</div>
+                        <textarea class="side-input" placeholder="Enter term or concept..." style="min-height: 50px;">useContext</textarea>
+                        <div class="image-preview">
+                            <i class="fa-regular fa-image"></i>
+                            <button class="remove-img-btn"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="side-toolbar">
+                            <button class="tool-btn" style="color: var(--primary);"><i class="fa-solid fa-image"></i> Image Added</button>
+                            <button class="tool-btn"><i class="fa-solid fa-microphone"></i> Audio</button>
+                            <button class="tool-btn"><i class="fa-solid fa-code"></i> Code</button>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="fc-side">
+                        <div class="side-label">Back (Definition)</div>
+                        <textarea class="side-input" placeholder="Enter definition or answer...">A hook that lets you read and subscribe to context from your component. Helps prevent "prop drilling".</textarea>
+                        <div class="side-toolbar">
+                            <button class="tool-btn"><i class="fa-solid fa-image"></i> Image</button>
+                            <button class="tool-btn"><i class="fa-solid fa-microphone"></i> Audio</button>
+                            <button class="tool-btn"><i class="fa-solid fa-code"></i> Code</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Add Card Button -->
+        <div class="add-card-area">
+            <i class="fa-solid fa-plus-circle"></i>
+            <h3>Add New Card</h3>
+            <p>Or press "Enter" inside the last card</p>
+        </div>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,630 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Structure Management - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Synchronized with EduNexus Login Image */
+            --primary: #5c24ff; /* Deep vibrant purple */
+            --primary-light: #9b8cf8; /* Light purple from button */
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --text-light: #9ca3af;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Placeholder (Optional for full context) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 40px;
+            max-width: 1200px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+            border-color: var(--border-hover);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-icon {
+            padding: 8px;
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-icon:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        /* Course Structure List */
+        .module-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .module-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .module-header {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--surface);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .module-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .drag-handle {
+            color: var(--text-light);
+            cursor: grab;
+            display: flex;
+            padding: 4px;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .module-title-group h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 100px;
+            font-weight: 600;
+        }
+
+        .badge-draft {
+            background-color: #f3f4f6;
+            color: var(--text-muted);
+        }
+        
+        .badge-published {
+            background-color: #ecfdf5;
+            color: var(--success);
+        }
+
+        .module-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            gap: 16px;
+        }
+
+        .module-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .module-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chevron {
+            transition: transform 0.3s ease;
+            color: var(--text-muted);
+            margin-left: 12px;
+        }
+
+        .module-card.expanded .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Lesson List */
+        .lesson-list {
+            border-top: 1px solid var(--border);
+            background-color: #fcfcfc;
+            display: none; /* hidden by default */
+        }
+
+        .module-card.expanded .lesson-list {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lesson-item {
+            padding: 16px 24px 16px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.2s;
+        }
+
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-item:hover {
+            background-color: var(--bg-color);
+        }
+
+        .lesson-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .lesson-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .icon-video {
+            background-color: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .icon-quiz {
+            background-color: #fef2f2;
+            color: #ef4444;
+        }
+
+        .icon-doc {
+            background-color: #f5f3ff;
+            color: var(--primary);
+        }
+
+        .lesson-title {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .lesson-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .add-lesson-btn {
+            padding: 16px 24px 16px 60px;
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            background: #fcfcfc;
+        }
+
+        .add-lesson-btn:hover {
+            color: var(--primary-hover);
+            background-color: var(--primary-lighter);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px dashed var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .empty-text h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .empty-text p {
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 300px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
+            Edu<span>Nexus</span>
+        </div>
+        <nav>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-book-open"></i> All Courses
+            </a>
+            <a href="#" class="nav-item active">
+                <i class="fa-solid fa-layer-group"></i> Course Structure
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-users"></i> Students
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-gear"></i> Settings
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <header class="header">
+            <div class="header-title">
+                <h1>Course Structure</h1>
+                <p>Manage modules, lessons, and quizzes for "Advanced Full-Stack Development"</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" id="toggleAllBtn">
+                    <i class="fa-solid fa-compress"></i> Collapse All
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Add New Module
+                </button>
+            </div>
+        </header>
+
+        <div class="module-list" id="moduleList">
+            
+            <!-- Module 1 -->
+            <div class="module-card expanded">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div class="module-header-left">
+                        <div class="drag-handle" title="Drag to reorder">
+                            <i class="fa-solid fa-grip-vertical"></i>
+                        </div>
+                        <div class="module-title-group">
+                            <h3>Module 1: Introduction to ASP.NET Core <span class="badge badge-published">Published</span></h3>
+                            <div class="module-meta">
+                                <span><i class="fa-regular fa-clock"></i> 2h 15m</span>
+                                <span><i class="fa-solid fa-book-open-reader"></i> 4 Items</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn-icon" title="Edit Module" onclick="event.stopPropagation()"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button class="btn-icon" title="Delete Module" onclick="event.stopPropagation()" style="color: var(--danger)"><i class="fa-regular fa-trash-can"></i></button>
+                        <i class="fa-solid fa-chevron-down chevron"></i>
+                    </div>
+                </div>
+                
+                <div class="lesson-list">
+                    <!-- Lesson Item 1 -->
+                    <div class="lesson-item">
+                        <div class="lesson-left">
+                            <div class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
+                            <div class="lesson-icon icon-video"><i class="fa-solid fa-play"></i></div>
+                            <div>
+                                <div class="lesson-title">1.1 Welcome to the Course</div>
+                                <div class="lesson-meta">
+                                    <span>Video • 15:00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-actions">
+                            <button class="btn-icon"><i class="fa-regular fa-pen-to-square"></i></button>
+                            <button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Lesson Item 2 -->
+                    <div class="lesson-item">
+                        <div class="lesson-left">
+                            <div class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
+                            <div class="lesson-icon icon-doc"><i class="fa-regular fa-file-lines"></i></div>
+                            <div>
+                                <div class="lesson-title">1.2 Environment Setup Guide</div>
+                                <div class="lesson-meta">
+                                    <span>Reading • 10:00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-actions">
+                            <button class="btn-icon"><i class="fa-regular fa-pen-to-square"></i></button>
+                            <button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Lesson Item 3 -->
+                    <div class="lesson-item">
+                        <div class="lesson-left">
+                            <div class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
+                            <div class="lesson-icon icon-quiz"><i class="fa-regular fa-circle-question"></i></div>
+                            <div>
+                                <div class="lesson-title">1.3 Module 1 Knowledge Check</div>
+                                <div class="lesson-meta">
+                                    <span>Quiz • 10 Questions</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-actions">
+                            <button class="btn-icon"><i class="fa-regular fa-pen-to-square"></i></button>
+                            <button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="add-lesson-btn">
+                        <i class="fa-solid fa-plus"></i> Add Lesson or Quiz
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module 2 -->
+            <div class="module-card">
+                <div class="module-header" onclick="toggleModule(this)">
+                    <div class="module-header-left">
+                        <div class="drag-handle" title="Drag to reorder">
+                            <i class="fa-solid fa-grip-vertical"></i>
+                        </div>
+                        <div class="module-title-group">
+                            <h3>Module 2: Entity Framework Core Deep Dive <span class="badge badge-draft">Draft</span></h3>
+                            <div class="module-meta">
+                                <span><i class="fa-regular fa-clock"></i> 3h 40m</span>
+                                <span><i class="fa-solid fa-book-open-reader"></i> 6 Items</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn-icon" title="Edit Module" onclick="event.stopPropagation()"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button class="btn-icon" title="Delete Module" onclick="event.stopPropagation()" style="color: var(--danger)"><i class="fa-regular fa-trash-can"></i></button>
+                        <i class="fa-solid fa-chevron-down chevron"></i>
+                    </div>
+                </div>
+                
+                <div class="lesson-list">
+                    <div class="lesson-item">
+                        <div class="lesson-left">
+                            <div class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
+                            <div class="lesson-icon icon-video"><i class="fa-solid fa-play"></i></div>
+                            <div>
+                                <div class="lesson-title">2.1 Code-First vs Database-First</div>
+                                <div class="lesson-meta">
+                                    <span>Video • 25:00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="module-actions">
+                            <button class="btn-icon"><i class="fa-regular fa-pen-to-square"></i></button>
+                            <button class="btn-icon"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                        </div>
+                    </div>
+                    <div class="add-lesson-btn">
+                        <i class="fa-solid fa-plus"></i> Add Lesson or Quiz
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        // Simple toggle logic for modules
+        function toggleModule(headerElement) {
+            const card = headerElement.closest('.module-card');
+            card.classList.toggle('expanded');
+        }
+
+        // Toggle all modules
+        document.getElementById('toggleAllBtn').addEventListener('click', function() {
+            const cards = document.querySelectorAll('.module-card');
+            const isAnyExpanded = Array.from(cards).some(card => card.classList.contains('expanded'));
+            
+            cards.forEach(card => {
+                if (isAnyExpanded) {
+                    card.classList.remove('expanded');
+                } else {
+                    card.classList.add('expanded');
+                }
+            });
+
+            this.innerHTML = isAnyExpanded 
+                ? '<i class="fa-solid fa-expand"></i> Expand All' 
+                : '<i class="fa-solid fa-compress"></i> Collapse All';
+        });
+    </script>
+</body>
+</html>
