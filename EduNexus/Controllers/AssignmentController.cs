@@ -26,7 +26,7 @@ public class AssignmentController : Controller
         {
             AssignmentId = assignmentId
         };
-        return View(model);
+        return View("~/Views/Home/EssaySubmit.cshtml", model);
     }
 
     [HttpPost]
@@ -35,7 +35,7 @@ public class AssignmentController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return View(model);
+            return View("~/Views/Home/EssaySubmit.cshtml", model);
         }
 
         // Mocking StudentId since Auth is not fully implemented in the snippet
@@ -71,7 +71,7 @@ public class AssignmentController : Controller
         catch (Exception ex)
         {
             ModelState.AddModelError("", "Đã xảy ra lỗi khi lưu bài: " + ex.Message);
-            return View(model);
+            return View("~/Views/Home/EssaySubmit.cshtml", model);
         }
     }
 }

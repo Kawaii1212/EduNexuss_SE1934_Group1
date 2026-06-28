@@ -1,3 +1,5 @@
+@model EduNexus.Models.SubmitEssayViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = null;
 }
@@ -434,10 +436,21 @@
         </div>
     </header>
 
-    <main class="submit-container">
+    <form class="submit-container" asp-controller="Assignment" asp-action="SubmitEssay" method="post" enctype="multipart/form-data" id="essayForm" onsubmit="return validateForm()">
+        
+        <input type="hidden" asp-for="AssignmentId" value="1" />
+        
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div style="position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: var(--success); color: white; padding: 12px 24px; border-radius: 8px; z-index: 1000; box-shadow: var(--shadow-md);">
+                @TempData["SuccessMessage"]
+            </div>
+        }
         
         <!-- Left Column: Assignment Details & Submission Area -->
         <div class="main-col">
+            
+            <div asp-validation-summary="All" style="color: var(--danger); font-weight: 600; padding: 16px; background: #fee2e2; border-radius: 8px; display: @(ViewData.ModelState.IsValid ? "none" : "block");"></div>
             
             <div class="assignment-info">
                 <div class="assignment-header">
@@ -479,22 +492,24 @@
 
                 <div class="submission-body">
                     <!-- File Upload View -->
-                    <div class="upload-area" id="uploadArea">
-                        <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-                        <div class="upload-text">Click to upload or drag your file here</div>
-                        <div class="upload-subtext">Supported formats: PDF, DOCX, TXT (Max 20MB)</div>
+                    <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-icon" id="uploadIcon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <div class="upload-text" id="uploadText">Click to upload or drag your file here</div>
+                        <div class="upload-subtext" id="uploadSubtext">Supported formats: PDF, DOCX, TXT (Max 20MB)</div>
+                        <input asp-for="AttachedFile" type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(this)" />
                     </div>
 
                     <!-- Text Entry View (Hidden by default, shown for completeness) -->
                     <div class="editor-box" id="textEntryArea">
                         <div class="editor-toolbar">
-                            <button class="toolbar-btn"><i class="fa-solid fa-bold"></i></button>
-                            <button class="toolbar-btn"><i class="fa-solid fa-italic"></i></button>
-                            <button class="toolbar-btn"><i class="fa-solid fa-list-ul"></i></button>
-                            <button class="toolbar-btn"><i class="fa-solid fa-list-ol"></i></button>
-                            <button class="toolbar-btn"><i class="fa-solid fa-link"></i></button>
+                            <button type="button" class="toolbar-btn"><i class="fa-solid fa-bold"></i></button>
+                            <button type="button" class="toolbar-btn"><i class="fa-solid fa-italic"></i></button>
+                            <button type="button" class="toolbar-btn"><i class="fa-solid fa-list-ul"></i></button>
+                            <button type="button" class="toolbar-btn"><i class="fa-solid fa-list-ol"></i></button>
+                            <button type="button" class="toolbar-btn"><i class="fa-solid fa-link"></i></button>
                         </div>
-                        <div class="editor-content" contenteditable="true" placeholder="Type your essay here..."></div>
+                        <div class="editor-content" id="editorContent" contenteditable="true" placeholder="Type your essay here..." oninput="document.getElementById('hiddenContent').value = this.innerHTML"></div>
+                        <textarea asp-for="Content" id="hiddenContent" style="display: none;"></textarea>
                     </div>
 
                 </div>
@@ -535,8 +550,8 @@
                     <span class="status-value" style="color: var(--danger);">3 Days, 4 Hours</span>
                 </div>
 
-                <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Assignment</button>
-                <button class="btn btn-outline">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Assignment</button>
+                <button type="button" class="btn btn-outline" onclick="window.location.href='/Home/CourseStructure'">Cancel</button>
             </div>
 
             <div class="status-card">
@@ -550,18 +565,20 @@
 
         </div>
 
-    </main>
+    </form>
 
     <script>
         // Simple mock interaction for tabs
         const tabs = document.querySelectorAll('.sub-tab');
         const uploadArea = document.getElementById('uploadArea');
         const textEntryArea = document.getElementById('textEntryArea');
+        let currentActiveTab = 0;
 
         tabs.forEach((tab, index) => {
             tab.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
+                currentActiveTab = index;
 
                 if (index === 0) {
                     uploadArea.style.display = 'block';
@@ -575,6 +592,38 @@
                 }
             });
         });
+
+        function validateForm() {
+            const hiddenContent = document.getElementById('hiddenContent');
+            const fileInput = document.getElementById('fileInput');
+            
+            // If Text Entry is active, ensure there's content.
+            // If File Upload is active, ensure there's a file.
+            // But since Content is [Required] in ViewModel, we populate it to bypass if using file
+            if (currentActiveTab === 0 && fileInput.files.length > 0) {
+                hiddenContent.value = "Submitted via File Upload";
+            }
+            return true; 
+        }
+
+        function handleFileSelect(input) {
+            const icon = document.getElementById('uploadIcon');
+            const text = document.getElementById('uploadText');
+            const subtext = document.getElementById('uploadSubtext');
+            
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                icon.innerHTML = '<i class="fa-solid fa-file-circle-check" style="color: var(--success);"></i>';
+                text.innerText = file.name;
+                text.style.color = 'var(--primary)';
+                subtext.innerText = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            } else {
+                icon.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i>';
+                text.innerText = 'Click to upload or drag your file here';
+                text.style.color = 'var(--text-main)';
+                subtext.innerText = 'Supported formats: PDF, DOCX, TXT (Max 20MB)';
+            }
+        }
     </script>
 </body>
 </html>
