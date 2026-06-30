@@ -1,0 +1,407 @@
+@model EduNexus.Models.QuestionFormViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Câu hỏi mới - EduNexus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --bg: #fafafa;
+            --surface: #fff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text);
+        }
+
+        .page-badge {
+            background: var(--primary-lighter);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+            transition: all 0.15s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(92, 36, 255, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .option-field {
+            position: relative;
+        }
+
+        .option-prefix {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        .option-field input {
+            padding-left: 36px;
+        }
+
+        .diff-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .diff-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--muted);
+            text-align: center;
+            transition: all 0.15s;
+        }
+
+        .diff-btn.active {
+            border-color: var(--primary);
+            background: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        .btn-submit-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid var(--border);
+            padding-top: 24px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            padding: 11px 24px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(92, 36, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            opacity: 0.95;
+            box-shadow: 0 6px 14px rgba(92, 36, 255, 0.3);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .btn-cancel:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .error-message {
+            font-size: 12px;
+            color: var(--danger);
+            margin-top: 5px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .alert-danger-form {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Question" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Trở về Ngân hàng
+            </a>
+            <div class="page-badge">
+                <i class="fa-solid fa-file-signature"></i> Thêm mới câu hỏi
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>
+                    <i class="fa-solid fa-circle-plus" style="color:var(--primary)"></i>
+                    Tạo Câu hỏi trắc nghiệm mới
+                </h2>
+            </div>
+            <div class="card-body">
+                @if (ViewData["ErrorMessage"] != null)
+                {
+                    <div class="alert-danger-form">
+                        <i class="fa-solid fa-circle-xmark"></i> @ViewData["ErrorMessage"]
+                    </div>
+                }
+
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group">
+                        <label asp-for="ModuleId">Thuộc Module</label>
+                        <select asp-for="ModuleId" class="form-control">
+                            <option value="">-- Chọn Module ứng với môn học --</option>
+                            @if (Model.Modules != null)
+                            {
+                                foreach (var m in Model.Modules)
+                                {
+                                    <option value="@m.Id">@m.Course.Title — @m.Title</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="ModuleId" class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Content">Nội dung câu hỏi</label>
+                        <textarea asp-for="Content" class="form-control" placeholder="Nhập câu hỏi trắc nghiệm..."></textarea>
+                        <span asp-validation-for="Content" class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Các phương án trả lời</label>
+                        <div class="options-grid">
+                            <div class="option-field">
+                                <span class="option-prefix">A.</span>
+                                <input asp-for="OptionA" class="form-control" placeholder="Đáp án A" />
+                                <span asp-validation-for="OptionA" class="error-message"></span>
+                            </div>
+                            <div class="option-field">
+                                <span class="option-prefix">B.</span>
+                                <input asp-for="OptionB" class="form-control" placeholder="Đáp án B" />
+                                <span asp-validation-for="OptionB" class="error-message"></span>
+                            </div>
+                            <div class="option-field">
+                                <span class="option-prefix">C.</span>
+                                <input asp-for="OptionC" class="form-control" placeholder="Đáp án C" />
+                                <span asp-validation-for="OptionC" class="error-message"></span>
+                            </div>
+                            <div class="option-field">
+                                <span class="option-prefix">D.</span>
+                                <input asp-for="OptionD" class="form-control" placeholder="Đáp án D" />
+                                <span asp-validation-for="OptionD" class="error-message"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="CorrectOption">Phương án đúng</label>
+                        <select asp-for="CorrectOption" class="form-control" style="font-weight: 600; color: var(--success);">
+                            <option value="A" style="color:var(--text);">Phương án A</option>
+                            <option value="B" style="color:var(--text);">Phương án B</option>
+                            <option value="C" style="color:var(--text);">Phương án C</option>
+                            <option value="D" style="color:var(--text);">Phương án D</option>
+                        </select>
+                        <span asp-validation-for="CorrectOption" class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Độ khó câu hỏi</label>
+                        <div class="diff-btns">
+                            <button type="button" onclick="setDiff('EASY', this)"
+                                    class="diff-btn @(Model.Difficulty == "EASY" ? "active" : "")">
+                                Dễ
+                            </button>
+                            <button type="button" onclick="setDiff('MEDIUM', this)"
+                                    class="diff-btn @(Model.Difficulty == "MEDIUM" || string.IsNullOrEmpty(Model.Difficulty) ? "active" : "")">
+                                Vừa
+                            </button>
+                            <button type="button" onclick="setDiff('HARD', this)"
+                                    class="diff-btn @(Model.Difficulty == "HARD" ? "active" : "")">
+                                Khó
+                            </button>
+                        </div>
+                        <input type="hidden" asp-for="Difficulty" id="diffInput" value="@(string.IsNullOrEmpty(Model.Difficulty) ? "MEDIUM" : Model.Difficulty)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="AiExplanation">Giải thích đáp án (Tuỳ chọn)</label>
+                        <textarea asp-for="AiExplanation" class="form-control" placeholder="Giải thích vì sao lựa chọn này đúng..."></textarea>
+                        <span asp-validation-for="AiExplanation" class="error-message"></span>
+                    </div>
+
+                    <div class="btn-submit-row">
+                        <a href="/Question" class="btn btn-cancel">Huỷ bỏ</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-floppy-disk"></i> Lưu câu hỏi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setDiff(val, btn) {
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('diffInput').value = val;
+        }
+    </script>
+</body>
+</html>

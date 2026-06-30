@@ -1,0 +1,559 @@
+@model EduNexus.Models.QuestionImportViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhập Câu hỏi từ CSV - EduNexus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --bg: #fafafa;
+            --surface: #fff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text);
+        }
+
+        .page-badge {
+            background: var(--primary-lighter);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 30px;
+        }
+
+        @@media (max-width: 800px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            height: fit-content;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            background: #fafafa;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 13.5px;
+            outline: none;
+            background: #fff;
+            transition: all 0.15s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(92, 36, 255, 0.1);
+        }
+
+        .divider-or {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+            margin: 24px 0;
+            text-transform: uppercase;
+        }
+
+        .divider-or::before, .divider-or::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .divider-or:not(:empty)::before {
+            margin-right: 15px;
+        }
+
+        .divider-or:not(:empty)::after {
+            margin-left: 15px;
+        }
+
+        textarea.form-control {
+            min-height: 180px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            white-space: pre;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            padding: 30px;
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: #fcfcfc;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: var(--primary-lighter);
+        }
+
+        .upload-zone i {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .upload-zone p {
+            font-size: 13px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .upload-zone span {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file-info {
+            display: none;
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--success);
+            font-weight: 600;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .guide-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .guide-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .guide-list {
+            margin-left: 20px;
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .template-block {
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 14px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11.5px;
+            white-space: pre-wrap;
+            position: relative;
+            margin-top: 10px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #cbd5e1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .error-card {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 24px;
+            grid-column: 1 / -1;
+        }
+
+        .error-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #991b1b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-left: 20px;
+            font-size: 12.5px;
+            color: #b91c1c;
+            line-height: 1.6;
+        }
+
+        .btn-submit-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(92, 36, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            opacity: 0.95;
+            box-shadow: 0 6px 14px rgba(92, 36, 255, 0.3);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .btn-cancel:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .error-message {
+            font-size: 12px;
+            color: var(--danger);
+            margin-top: 5px;
+            display: block;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/Question" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Quay lại Ngân hàng
+            </a>
+            <div class="page-badge">
+                <i class="fa-solid fa-file-import"></i> Nhập câu hỏi hàng loạt
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        @if (Model.ImportErrors != null && Model.ImportErrors.Count > 0)
+        {
+            <div class="error-card">
+                <h3>
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    Đã xảy ra lỗi khi kiểm tra định dạng CSV (Không có dữ liệu nào được lưu)
+                </h3>
+                <ol class="error-list">
+                    @foreach (var err in Model.ImportErrors)
+                    {
+                        <li>@err</li>
+                    }
+                </ol>
+            </div>
+        }
+
+        <div class="card">
+            <div class="card-header">
+                <h2>
+                    <i class="fa-solid fa-file-csv" style="color:var(--primary)"></i>
+                    Chọn phương thức nhập dữ liệu
+                </h2>
+            </div>
+            <div class="card-body">
+                <form asp-action="Import" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group">
+                        <label asp-for="ModuleId">Chọn Module nhận câu hỏi</label>
+                        <select asp-for="ModuleId" class="form-control">
+                            <option value="">-- Chọn Module ứng với môn học --</option>
+                            @if (Model.Modules != null)
+                            {
+                                foreach (var m in Model.Modules)
+                                {
+                                    <option value="@m.Id" selected="@(m.Id == Model.ModuleId ? "selected" : null)">
+                                        @m.Course.Title — @m.Title
+                                    </option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="ModuleId" class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cách 1: Tải lên file CSV (.csv)</label>
+                        <div class="upload-zone" onclick="triggerFileInput()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <p>Nhấp vào đây để chọn file từ máy tính</p>
+                            <span>Hỗ trợ định dạng file .csv bọc ngoặc kép UTF-8</span>
+                            <input type="file" id="fileUpload" name="File" class="file-input" accept=".csv" onchange="fileSelected(this)" />
+                        </div>
+                        <div class="selected-file-info" id="fileInfo">
+                            <i class="fa-solid fa-file-circle-check"></i>
+                            <span id="fileName">Tên file ở đây</span>
+                        </div>
+                    </div>
+
+                    <div class="divider-or">Hoặc</div>
+
+                    <div class="form-group">
+                        <label asp-for="CsvText">Cách 2: Dán văn bản CSV vào ô dưới đây</label>
+                        <textarea asp-for="CsvText" class="form-control" placeholder="Nội dung,Lựa chọn A,Lựa chọn B,Lựa chọn C,Lựa chọn D,Đáp án đúng,Độ khó,Giải thích"></textarea>
+                    </div>
+
+                    <div class="btn-submit-row">
+                        <a href="/Question" class="btn btn-cancel">Huỷ bỏ</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-circle-check"></i> Tiến hành Nhập câu hỏi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="guide-box">
+            <div class="guide-title">
+                <i class="fa-solid fa-circle-info" style="color:var(--primary)"></i>
+                Quy định & Mẫu file CSV
+            </div>
+            
+            <ul class="guide-list">
+                <li>Dòng đầu tiên của dữ liệu có thể là tiêu đề (sẽ được tự động bỏ qua).</li>
+                <li>Mỗi dòng gồm từ 6 đến 8 cột phân tách bởi <strong>dấu phẩy (,)</strong>.</li>
+                <li>Nên bọc các trường văn bản chứa dấu phẩy hoặc kí tự đặc biệt trong <strong>dấu ngoặc kép (")</strong>.</li>
+                <li>Định dạng cột:
+                    <ol style="margin-left: 20px; margin-top: 5px;">
+                        <li><strong>Cột 1:</strong> Nội dung câu hỏi (Bắt buộc)</li>
+                        <li><strong>Cột 2:</strong> Phương án A (Bắt buộc)</li>
+                        <li><strong>Cột 3:</strong> Phương án B (Bắt buộc)</li>
+                        <li><strong>Cột 4:</strong> Phương án C (Bắt buộc)</li>
+                        <li><strong>Cột 5:</strong> Phương án D (Bắt buộc)</li>
+                        <li><strong>Cột 6:</strong> Đáp án đúng (Chỉ nhận: <strong>A, B, C hoặc D</strong>)</li>
+                        <li><strong>Cột 7:</strong> Độ khó (Chỉ nhận: <strong>EASY, MEDIUM, HARD</strong>. Mặc định: MEDIUM)</li>
+                        <li><strong>Cột 8:</strong> Giải thích đáp án (Tuỳ chọn)</li>
+                    </ol>
+                </li>
+            </ul>
+
+            <div class="guide-title" style="margin-top: 20px;">
+                <i class="fa-regular fa-clipboard" style="color:var(--primary)"></i>
+                Dữ liệu mẫu (Nhấn để sao chép)
+            </div>
+
+            <div class="template-block" id="templateText">
+                <button class="copy-btn" onclick="copyTemplate()">
+                    <i class="fa-regular fa-copy" id="copyIcon"></i>
+                    <span id="copyText">Sao chép</span>
+                </button>Content,OptionA,OptionB,OptionC,OptionD,CorrectOption,Difficulty,Explanation
+"Từ khóa 'defer' trong Go dùng để làm gì?","Trì hoãn thực thi hàm cho đến khi hàm bao quanh return","Chạy đa luồng","Khai báo biến hằng","Giải phóng bộ nhớ ngay lập tức","A","MEDIUM","Defer đẩy hàm vào stack và chạy khi hàm bao quanh kết thúc."
+"Trong Javascript, '1' + 1 trả về kết quả gì?","'11'","2","NaN","Undefined","A","EASY","Toán tử cộng với chuỗi sẽ chuyển số thành chuỗi và nối lại."
+"SQL JOIN nào trả về tất cả các dòng khi có sự khớp ở một trong hai bảng?","FULL OUTER JOIN","INNER JOIN","LEFT JOIN","RIGHT JOIN","A","HARD","Full Outer Join kết hợp kết quả của cả Left và Right Join."</div>
+        </div>
+
+    </div>
+
+    <script>
+        function triggerFileInput() {
+            document.getElementById('fileUpload').click();
+        }
+
+        function fileSelected(input) {
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            if (input.files && input.files[0]) {
+                fileName.textContent = input.files[0].name;
+                fileInfo.style.display = 'flex';
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        }
+
+        function copyTemplate() {
+            // Lấy văn bản mẫu, bỏ nút sao chép ra
+            const block = document.getElementById('templateText');
+            // Bản sao text
+            const clone = block.cloneNode(true);
+            const btn = clone.querySelector('.copy-btn');
+            if (btn) clone.removeChild(btn);
+            
+            const textToCopy = clone.textContent.trim();
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const copyTextSpan = document.getElementById('copyText');
+                const copyIcon = document.getElementById('copyIcon');
+                
+                copyTextSpan.textContent = 'Đã sao chép!';
+                copyIcon.className = 'fa-solid fa-check';
+                
+                setTimeout(() => {
+                    copyTextSpan.textContent = 'Sao chép';
+                    copyIcon.className = 'fa-regular fa-copy';
+                }, 2000);
+            }).catch(err => {
+                alert('Không thể sao chép tự động: ' + err);
+            });
+        }
+    </script>
+</body>
+</html>
