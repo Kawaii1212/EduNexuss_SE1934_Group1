@@ -1,3 +1,4 @@
+@model EduNexus.Models.PersonalProgressViewModel
 @{
     Layout = null;
 }
@@ -412,8 +413,11 @@
             <a href="#" class="nav-item">
                 <i class="fa-solid fa-book-open"></i> All Courses
             </a>
-            <a href="#" class="nav-item active">
+            <a href="@Url.Action("PersonalProgress", "Home")" class="nav-item active">
                 <i class="fa-solid fa-bullseye"></i> Personal Progress
+            </a>
+            <a href="@Url.Action("StudentLibrary", "Home")" class="nav-item">
+                <i class="fa-solid fa-folder-open"></i> Library
             </a>
             <a href="#" class="nav-item">
                 <i class="fa-solid fa-users"></i> Community
@@ -445,7 +449,7 @@
                 </div>
                 <div class="stat-info">
                     <h4>Courses Enrolled</h4>
-                    <p>12</p>
+                    <p>@Model.CoursesEnrolled</p>
                 </div>
             </div>
             <div class="stat-card">
@@ -454,7 +458,7 @@
                 </div>
                 <div class="stat-info">
                     <h4>Courses Completed</h4>
-                    <p>4</p>
+                    <p>@Model.CoursesCompleted</p>
                 </div>
             </div>
             <div class="stat-card">
@@ -463,7 +467,7 @@
                 </div>
                 <div class="stat-info">
                     <h4>Learning Hours</h4>
-                    <p>86h</p>
+                    <p>@Model.LearningHours h</p>
                 </div>
             </div>
             <div class="stat-card">
@@ -472,7 +476,7 @@
                 </div>
                 <div class="stat-info">
                     <h4>Current Streak</h4>
-                    <p>7 Days</p>
+                    <p>@Model.CurrentStreak Days</p>
                 </div>
             </div>
         </div>
@@ -484,82 +488,39 @@
         </div>
         
         <div class="progress-list">
-            
-            <!-- Course 1 -->
-            <div class="progress-card">
-                <div class="course-info">
-                    <div class="course-icon">
-                        <i class="fa-brands fa-react"></i>
-                    </div>
-                    <div class="course-details">
-                        <h4>Advanced Full-Stack Development</h4>
-                        <p>Module 4: React & Redux Deep Dive</p>
-                    </div>
+            @if(Model.OngoingCourses.Count == 0)
+            {
+                <div class="progress-card" style="justify-content: center; color: var(--text-muted);">
+                    <p>You have no ongoing courses right now. Go to All Courses to start learning!</p>
                 </div>
-                
-                <div class="progress-bar-container">
-                    <div class="progress-info">
-                        <span class="label">Progress</span>
-                        <span>65%</span>
+            }
+
+            @foreach(var course in Model.OngoingCourses)
+            {
+                <div class="progress-card">
+                    <div class="course-info">
+                        <div class="course-icon" style="color: @course.IconColorHex;">
+                            <i class="@course.IconClass"></i>
+                        </div>
+                        <div class="course-details">
+                            <h4>@course.CourseName</h4>
+                            <p>@course.CurrentModuleOrLesson</p>
+                        </div>
                     </div>
-                    <div class="progress-track">
-                        <div class="progress-fill" style="width: 65%;"></div>
+                    
+                    <div class="progress-bar-container">
+                        <div class="progress-info">
+                            <span class="label">Progress</span>
+                            <span>@course.ProgressPercent.ToString("0.##")%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: @course.ProgressPercent.ToString("0.##").Replace(",", ".");%;"></div>
+                        </div>
                     </div>
+
+                    <a href="/Home/LessonView" class="action-btn">Continue Learning</a>
                 </div>
-
-                <a href="#" class="action-btn">Continue Learning</a>
-            </div>
-
-            <!-- Course 2 -->
-            <div class="progress-card">
-                <div class="course-info">
-                    <div class="course-icon" style="color: #10b981;">
-                        <i class="fa-brands fa-node-js"></i>
-                    </div>
-                    <div class="course-details">
-                        <h4>Backend Masterclass with Node.js</h4>
-                        <p>Module 2: Building RESTful APIs</p>
-                    </div>
-                </div>
-                
-                <div class="progress-bar-container">
-                    <div class="progress-info">
-                        <span class="label">Progress</span>
-                        <span>32%</span>
-                    </div>
-                    <div class="progress-track">
-                        <div class="progress-fill" style="width: 32%;"></div>
-                    </div>
-                </div>
-
-                <a href="#" class="action-btn">Continue Learning</a>
-            </div>
-
-            <!-- Course 3 -->
-            <div class="progress-card">
-                <div class="course-info">
-                    <div class="course-icon" style="color: #3b82f6;">
-                        <i class="fa-brands fa-docker"></i>
-                    </div>
-                    <div class="course-details">
-                        <h4>Docker & Kubernetes for Beginners</h4>
-                        <p>Module 1: Containerization Basics</p>
-                    </div>
-                </div>
-                
-                <div class="progress-bar-container">
-                    <div class="progress-info">
-                        <span class="label">Progress</span>
-                        <span>10%</span>
-                    </div>
-                    <div class="progress-track">
-                        <div class="progress-fill" style="width: 10%;"></div>
-                    </div>
-                </div>
-
-                <a href="#" class="action-btn">Continue Learning</a>
-            </div>
-
+            }
         </div>
 
         <!-- Recent Achievements -->

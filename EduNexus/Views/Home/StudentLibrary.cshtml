@@ -1,3 +1,4 @@
+@model EduNexus.Models.StudentLibraryViewModel
 @{
     Layout = null;
 }
@@ -391,10 +392,10 @@
             <a href="#" class="nav-item">
                 <i class="fa-solid fa-book-open"></i> All Courses
             </a>
-            <a href="#" class="nav-item">
+            <a href="@Url.Action("PersonalProgress", "Home")" class="nav-item">
                 <i class="fa-solid fa-bullseye"></i> Personal Progress
             </a>
-            <a href="#" class="nav-item active">
+            <a href="@Url.Action("StudentLibrary", "Home")" class="nav-item active">
                 <i class="fa-solid fa-folder-open"></i> Library
             </a>
             <a href="#" class="nav-item">
@@ -456,84 +457,46 @@
         </div>
 
         <div class="library-grid">
-            
-            <!-- Resource Item 1 -->
-            <div class="resource-card">
-                <div class="resource-type-badge badge-pdf">PDF</div>
-                <div class="resource-icon icon-pdf">
-                    <i class="fa-regular fa-file-pdf"></i>
+            @if(Model.Resources.Count == 0)
+            {
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px;">
+                    <h3>No resources found for your enrolled classes.</h3>
+                    <p style="margin-top: 10px;">Check back later when your teachers upload new materials.</p>
                 </div>
-                <h3>ASP.NET Core 8 Cheat Sheet</h3>
-                <p>A comprehensive guide to the latest features in ASP.NET Core 8, including minimal APIs and Blazor updates.</p>
-                
-                <div class="resource-meta">
-                    <div class="resource-size">
-                        <i class="fa-solid fa-database"></i> 2.4 MB
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <a href="#" class="btn-action" title="View"><i class="fa-regular fa-eye"></i></a>
-                        <a href="#" class="btn-action" title="Download"><i class="fa-solid fa-download"></i></a>
-                    </div>
-                </div>
-            </div>
+            }
 
-            <!-- Resource Item 2 -->
-            <div class="resource-card">
-                <div class="resource-type-badge badge-video">MP4</div>
-                <div class="resource-icon icon-video">
-                    <i class="fa-solid fa-video"></i>
-                </div>
-                <h3>React Hooks Masterclass</h3>
-                <p>Deep dive into useState, useEffect, useMemo, and custom hooks with practical examples.</p>
-                
-                <div class="resource-meta">
-                    <div class="resource-size">
-                        <i class="fa-regular fa-clock"></i> 45 mins
+            @foreach(var item in Model.Resources)
+            {
+                <div class="resource-card">
+                    <div class="resource-type-badge @item.BadgeClass">@item.ResourceType</div>
+                    <div class="resource-icon @item.IconClass">
+                        @Html.Raw(item.IconHtml)
                     </div>
-                    <div style="display: flex; gap: 8px;">
-                        <a href="#" class="btn-action" title="Watch"><i class="fa-solid fa-play"></i></a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Resource Item 3 -->
-            <div class="resource-card">
-                <div class="resource-type-badge badge-zip">ZIP</div>
-                <div class="resource-icon icon-zip">
-                    <i class="fa-regular fa-file-zipper"></i>
-                </div>
-                <h3>UI/UX Starter Kit</h3>
-                <p>A collection of Figma templates, icons, and color palettes to kickstart your next design project.</p>
-                
-                <div class="resource-meta">
-                    <div class="resource-size">
-                        <i class="fa-solid fa-database"></i> 156 MB
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <a href="#" class="btn-action" title="Download"><i class="fa-solid fa-download"></i></a>
+                    <h3>@item.Title</h3>
+                    <p>@item.Description</p>
+                    
+                    <div class="resource-meta">
+                        <div class="resource-size">
+                            <i class="fa-solid fa-database"></i> @item.FileSize
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            @if(item.ResourceType == "LINK")
+                            {
+                                <a href="@item.FileUrl" class="btn-action" title="Open Link" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                            }
+                            else if(item.ResourceType == "MP4")
+                            {
+                                <a href="@item.FileUrl" class="btn-action" title="Watch"><i class="fa-solid fa-play"></i></a>
+                            }
+                            else
+                            {
+                                <a href="@item.FileUrl" class="btn-action" title="View"><i class="fa-regular fa-eye"></i></a>
+                                <a href="@item.FileUrl" class="btn-action" title="Download" download><i class="fa-solid fa-download"></i></a>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Resource Item 4 -->
-            <div class="resource-card">
-                <div class="resource-type-badge badge-link">LINK</div>
-                <div class="resource-icon icon-link">
-                    <i class="fa-solid fa-link"></i>
-                </div>
-                <h3>Tailwind CSS Official Docs</h3>
-                <p>Quick access to the official documentation for utility-first CSS framework.</p>
-                
-                <div class="resource-meta">
-                    <div class="resource-size">
-                        <i class="fa-solid fa-globe"></i> External
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <a href="#" class="btn-action" title="Open Link"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-                    </div>
-                </div>
-            </div>
-
+            }
         </div>
 
     </main>

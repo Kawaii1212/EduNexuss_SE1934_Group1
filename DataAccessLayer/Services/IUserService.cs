@@ -11,4 +11,5 @@ public interface IUserService
     void UpdateUser(User user);
     void DeleteUser(User user);
     User? GetUserByEmail(string email);
+    User HandleGoogleLogin(string email, string name, string providerId);
 }
