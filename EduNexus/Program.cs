@@ -24,6 +24,11 @@ builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
 builder.Services.AddScoped<IUserOauthIdentityRepository, UserOauthIdentityRepository>();
 
+// SCR-08: AI Question Staging
+builder.Services.AddHttpClient<GeminiService>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
