@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Sensitive configuration files - chứa API key, connection string thật
+appsettings.Development.json
+**/appsettings.Development.json
