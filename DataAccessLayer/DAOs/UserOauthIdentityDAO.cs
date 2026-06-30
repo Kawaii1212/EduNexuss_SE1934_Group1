@@ -1,4 +1,5 @@
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using DataAccessLayer.Models;
 
 namespace DataAccessLayer.DAOs;
@@ -29,6 +30,7 @@ public class UserOauthIdentityDAO : BaseDAO<UserOauthIdentity>
     {
         using var context = GetContext();
         return context.UserOauthIdentities
+            .Include(uoi => uoi.User)
             .FirstOrDefault(uoi => uoi.Provider == provider && uoi.ProviderUserId == providerId);
     }
 }

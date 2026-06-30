@@ -27,7 +27,7 @@ namespace EduNexus.Controllers
             // If already authenticated, redirect based on role
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                if (User.IsInRole("Student"))
+                if (User.IsInRole("Student") || User.IsInRole("STUDENT"))
                 {
                     return RedirectToAction("StudentLibrary", "Home");
                 }
