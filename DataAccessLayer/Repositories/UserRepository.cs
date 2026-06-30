@@ -15,4 +15,6 @@ public class UserRepository : IUserRepository
     public User? GetUserById(object id) => UserDAO.Instance.GetById(id);
 
     public void UpdateUser(User user) => UserDAO.Instance.Update(user);
+
+    public User? GetUserByEmail(string email) => UserDAO.Instance.GetUserByEmail(email);
 }

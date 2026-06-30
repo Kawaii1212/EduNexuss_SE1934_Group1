@@ -17,6 +17,14 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 builder.Services.AddScoped<ISubmissionService, SubmissionService>();
 
+builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/SignIn";
+        options.LogoutPath = "/Auth/SignOut";
+        options.AccessDeniedPath = "/Home/Error";
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,10 +40,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Auth}/{action=SignIn}/{id?}");
 
 app.Run();

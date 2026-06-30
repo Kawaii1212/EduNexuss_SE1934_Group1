@@ -1,3 +1,4 @@
+@model EduNexus.Models.LoginViewModel
 @{
     Layout = null;
 }
@@ -237,23 +238,31 @@
         <div class="form-container">
             <h1>Welcome Back</h1>
             
-            <form action="#" method="POST">
+            <form asp-action="SignIn" method="POST">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="ModelOnly" class="text-danger" style="color:red; margin-bottom:15px; font-size:14px;"></div>
+                }
+
                 <div class="form-group">
-                    <input type="email" class="form-control" placeholder="Email address" required>
+                    <input asp-for="Email" class="form-control" placeholder="Email address" required>
+                    <span asp-validation-for="Email" style="color:red; font-size: 12px; margin-top: 5px; display: block;"></span>
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" placeholder="Password" required>
+                    <input asp-for="Password" class="form-control" placeholder="Password" required>
+                    <span asp-validation-for="Password" style="color:red; font-size: 12px; margin-top: 5px; display: block;"></span>
                 </div>
                 
                 <div class="form-options">
                     <div class="checkbox-group">
                         <!-- Custom styled checkbox -->
                         <div class="custom-checkbox" id="rememberMeCheck">
-                            <div class="custom-checkbox-dot"></div>
+                            <div class="custom-checkbox-dot" style="display:none;"></div>
                         </div>
+                        <input type="checkbox" asp-for="RememberMe" id="rememberMeInput" style="display:none;" />
                         <span>Remember me</span>
                     </div>
-                    <a href="#" class="forgot-password">Forgot password?</a>
+                    <a href="/Auth/ForgotPassword" class="forgot-password">Forgot password?</a>
                 </div>
                 
                 <button type="submit" class="btn-primary">Sign In</button>
@@ -281,14 +290,28 @@
 
     <script>
         // Simple script to toggle the custom checkbox visually
-        document.getElementById('rememberMeCheck').addEventListener('click', function() {
-            const dot = this.querySelector('.custom-checkbox-dot');
-            if (dot.style.display === 'none') {
-                dot.style.display = 'block';
-                this.style.backgroundColor = 'var(--primary)';
-            } else {
+        const rememberMeCheck = document.getElementById('rememberMeCheck');
+        const rememberMeInput = document.getElementById('rememberMeInput');
+        const dot = rememberMeCheck.querySelector('.custom-checkbox-dot');
+        
+        // Initialize from input
+        if (rememberMeInput.checked) {
+            dot.style.display = 'block';
+            rememberMeCheck.style.backgroundColor = 'var(--primary)';
+        } else {
+            dot.style.display = 'none';
+            rememberMeCheck.style.backgroundColor = 'var(--border-color)';
+        }
+
+        rememberMeCheck.addEventListener('click', function() {
+            if (rememberMeInput.checked) {
+                rememberMeInput.checked = false;
                 dot.style.display = 'none';
                 this.style.backgroundColor = 'var(--border-color)';
+            } else {
+                rememberMeInput.checked = true;
+                dot.style.display = 'block';
+                this.style.backgroundColor = 'var(--primary)';
             }
         });
     </script>

@@ -22,4 +22,6 @@ public class UserService : IUserService
     public User? GetUserById(object id) => _userRepository.GetUserById(id);
 
     public void UpdateUser(User user) => _userRepository.UpdateUser(user);
+
+    public User? GetUserByEmail(string email) => _userRepository.GetUserByEmail(email);
 }

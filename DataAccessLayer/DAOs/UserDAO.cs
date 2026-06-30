@@ -24,5 +24,9 @@ public class UserDAO : BaseDAO<User>
         }
     }
 
-    // Add specific User DAO methods here if needed, utilizing GetContext()
+    public User? GetUserByEmail(string email)
+    {
+        using var context = GetContext();
+        return context.Users.FirstOrDefault(u => u.Email == email);
+    }
 }
