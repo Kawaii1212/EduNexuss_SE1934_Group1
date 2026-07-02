@@ -6,26 +6,107 @@ using System.Text;
 using System.Threading.Tasks;
 using EduNexus.Models;
 using EduNexus.Services;
-using EduNexus.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace EduNexus.Controllers;
 
 public class QuestionController : Controller
 {
     private readonly IQuestionService _questionService;
+    private readonly EduNexusContext _context;
 
-    public QuestionController(IQuestionService questionService)
+    public QuestionController(IQuestionService questionService, EduNexusContext context)
     {
         _questionService = questionService;
+        _context = context;
+    }
+
+    private void ResolveCourseContext(long? courseId, long? moduleId)
+    {
+        Course? course = null;
+        if (moduleId.HasValue && moduleId.Value > 0)
+        {
+            var module = _context.Modules
+                .Include(m => m.Course)
+                .FirstOrDefault(m => m.Id == moduleId.Value);
+            if (module != null)
+            {
+                course = module.Course;
+            }
+        }
+        else if (courseId.HasValue && courseId.Value > 0)
+        {
+            course = _context.Courses.Find(courseId.Value);
+        }
+
+        if (course != null)
+        {
+            ViewBag.ActiveCourseId = course.Id;
+            ViewBag.ActiveCourseTitle = course.Title;
+            ViewData["ActiveMenu"] = "MyCourses";
+            ViewData["ActiveSubMenu"] = "Question";
+        }
     }
 
     // GET: /Question
-    public IActionResult Index(long? moduleId, string? difficulty, string? status, string? searchTerm)
+    public IActionResult Index(long? courseId, long? moduleId, string? difficulty, string? status, string? searchTerm)
     {
-        var modules = _questionService.GetAllModules();
-        var questions = _questionService.GetQuestions(moduleId, difficulty, status, searchTerm);
+        // Enforce strict module-level filtering
+        if (!moduleId.HasValue || moduleId.Value <= 0)
+        {
+            if (courseId.HasValue && courseId.Value > 0)
+            {
+                var firstModule = _context.Modules
+                    .Where(m => m.CourseId == courseId.Value)
+                    .OrderBy(m => m.OrderNo)
+                    .FirstOrDefault();
+                if (firstModule != null)
+                {
+                    moduleId = firstModule.Id;
+                }
+            }
+            else
+            {
+                var firstModule = _context.Modules.OrderBy(m => m.Id).FirstOrDefault();
+                if (firstModule != null)
+                {
+                    moduleId = firstModule.Id;
+                    courseId = firstModule.CourseId;
+                }
+            }
+        }
+
+        ResolveCourseContext(courseId, moduleId);
+        if (ViewBag.ActiveCourseId != null && !courseId.HasValue)
+        {
+            courseId = (long)ViewBag.ActiveCourseId;
+        }
+
+        List<Module> modules;
+        if (courseId.HasValue && courseId.Value > 0)
+        {
+            modules = _context.Modules
+                .Where(m => m.CourseId == courseId.Value)
+                .OrderBy(m => m.OrderNo)
+                .ToList();
+        }
+        else
+        {
+            modules = _questionService.GetAllModules();
+        }
+
+        List<Question> questions;
+        if (moduleId.HasValue && moduleId.Value > 0)
+        {
+            questions = _questionService.GetQuestions(moduleId.Value, difficulty, status, searchTerm);
+        }
+        else
+        {
+            questions = new List<Question>();
+        }
 
         var vm = new QuestionBankViewModel
         {
@@ -49,18 +130,36 @@ public class QuestionController : Controller
         var q = _questionService.GetById(id);
         if (q == null)
         {
-            TempData["ErrorMessage"] = "Kh�ng t�m th?y c�u h?i.";
+            TempData["ErrorMessage"] = "Không tìm thấy câu hỏi.";
             return RedirectToAction(nameof(Index));
         }
+        ResolveCourseContext(null, q.ModuleId);
         return View(q);
     }
 
     // GET: /Question/Create
-    public IActionResult Create()
+    public IActionResult Create(long? courseId, long? moduleId)
     {
+        ResolveCourseContext(courseId, moduleId);
+        if (ViewBag.ActiveCourseId != null && !courseId.HasValue)
+        {
+            courseId = (long)ViewBag.ActiveCourseId;
+        }
+
+        List<Module> modules;
+        if (courseId.HasValue && courseId.Value > 0)
+        {
+            modules = _context.Modules.Where(m => m.CourseId == courseId.Value).OrderBy(m => m.OrderNo).ToList();
+        }
+        else
+        {
+            modules = _questionService.GetAllModules();
+        }
+
         var vm = new QuestionFormViewModel
         {
-            Modules = _questionService.GetAllModules()
+            Modules = modules,
+            ModuleId = moduleId ?? 0
         };
         return View(vm);
     }
@@ -70,13 +169,24 @@ public class QuestionController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Create(QuestionFormViewModel form)
     {
+        var module = _context.Modules.Find(form.ModuleId);
+        long? courseId = module?.CourseId;
+
         if (!ModelState.IsValid)
         {
-            form.Modules = _questionService.GetAllModules();
+            ResolveCourseContext(courseId, form.ModuleId);
+            if (courseId.HasValue)
+            {
+                form.Modules = _context.Modules.Where(m => m.CourseId == courseId.Value).OrderBy(m => m.OrderNo).ToList();
+            }
+            else
+            {
+                form.Modules = _questionService.GetAllModules();
+            }
             return View(form);
         }
 
-        // Gi? l?p userId = 1 khi chua c� Auth ho�n ch?nh
+        // Giả lập creatorId = 1 khi chưa có Auth hoàn chỉnh
         long creatorId = 1;
 
         var q = new Question
@@ -99,13 +209,21 @@ public class QuestionController : Controller
         try
         {
             _questionService.Add(q);
-            TempData["SuccessMessage"] = "? Th�m c�u h?i th? c�ng th�nh c�ng.";
-            return RedirectToAction(nameof(Index), new { moduleId = form.ModuleId });
+            TempData["SuccessMessage"] = "Thêm câu hỏi thủ công thành công.";
+            return RedirectToAction(nameof(Index), new { courseId = courseId, moduleId = form.ModuleId });
         }
         catch (Exception ex)
         {
-            ViewData["ErrorMessage"] = $"L?i h? th?ng: {ex.Message}";
-            form.Modules = _questionService.GetAllModules();
+            ViewData["ErrorMessage"] = $"Lỗi hệ thống: {ex.Message}";
+            ResolveCourseContext(courseId, form.ModuleId);
+            if (courseId.HasValue)
+            {
+                form.Modules = _context.Modules.Where(m => m.CourseId == courseId.Value).OrderBy(m => m.OrderNo).ToList();
+            }
+            else
+            {
+                form.Modules = _questionService.GetAllModules();
+            }
             return View(form);
         }
     }
@@ -116,8 +234,21 @@ public class QuestionController : Controller
         var q = _questionService.GetById(id);
         if (q == null)
         {
-            TempData["ErrorMessage"] = "Kh�ng t�m th?y c�u h?i.";
+            TempData["ErrorMessage"] = "Không tìm thấy câu hỏi.";
             return RedirectToAction(nameof(Index));
+        }
+
+        ResolveCourseContext(null, q.ModuleId);
+        long? courseId = ViewBag.ActiveCourseId;
+
+        List<Module> modules;
+        if (courseId.HasValue && courseId.Value > 0)
+        {
+            modules = _context.Modules.Where(m => m.CourseId == courseId.Value).OrderBy(m => m.OrderNo).ToList();
+        }
+        else
+        {
+            modules = _questionService.GetAllModules();
         }
 
         var vm = new QuestionFormViewModel
@@ -132,7 +263,7 @@ public class QuestionController : Controller
             CorrectOption = q.CorrectOption,
             Difficulty = q.Difficulty,
             AiExplanation = q.AiExplanation,
-            Modules = _questionService.GetAllModules()
+            Modules = modules
         };
 
         return View(vm);
@@ -148,17 +279,28 @@ public class QuestionController : Controller
             return BadRequest();
         }
 
+        var module = _context.Modules.Find(form.ModuleId);
+        long? courseId = module?.CourseId;
+
         if (!ModelState.IsValid)
         {
-            form.Modules = _questionService.GetAllModules();
+            ResolveCourseContext(courseId, form.ModuleId);
+            if (courseId.HasValue)
+            {
+                form.Modules = _context.Modules.Where(m => m.CourseId == courseId.Value).OrderBy(m => m.OrderNo).ToList();
+            }
+            else
+            {
+                form.Modules = _questionService.GetAllModules();
+            }
             return View(form);
         }
 
         var q = _questionService.GetById(id);
         if (q == null)
         {
-            TempData["ErrorMessage"] = "Kh�ng t�m th?y c�u h?i d? c?p nh?t.";
-            return RedirectToAction(nameof(Index));
+            TempData["ErrorMessage"] = "Không tìm thấy câu hỏi để cập nhật.";
+            return RedirectToAction(nameof(Index), new { courseId = courseId });
         }
 
         q.ModuleId = form.ModuleId;
@@ -174,13 +316,21 @@ public class QuestionController : Controller
         try
         {
             _questionService.Update(q);
-            TempData["SuccessMessage"] = "? C?p nh?t c�u h?i th�nh c�ng.";
-            return RedirectToAction(nameof(Index), new { moduleId = form.ModuleId });
+            TempData["SuccessMessage"] = "Cập nhật câu hỏi thành công.";
+            return RedirectToAction(nameof(Index), new { courseId = courseId, moduleId = form.ModuleId });
         }
         catch (Exception ex)
         {
-            ViewData["ErrorMessage"] = $"L?i h? th?ng: {ex.Message}";
-            form.Modules = _questionService.GetAllModules();
+            ViewData["ErrorMessage"] = $"Lỗi hệ thống: {ex.Message}";
+            ResolveCourseContext(courseId, form.ModuleId);
+            if (courseId.HasValue)
+            {
+                form.Modules = _context.Modules.Where(m => m.CourseId == courseId.Value).OrderBy(m => m.OrderNo).ToList();
+            }
+            else
+            {
+                form.Modules = _questionService.GetAllModules();
+            }
             return View(form);
         }
     }
@@ -193,29 +343,49 @@ public class QuestionController : Controller
         var q = _questionService.GetById(id);
         if (q == null)
         {
-            TempData["ErrorMessage"] = "Kh�ng t�m th?y c�u h?i d? xo�.";
+            TempData["ErrorMessage"] = "Không tìm thấy câu hỏi để xóa.";
             return RedirectToAction(nameof(Index));
         }
+
+        long? courseId = _context.Modules.Find(q.ModuleId)?.CourseId;
+        long originalModuleId = q.ModuleId;
 
         try
         {
             _questionService.Delete(q);
-            TempData["SuccessMessage"] = "?? �� xo� c�u h?i th�nh c�ng.";
+            TempData["SuccessMessage"] = "Đã xóa câu hỏi thành công.";
         }
         catch (Exception ex)
         {
-            TempData["ErrorMessage"] = $"? Kh�ng th? xo� c�u h?i n�y: {ex.Message}";
+            TempData["ErrorMessage"] = $"Không thể xóa câu hỏi này: {ex.Message}";
         }
 
-        return RedirectToAction(nameof(Index), new { moduleId = q.ModuleId });
+        return RedirectToAction(nameof(Index), new { courseId = courseId, moduleId = originalModuleId });
     }
 
     // GET: /Question/Import
-    public IActionResult Import()
+    public IActionResult Import(long? courseId, long? moduleId)
     {
+        ResolveCourseContext(courseId, moduleId);
+        if (ViewBag.ActiveCourseId != null && !courseId.HasValue)
+        {
+            courseId = (long)ViewBag.ActiveCourseId;
+        }
+
+        List<Module> modules;
+        if (courseId.HasValue && courseId.Value > 0)
+        {
+            modules = _context.Modules.Where(m => m.CourseId == courseId.Value).OrderBy(m => m.OrderNo).ToList();
+        }
+        else
+        {
+            modules = _questionService.GetAllModules();
+        }
+
         var vm = new QuestionImportViewModel
         {
-            Modules = _questionService.GetAllModules()
+            Modules = modules,
+            ModuleId = moduleId ?? 0
         };
         return View(vm);
     }
@@ -225,13 +395,24 @@ public class QuestionController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Import(QuestionImportViewModel model)
     {
+        var module = _context.Modules.Find(model.ModuleId);
+        long? courseId = module?.CourseId;
+
+        ResolveCourseContext(courseId, model.ModuleId);
+
         if (model.ModuleId <= 0)
         {
-            ModelState.AddModelError(nameof(model.ModuleId), "Vui l�ng ch?n Module nh?n c�u h?i.");
+            ModelState.AddModelError(nameof(model.ModuleId), "Vui lòng chọn Module nhận câu hỏi.");
         }
 
-        var modules = _questionService.GetAllModules();
-        model.Modules = modules;
+        if (courseId.HasValue)
+        {
+            model.Modules = _context.Modules.Where(m => m.CourseId == courseId.Value).OrderBy(m => m.OrderNo).ToList();
+        }
+        else
+        {
+            model.Modules = _questionService.GetAllModules();
+        }
 
         if (!ModelState.IsValid)
         {
@@ -250,7 +431,7 @@ public class QuestionController : Controller
         }
         else
         {
-            ModelState.AddModelError("", "Vui l�ng upload file .csv ho?c d�n n?i dung CSV.");
+            ModelState.AddModelError("", "Vui lòng upload file .csv hoặc dán nội dung CSV.");
             return View(model);
         }
 
@@ -258,7 +439,7 @@ public class QuestionController : Controller
         var questionsToImport = new List<Question>();
         var errors = new List<string>();
 
-        // Gi? l?p creatorId = 1
+        // Giả lập creatorId = 1
         long creatorId = 1;
         int rowNum = 0;
         bool isFirstLine = true;
@@ -268,14 +449,14 @@ public class QuestionController : Controller
             rowNum++;
             if (string.IsNullOrWhiteSpace(rawLine)) continue;
 
-            // B? qua d�ng ti�u d? n?u d�ng d?u tr�ng d?nh d?ng c?t m?u
+            // Bỏ qua dòng tiêu đề nếu dòng đầu trùng định dạng cột mẫu
             var columns = ParseCsvLine(rawLine);
             if (isFirstLine)
             {
                 isFirstLine = false;
                 if (columns.Count > 0 &&
                     (columns[0].Equals("Content", StringComparison.OrdinalIgnoreCase) ||
-                     columns[0].Equals("N?i dung", StringComparison.OrdinalIgnoreCase)))
+                     columns[0].Equals("Nội dung", StringComparison.OrdinalIgnoreCase)))
                 {
                     continue; // Skip header
                 }
@@ -283,7 +464,7 @@ public class QuestionController : Controller
 
             if (columns.Count < 6)
             {
-                errors.Add($"D�ng {rowNum}: Thi?u d? li?u (C?n �t nh?t 6 c?t: N?i dung, A, B, C, D, ��p �n d�ng).");
+                errors.Add($"Dòng {rowNum}: Thiếu dữ liệu (Cần ít nhất 6 cột: Nội dung, A, B, C, D, Đáp án đúng).");
                 continue;
             }
 
@@ -313,18 +494,18 @@ public class QuestionController : Controller
             // Validate
             if (string.IsNullOrWhiteSpace(content))
             {
-                errors.Add($"D�ng {rowNum}: N?i dung c�u h?i kh�ng du?c d? tr?ng.");
+                errors.Add($"Dòng {rowNum}: Nội dung câu hỏi không được để trống.");
                 continue;
             }
             if (string.IsNullOrWhiteSpace(optA) || string.IsNullOrWhiteSpace(optB) ||
                 string.IsNullOrWhiteSpace(optC) || string.IsNullOrWhiteSpace(optD))
             {
-                errors.Add($"D�ng {rowNum}: C�c l?a ch?n A, B, C, D kh�ng du?c d? tr?ng.");
+                errors.Add($"Dòng {rowNum}: Các lựa chọn A, B, C, D không được để trống.");
                 continue;
             }
             if (correctOpt != "A" && correctOpt != "B" && correctOpt != "C" && correctOpt != "D")
             {
-                errors.Add($"D�ng {rowNum}: ��p �n d�ng '{correctOpt}' kh�ng h?p l? (ph?i l� A, B, C ho?c D).");
+                errors.Add($"Dòng {rowNum}: Đáp án đúng '{correctOpt}' không hợp lệ (phải là A, B, C hoặc D).");
                 continue;
             }
 
@@ -350,7 +531,7 @@ public class QuestionController : Controller
 
         if (questionsToImport.Count == 0 && errors.Count == 0)
         {
-            errors.Add("Kh�ng t�m th?y d? li?u h?p l? d? import.");
+            errors.Add("Không tìm thấy dữ liệu hợp lệ để import.");
         }
 
         if (errors.Count > 0)
@@ -362,52 +543,68 @@ public class QuestionController : Controller
         try
         {
             _questionService.AddRange(questionsToImport);
-            TempData["SuccessMessage"] = $"? Import th�nh c�ng {questionsToImport.Count} c�u h?i v�o ng�n h�ng c�u h?i.";
-            return RedirectToAction(nameof(Index), new { moduleId = model.ModuleId });
+            TempData["SuccessMessage"] = $"Import thành công {questionsToImport.Count} câu hỏi vào ngân hàng câu hỏi.";
+            return RedirectToAction(nameof(Index), new { courseId = courseId, moduleId = model.ModuleId });
         }
         catch (Exception ex)
         {
-            errors.Add($"L?i luu database: {ex.Message}");
+            errors.Add($"Lỗi lưu database: {ex.Message}");
             model.ImportErrors = errors;
             return View(model);
         }
     }
 
-    // Helper t�ch d�ng CSV h? tr? d?u ngo?c k�p
+    // Helper tách dòng CSV hỗ trợ dấu ngoặc kép
     private static List<string> ParseCsvLine(string line)
     {
         var result = new List<string>();
         if (string.IsNullOrWhiteSpace(line)) return result;
 
-        var inQuotes = false;
-        var currentToken = new StringBuilder();
+        var currentColumn = new StringBuilder();
+        bool inQuotes = false;
+
         for (int i = 0; i < line.Length; i++)
         {
             char c = line[i];
+
             if (c == '"')
             {
-                // X? l� d?u ngo?c k�p l?ng nhau "" d?i di?n cho "
-                if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
-                {
-                    currentToken.Append('"');
-                    i++;
-                }
-                else
-                {
-                    inQuotes = !inQuotes;
-                }
+                inQuotes = !inQuotes;
             }
             else if (c == ',' && !inQuotes)
             {
-                result.Add(currentToken.ToString().Trim());
-                currentToken.Clear();
+                result.Add(currentColumn.ToString());
+                currentColumn.Clear();
             }
             else
             {
-                currentToken.Append(c);
+                currentColumn.Append(c);
             }
         }
-        result.Add(currentToken.ToString().Trim());
+        result.Add(currentColumn.ToString());
         return result;
+    }
+
+    // GET: /Question/ViewQuestions?moduleId=5
+    [HttpGet]
+    public IActionResult ViewQuestions(long moduleId)
+    {
+        var module = _context.Modules
+            .Include(m => m.Course)
+            .FirstOrDefault(m => m.Id == moduleId);
+        if (module == null) return NotFound("Chương học không tồn tại.");
+
+        ResolveCourseContext(module.CourseId, moduleId);
+
+        var questions = _context.Questions
+            .Include(q => q.Module)
+            .Where(q => q.ModuleId == moduleId && q.Status == "APPROVED")
+            .OrderByDescending(q => q.CreatedAt)
+            .ToList();
+
+        ViewBag.ModuleName = module.Title;
+        ViewBag.ModuleOrderNo = module.OrderNo;
+
+        return View(questions);
     }
 }

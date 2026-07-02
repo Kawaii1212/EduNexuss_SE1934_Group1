@@ -1,0 +1,444 @@
+@model EduNexus.ViewModels.SmeCoursesViewModel
+@{
+    Layout = "~/Views/Shared/_SmeLayout.cshtml";
+    ViewData["Title"] = "Khóa học của tôi";
+    ViewData["ActiveMenu"] = "MyCourses";
+}
+
+<style>
+    /* Header Area */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+    }
+
+    .header-title h1 {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        margin-bottom: 6px;
+    }
+
+    .header-title p {
+        color: var(--text-muted);
+        font-size: 15px;
+    }
+
+    .role-badge {
+        background: #f1f5f9;
+        color: var(--text-main);
+        padding: 8px 16px;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 13px;
+        border: 1px solid var(--border);
+    }
+
+    /* Welcome Banner */
+    .welcome-banner {
+        background: linear-gradient(135deg, var(--primary-light), var(--primary));
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        box-shadow: 0 10px 25px -5px rgba(92, 36, 255, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-banner::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        pointer-events: none;
+    }
+
+    .banner-text h2 {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .banner-text p {
+        font-size: 15px;
+        opacity: 0.95;
+        max-width: 500px;
+        line-height: 1.5;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    .stat-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .icon-primary { background-color: var(--primary-lighter); color: var(--primary); }
+    .icon-success { background-color: #d1fae5; color: var(--success); }
+    .icon-warning { background-color: #fffbeb; color: var(--warning); }
+
+    .stat-info h4 {
+        color: var(--text-muted);
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .stat-info p {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    /* Course List Area */
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 28px;
+    }
+
+    .course-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .course-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        border-color: var(--primary-light);
+    }
+
+    .course-img-placeholder {
+        height: 170px;
+        background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 54px;
+        color: #0284c7;
+        position: relative;
+    }
+
+    .course-card:nth-child(2n) .course-img-placeholder {
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        color: #16a34a;
+    }
+
+    .course-card:nth-child(3n) .course-img-placeholder {
+        background: linear-gradient(135deg, #fff7ed, #ffedd5);
+        color: #ea580c;
+    }
+
+    .course-card:nth-child(4n) .course-img-placeholder {
+        background: linear-gradient(135deg, #faf5ff, #f3e8ff);
+        color: #9333ea;
+    }
+
+    .course-status-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        padding: 6px 12px;
+        border-radius: 9999px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .badge-draft { background: #f1f5f9; color: #475569; }
+    .badge-pending { background: #fef3c7; color: #d97706; }
+    .badge-published { background: #d1fae5; color: #065f46; }
+    .badge-archived { background: #fee2e2; color: #991b1b; }
+
+    .course-group-tag {
+        position: absolute;
+        bottom: 16px;
+        left: 16px;
+        background: rgba(15, 23, 42, 0.6);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+    }
+
+    .course-body {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .course-body h3 {
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        line-height: 1.4;
+        color: var(--text-main);
+    }
+
+    .course-body p {
+        font-size: 14px;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 67px;
+    }
+
+    .course-meta {
+        display: flex;
+        gap: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+        margin-top: auto;
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+    .course-meta span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .course-meta i {
+        color: var(--primary-light);
+    }
+
+    .course-footer {
+        padding: 0 24px 24px 24px;
+    }
+
+    .btn-manage {
+        display: flex;
+        width: 100%;
+        padding: 12px;
+        background-color: #f8fafc;
+        border: 1px solid var(--border);
+        color: var(--text-main);
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        font-size: 14px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .course-card:hover .btn-manage {
+        background-color: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(92, 36, 255, 0.15);
+    }
+
+    /* Empty State */
+    .empty-state {
+        grid-column: 1 / -1;
+        background: var(--surface);
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-lg);
+        padding: 60px;
+        text-align: center;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: var(--primary-light);
+    }
+
+    .empty-state h3 {
+        font-size: 18px;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+</style>
+
+<header class="header">
+    <div class="header-title">
+        <h1>Khóa học của tôi</h1>
+        <p>Danh sách các khóa học được phân công phụ trách bởi Subject Matter Expert</p>
+    </div>
+    <div class="role-badge">
+        Vai trò: SME
+    </div>
+</header>
+
+<!-- Welcome Banner -->
+<section class="welcome-banner">
+    <div class="banner-text">
+        <h2>Chào mừng trở lại, @Model.SmeName!</h2>
+        <p>Hệ thống hỗ trợ bạn quản lý nội dung khóa học, cập nhật tài liệu và kiểm tra tiến trình chấm bài tập của học viên hiệu quả nhất.</p>
+    </div>
+</section>
+
+<!-- Statistics Widget Grid -->
+<section class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon icon-primary">
+            <i class="fa-solid fa-book"></i>
+        </div>
+        <div class="stat-info">
+            <h4>Tổng khóa học giao</h4>
+            <p>@Model.Courses.Count</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon icon-warning">
+            <i class="fa-solid fa-file-signature"></i>
+        </div>
+        <div class="stat-info">
+            <h4>Khóa học nháp / Chờ duyệt</h4>
+            <p>@Model.Courses.Count(c => c.Status == "DRAFT" || c.Status == "PENDING_REVIEW")</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon icon-success">
+            <i class="fa-solid fa-school"></i>
+        </div>
+        <div class="stat-info">
+            <h4>Lớp học đang chạy</h4>
+            <p>@Model.Courses.Sum(c => c.ClassCount)</p>
+        </div>
+    </div>
+</section>
+
+<h2 class="section-title">
+    <i class="fa-solid fa-list-check" style="color: var(--primary)"></i> Khóa học phụ trách
+</h2>
+
+<div class="courses-grid">
+    @if (Model.Courses != null && Model.Courses.Any())
+    {
+        foreach (var course in Model.Courses)
+        {
+            <div class="course-card">
+                <div class="course-img-placeholder">
+                    @if (course.Title.Contains("React", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <i class="fa-brands fa-react"></i>
+                    }
+                    else if (course.Title.Contains("Python", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <i class="fa-brands fa-python"></i>
+                    }
+                    else if (course.Title.Contains("SQL", StringComparison.OrdinalIgnoreCase) || course.Title.Contains("Data", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <i class="fa-solid fa-database"></i>
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    }
+
+                    <!-- Course Status Badge -->
+                    @if (course.Status == "PUBLISHED")
+                    {
+                        <span class="course-status-badge badge-published">Đang chạy</span>
+                    }
+                    else if (course.Status == "PENDING_REVIEW")
+                    {
+                        <span class="course-status-badge badge-pending">Chờ duyệt</span>
+                    }
+                    else if (course.Status == "ARCHIVED")
+                    {
+                        <span class="course-status-badge badge-archived">Lưu trữ</span>
+                    }
+                    else
+                    {
+                        <span class="course-status-badge badge-draft">Bản nháp</span>
+                    }
+
+                    <span class="course-group-tag">@course.CourseGroupName</span>
+                </div>
+                <div class="course-body">
+                    <h3>@course.Title</h3>
+                    <p>@(string.IsNullOrEmpty(course.Description) ? "Chưa có mô tả cho khóa học này. Hãy thêm mô tả chi tiết để học viên dễ theo dõi." : course.Description)</p>
+                    <div class="course-meta">
+                        <span>
+                            <i class="fa-solid fa-cubes"></i> @course.ModuleCount Chương học
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-chalkboard-user"></i> @course.ClassCount Lớp học
+                        </span>
+                    </div>
+                </div>
+                <div class="course-footer">
+                    <a href="/Course/Structure?courseId=@course.Id" class="btn-manage">
+                        Chi tiết khóa học <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fa-solid fa-folder-open"></i>
+            <h3>Chưa có khóa học nào được giao</h3>
+            <p>Vui lòng liên hệ Admin để được phân công quản lý khóa học.</p>
+        </div>
+    }
+</div>

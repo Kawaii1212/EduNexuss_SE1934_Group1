@@ -1,0 +1,225 @@
+@model EduNexus.Models.Module
+@{
+    Layout = "~/Views/Shared/_SmeLayout.cshtml";
+    ViewData["Title"] = "Thêm chương mới - EduNexus";
+    ViewData["ActiveMenu"] = "MyCourses";
+}
+
+<style>
+    .module-form-page {
+        --m-primary: #5c24ff;
+        --m-primary-light: #9b8cf8;
+        --m-primary-lighter: #f0edff;
+        --m-surface: #fff;
+        --m-text: #111827;
+        --m-muted: #6b7280;
+        --m-border: #e5e7eb;
+        --m-radius: 12px;
+        --m-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .module-form-page .page-header {
+        background: var(--m-surface);
+        border: 1px solid var(--m-border);
+        border-radius: var(--m-radius);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 24px;
+        margin-bottom: 24px;
+    }
+
+    .module-form-page .back-btn {
+        color: var(--m-muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        padding: 8px 14px;
+        border: 1px solid var(--m-border);
+        border-radius: 8px;
+        background: var(--m-surface);
+    }
+
+    .module-form-page .back-btn:hover {
+        color: var(--m-text);
+        background: #f8fafc;
+        border-color: var(--m-muted);
+    }
+
+    .module-form-page .page-badge {
+        background: var(--m-primary-lighter);
+        color: var(--m-primary);
+        padding: 8px 16px;
+        border-radius: 100px;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .module-form-page .card {
+        background: var(--m-surface);
+        border: 1px solid var(--m-border);
+        border-radius: var(--m-radius);
+        box-shadow: var(--m-shadow);
+        overflow: hidden;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .module-form-page .card-header {
+        padding: 20px 24px;
+        background: #fafafa;
+        border-bottom: 1px solid var(--m-border);
+    }
+
+    .module-form-page .card-header h2 {
+        font-size: 18px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--m-text);
+        margin: 0;
+    }
+
+    .module-form-page .card-body {
+        padding: 30px;
+    }
+
+    .module-form-page .form-group {
+        margin-bottom: 20px;
+    }
+
+    .module-form-page .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--m-text);
+    }
+
+    .module-form-page .form-control {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1px solid var(--m-border);
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        background: #fff;
+        transition: all 0.15s;
+    }
+
+    .module-form-page .form-control:focus {
+        border-color: var(--m-primary-light);
+        box-shadow: 0 0 0 3px rgba(92, 36, 255, 0.1);
+    }
+
+    .module-form-page textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .module-form-page .btn-submit-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        border-top: 1px solid var(--m-border);
+        padding-top: 20px;
+        margin-top: 10px;
+    }
+
+    .module-form-page .btn {
+        padding: 11px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .module-form-page .btn-primary {
+        background: linear-gradient(135deg, var(--m-primary), #8b5cf6);
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(92, 36, 255, 0.2);
+    }
+
+    .module-form-page .btn-primary:hover {
+        transform: translateY(-1px);
+        opacity: 0.95;
+    }
+
+    .module-form-page .btn-cancel {
+        background: transparent;
+        border: 1px solid var(--m-border);
+        color: var(--m-muted);
+    }
+
+    .module-form-page .btn-cancel:hover {
+        background: #f8fafc;
+        color: var(--m-text);
+    }
+
+    .module-form-page .error-message {
+        font-size: 12px;
+        color: #ef4444;
+        margin-top: 5px;
+        display: block;
+        font-weight: 500;
+    }
+</style>
+
+<div class="module-form-page">
+    <div class="page-header">
+        <a href="/Course/Structure?courseId=@ViewBag.ActiveCourseId" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Trở về cấu trúc
+        </a>
+        <div class="page-badge">
+            <i class="fa-solid fa-folder-plus"></i> Thêm chương mới
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>
+                <i class="fa-solid fa-circle-plus" style="color:var(--m-primary)"></i>
+                Tạo chương học (Module) mới
+            </h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="CreateModule" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="CourseId" />
+
+                <div class="form-group">
+                    <label asp-for="Title">Tên chương học</label>
+                    <input asp-for="Title" class="form-control" placeholder="Ví dụ: Chương 1: Giới thiệu căn bản" required />
+                    <span asp-validation-for="Title" class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Description">Mô tả chi tiết chương học</label>
+                    <textarea asp-for="Description" class="form-control" placeholder="Tóm tắt nội dung chính hoặc mục tiêu đạt được sau chương học này..."></textarea>
+                    <span asp-validation-for="Description" class="error-message"></span>
+                </div>
+
+                <div class="btn-submit-row">
+                    <a href="/Course/Structure?courseId=@ViewBag.ActiveCourseId" class="btn btn-cancel">Huỷ bỏ</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> Lưu chương học
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

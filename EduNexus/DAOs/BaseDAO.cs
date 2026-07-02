@@ -29,9 +29,7 @@ public class BaseDAO<T> where T : class
 
     protected EduNexusContext GetContext()
     {
-        var optionsBuilder = new DbContextOptionsBuilder<EduNexusContext>();
-        optionsBuilder.UseSqlServer(AppConfiguration.ConnectionString);
-        return new EduNexusContext(optionsBuilder.Options);
+        return new EduNexusContext(AppConfiguration.DbContextOptions);
     }
 
     public virtual IEnumerable<T> GetAll()

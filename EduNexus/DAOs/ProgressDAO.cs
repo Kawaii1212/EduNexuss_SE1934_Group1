@@ -29,9 +29,7 @@ public class ProgressDAO
 
     protected EduNexusContext GetContext()
     {
-        var optionsBuilder = new DbContextOptionsBuilder<EduNexusContext>();
-        optionsBuilder.UseSqlServer(AppConfiguration.ConnectionString);
-        return new EduNexusContext(optionsBuilder.Options);
+        return new EduNexusContext(AppConfiguration.DbContextOptions);
     }
 
     public IEnumerable<Enrollment> GetEnrollmentsByStudent(long studentId)

@@ -1,577 +1,524 @@
 @model EduNexus.ViewModels.QuestionBankViewModel
 @{
-    Layout = null;
+    Layout = "~/Views/Shared/_SmeLayout.cshtml";
+    ViewData["Title"] = "Ngân hàng Câu hỏi - EduNexus";
+    ViewData["ActiveMenu"] = "MyCourses";
+    ViewData["ActiveSubMenu"] = "Question";
 }
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ngân hàng Câu hỏi - EduNexus</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #5c24ff;
-            --primary-light: #9b8cf8;
-            --primary-lighter: #f0edff;
-            --bg: #fafafa;
-            --surface: #fff;
-            --text: #111827;
-            --muted: #6b7280;
-            --border: #e5e7eb;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --radius: 12px;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        .topbar {
-            height: 70px;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 32px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-btn {
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: color 0.2s;
-        }
-
-        .back-btn:hover {
-            color: var(--text);
-        }
-
-        .page-badge {
-            background: var(--primary-lighter);
-            color: var(--primary);
-            padding: 6px 14px;
-            border-radius: 100px;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .topbar-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), #8b5cf6);
-            color: #fff;
-            box-shadow: 0 4px 10px rgba(92, 36, 255, 0.2);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            opacity: 0.95;
-            box-shadow: 0 6px 14px rgba(92, 36, 255, 0.3);
-        }
-
-        .btn-outline {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
-
-        .btn-outline:hover {
-            background: var(--bg);
-            border-color: var(--muted);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: #fff;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 8px;
-        }
-
-        .container {
-            display: flex;
-            gap: 30px;
-            padding: 30px 32px;
-            max-width: 1440px;
-            margin: 0 auto;
-        }
-
-        .sidebar {
-            width: 320px;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .alert {
-            padding: 14px 18px;
-            border-radius: var(--radius);
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: slideDown 0.3s ease;
-        }
-
-        .alert-success {
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            color: #065f46;
-        }
-
-        .alert-error {
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
-            color: #991b1b;
-        }
-
-        @@keyframes slideDown {
-            from { transform: translateY(-10px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            overflow: hidden;
-            transition: box-shadow 0.2s;
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow);
-        }
-
-        .card-header {
-            padding: 18px 24px;
-            background: #fafafa;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .card-header h3 {
-            font-size: 16px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--text);
-        }
-
-        .filter-panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            position: sticky;
-            top: 100px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .filter-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 13px;
-            outline: none;
-            background: #fff;
-            transition: all 0.15s;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(92, 36, 255, 0.1);
-        }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box i {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        .search-box input {
-            padding-right: 36px;
-        }
-
-        .btn-filter-submit {
-            width: 100%;
-            justify-content: center;
-            margin-top: 8px;
-        }
-
-        .btn-filter-reset {
-            width: 100%;
-            justify-content: center;
-            margin-top: 8px;
-            background: transparent;
-            color: var(--muted);
-            border: 1px dashed var(--border);
-        }
-
-        .btn-filter-reset:hover {
-            color: var(--text);
-            background: var(--bg);
-        }
-
-        .badge-count {
-            background: var(--primary-lighter);
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 100px;
-        }
-
-        /* Table styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            padding: 12px 20px;
-            text-align: left;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--muted);
-            text-transform: uppercase;
-            background: #fafafa;
-            border-bottom: 1px solid var(--border);
-        }
-
-        td {
-            padding: 18px 20px;
-            border-bottom: 1px solid var(--border);
-            font-size: 14px;
-            vertical-align: top;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background: #fcfcfc;
-        }
-
-        .q-module-info {
-            font-size: 12px;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .q-text {
-            font-weight: 600;
-            margin-bottom: 10px;
-            line-height: 1.5;
-            color: var(--text);
-        }
-
-        .q-opts {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px 20px;
-            background: #fdfdfd;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid #f5f5f5;
-        }
-
-        .q-opt {
-            font-size: 13px;
-            color: var(--muted);
-            padding: 2px 0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .q-opt.ok {
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        .q-opt.ok i {
-            color: var(--success);
-        }
-
-        .exp-link {
-            font-size: 12px;
-            color: var(--primary);
-            cursor: pointer;
-            text-decoration: none;
-            margin-top: 10px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 500;
-        }
-
-        .exp-link:hover {
-            text-decoration: underline;
-        }
-
-        .exp-box {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 8px;
-            padding: 10px 14px;
-            background: var(--primary-lighter);
-            border-radius: 8px;
-            display: none;
-            line-height: 1.6;
-            border-left: 3px solid var(--primary);
-            animation: fadeIn 0.2s ease;
-        }
-
-        @@keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .diff {
-            display: inline-flex;
-            padding: 4px 10px;
-            border-radius: 100px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .diff-EASY {
-            background: #ecfdf5;
-            color: #065f46;
-        }
-
-        .diff-MEDIUM {
-            background: #fffbeb;
-            color: #92400e;
-        }
-
-        .diff-HARD {
-            background: #fef2f2;
-            color: #991b1b;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            padding: 4px 10px;
-            border-radius: 100px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .status-DRAFT {
-            background: #eef2f6;
-            color: #475569;
-        }
-
-        .status-APPROVED {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .status-REJECTED {
-            background: #ffedd5;
-            color: #c2410c;
-        }
-
-        .actions-col {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 90px;
-        }
-
-        .action-link-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.15s;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .btn-view {
-            background: #f0edff;
-            color: var(--primary);
-        }
-
-        .btn-view:hover {
-            background: #e0daff;
-        }
-
-        .btn-edit {
-            background: #e0f2fe;
-            color: #0284c7;
-        }
-
-        .btn-edit:hover {
-            background: #bae6fd;
-        }
-
-        .btn-del {
-            background: #fee2e2;
-            color: var(--danger);
-            border: none;
-            width: 100%;
-        }
-
-        .btn-del:hover {
-            background: #fecaca;
-        }
-
-        .empty {
-            padding: 64px 20px;
-            text-align: center;
-            color: var(--muted);
-        }
-
-        .empty i {
-            font-size: 48px;
-            color: var(--primary-light);
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .empty p {
-            font-size: 15px;
-            margin-bottom: 8px;
-        }
-    </style>
-</head>
-<body>
-
-    <header class="topbar">
-        <div class="topbar-left">
-            <a href="/Home/Index" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i> Quay lại
-            </a>
+
+<style>
+    .question-bank-page {
+        --q-primary: #5c24ff;
+        --q-primary-light: #9b8cf8;
+        --q-primary-lighter: #f0edff;
+        --q-bg: #fafafa;
+        --q-surface: #fff;
+        --q-text: #111827;
+        --q-muted: #6b7280;
+        --q-border: #e5e7eb;
+        --q-success: #10b981;
+        --q-danger: #ef4444;
+        --q-warning: #f59e0b;
+        --q-radius: 12px;
+        --q-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --q-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .question-bank-page .question-header {
+        background: var(--q-surface);
+        border: 1px solid var(--q-border);
+        border-radius: var(--q-radius);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        margin-bottom: 24px;
+        box-shadow: var(--q-shadow-sm);
+    }
+
+    .question-bank-page .question-header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .question-bank-page .back-btn {
+        color: var(--q-muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        padding: 8px 14px;
+        border: 1px solid var(--q-border);
+        border-radius: 8px;
+        background: var(--q-surface);
+    }
+
+    .question-bank-page .back-btn:hover {
+        color: var(--q-text);
+        background: #f8fafc;
+        border-color: var(--q-muted);
+    }
+
+    .question-bank-page .page-badge {
+        background: var(--q-primary-lighter);
+        color: var(--q-primary);
+        padding: 8px 16px;
+        border-radius: 100px;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .question-bank-page .header-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .question-bank-page .btn {
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .question-bank-page .btn-primary {
+        background: linear-gradient(135deg, var(--q-primary), #8b5cf6);
+        color: #fff;
+        box-shadow: 0 4px 10px rgba(92, 36, 255, 0.2);
+    }
+
+    .question-bank-page .btn-primary:hover {
+        transform: translateY(-1px);
+        opacity: 0.95;
+        box-shadow: 0 6px 14px rgba(92, 36, 255, 0.3);
+    }
+
+    .question-bank-page .btn-outline {
+        background: var(--q-surface);
+        border: 1px solid var(--q-border);
+        color: var(--q-text);
+    }
+
+    .question-bank-page .btn-outline:hover {
+        background: #f8fafc;
+        border-color: var(--q-muted);
+    }
+
+    .question-bank-page .question-container {
+        display: flex;
+        gap: 24px;
+    }
+
+    .question-bank-page .filter-sidebar {
+        width: 300px;
+        flex-shrink: 0;
+    }
+
+    .question-bank-page .question-content {
+        flex: 1;
+    }
+
+    .question-bank-page .filter-panel {
+        background: var(--q-surface);
+        border: 1px solid var(--q-border);
+        border-radius: var(--q-radius);
+        padding: 24px;
+        position: sticky;
+        top: 24px;
+        box-shadow: var(--q-shadow-sm);
+    }
+
+    .question-bank-page .filter-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--q-text);
+        border-bottom: 1px solid var(--q-border);
+        padding-bottom: 10px;
+    }
+
+    .question-bank-page .form-group {
+        margin-bottom: 16px;
+    }
+
+    .question-bank-page .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--q-text);
+    }
+
+    .question-bank-page .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--q-border);
+        border-radius: 8px;
+        font-size: 13px;
+        outline: none;
+        background: #fff;
+        transition: all 0.15s;
+    }
+
+    .question-bank-page .form-control:focus {
+        border-color: var(--q-primary-light);
+        box-shadow: 0 0 0 3px rgba(92, 36, 255, 0.1);
+    }
+
+    .question-bank-page .search-box {
+        position: relative;
+    }
+
+    .question-bank-page .search-box i {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--q-muted);
+        font-size: 14px;
+    }
+
+    .question-bank-page .search-box input {
+        padding-right: 36px;
+    }
+
+    .question-bank-page .btn-filter-submit {
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+    }
+
+    .question-bank-page .btn-filter-reset {
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+        background: transparent;
+        color: var(--q-muted);
+        border: 1px dashed var(--q-border);
+    }
+
+    .question-bank-page .btn-filter-reset:hover {
+        color: var(--q-text);
+        background: #f8fafc;
+    }
+
+    .question-bank-page .card {
+        background: var(--q-surface);
+        border: 1px solid var(--q-border);
+        border-radius: var(--q-radius);
+        box-shadow: var(--q-shadow-sm);
+        overflow: hidden;
+    }
+
+    .question-bank-page .card-header {
+        padding: 18px 24px;
+        background: #fafafa;
+        border-bottom: 1px solid var(--q-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .question-bank-page .card-header h3 {
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--q-text);
+        margin: 0;
+    }
+
+    .question-bank-page .badge-count {
+        background: var(--q-primary-lighter);
+        color: var(--q-primary);
+        font-size: 12px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 100px;
+    }
+
+    /* Table styles */
+    .question-bank-page table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .question-bank-page th {
+        background: #f8fafc;
+        padding: 14px 20px;
+        text-align: left;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--q-muted);
+        border-bottom: 1px solid var(--q-border);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .question-bank-page td {
+        padding: 20px;
+        border-bottom: 1px solid var(--q-border);
+        vertical-align: top;
+        font-size: 14px;
+    }
+
+    .question-bank-page tr:last-child td {
+        border-bottom: none;
+    }
+
+    .question-bank-page .q-module-info {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--q-primary);
+        margin-bottom: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--q-primary-lighter);
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .question-bank-page .q-text {
+        font-weight: 600;
+        color: var(--q-text);
+        margin-bottom: 12px;
+        line-height: 1.5;
+    }
+
+    .question-bank-page .q-opts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 16px;
+    }
+
+    .question-bank-page .q-opt {
+        font-size: 13px;
+        color: var(--q-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .question-bank-page .q-opt.ok {
+        color: var(--q-success);
+        font-weight: 600;
+    }
+
+    .question-bank-page .q-opt i {
+        font-size: 14px;
+    }
+
+    .question-bank-page .exp-link {
+        font-size: 12px;
+        color: var(--q-primary);
+        cursor: pointer;
+        text-decoration: none;
+        margin-top: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-weight: 600;
+    }
+
+    .question-bank-page .exp-link:hover {
+        text-decoration: underline;
+    }
+
+    .question-bank-page .exp-box {
+        font-size: 12.5px;
+        color: #475569;
+        margin-top: 8px;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border-radius: 8px;
+        display: none;
+        line-height: 1.6;
+        border-left: 3px solid var(--q-primary);
+        animation: qFadeIn 0.2s ease;
+    }
+
+    @@keyframes qFadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .question-bank-page .diff {
+        display: inline-flex;
+        padding: 4px 10px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .question-bank-page .diff-EASY {
+        background: #ecfdf5;
+        color: #065f46;
+    }
+
+    .question-bank-page .diff-MEDIUM {
+        background: #fffbeb;
+        color: #92400e;
+    }
+
+    .question-bank-page .diff-HARD {
+        background: #fef2f2;
+        color: #991b1b;
+    }
+
+    .question-bank-page .status-badge {
+        display: inline-flex;
+        padding: 4px 10px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .question-bank-page .status-DRAFT {
+        background: #eef2f6;
+        color: #475569;
+    }
+
+    .question-bank-page .status-APPROVED {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .question-bank-page .status-REJECTED {
+        background: #ffedd5;
+        color: #c2410c;
+    }
+
+    .question-bank-page .actions-col {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 100px;
+    }
+
+    .question-bank-page .action-link-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s;
+        text-align: center;
+        cursor: pointer;
+        border: none;
+    }
+
+    .question-bank-page .btn-view {
+        background: #f0edff;
+        color: var(--q-primary);
+    }
+
+    .question-bank-page .btn-view:hover {
+        background: #e0daff;
+    }
+
+    .question-bank-page .btn-edit {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .question-bank-page .btn-edit:hover {
+        background: #bae6fd;
+    }
+
+    .question-bank-page .btn-del {
+        background: #fee2e2;
+        color: var(--q-danger);
+        width: 100%;
+    }
+
+    .question-bank-page .btn-del:hover {
+        background: #fecaca;
+    }
+
+    .question-bank-page .empty {
+        padding: 64px 20px;
+        text-align: center;
+        color: var(--q-muted);
+    }
+
+    .question-bank-page .empty i {
+        font-size: 48px;
+        color: var(--q-primary-light);
+        margin-bottom: 16px;
+        display: block;
+    }
+
+    .question-bank-page .empty p {
+        font-size: 15px;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--q-text);
+    }
+</style>
+
+<div class="question-bank-page">
+    <div class="question-header">
+        <div class="question-header-left">
+            @if (ViewBag.ActiveCourseId != null)
+            {
+                <a href="/Course/Structure?courseId=@ViewBag.ActiveCourseId" class="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại chi tiết khóa học
+                </a>
+            }
+            else
+            {
+                <a href="/Course/MyCourses" class="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Danh sách khóa học
+                </a>
+            }
             <div class="page-badge">
                 <i class="fa-solid fa-database"></i> Ngân hàng Câu hỏi
             </div>
         </div>
-        <div class="topbar-actions">
-            <a href="/Question/Import" class="btn btn-outline">
+        <div class="header-actions">
+            <a href="/Question/Import?courseId=@ViewBag.ActiveCourseId&moduleId=@Model.SelectedModuleId" class="btn btn-outline">
                 <i class="fa-solid fa-file-import"></i> Nhập từ CSV
             </a>
-            <a href="/Question/Create" class="btn btn-primary">
+            <a href="/QuestionStaging/Index?moduleId=@Model.SelectedModuleId" class="btn btn-outline" style="border-color: #8b5cf6; color: #8b5cf6;">
+                <i class="fa-solid fa-robot"></i> Tạo bằng AI
+            </a>
+            <a href="/Question/Create?courseId=@ViewBag.ActiveCourseId&moduleId=@Model.SelectedModuleId" class="btn btn-primary">
                 <i class="fa-solid fa-plus"></i> Tạo câu hỏi thủ công
             </a>
         </div>
-    </header>
+    </div>
 
-    <div class="container">
-        <div class="sidebar">
-            <form method="get" action="/Question" class="filter-panel">
+    <div class="question-container">
+        <div class="filter-sidebar">
+            <form method="get" action="/Question/Index" class="filter-panel">
+                @if (ViewBag.ActiveCourseId != null)
+                {
+                    <input type="hidden" name="courseId" value="@ViewBag.ActiveCourseId" />
+                }
+                
                 <div class="filter-title">
                     <i class="fa-solid fa-sliders"></i> Bộ lọc tìm kiếm
                 </div>
@@ -587,12 +534,11 @@
 
                 <div class="form-group">
                     <label for="moduleId">Chọn Module</label>
-                    <select id="moduleId" name="moduleId" class="form-control">
-                        <option value="">-- Tất cả Module --</option>
+                    <select id="moduleId" name="moduleId" class="form-control" required>
                         @foreach (var m in Model.Modules)
                         {
                             <option value="@m.Id" selected="@(m.Id == Model.SelectedModuleId ? "selected" : null)">
-                                @m.Course.Title — @m.Title
+                                Chương @m.OrderNo: @m.Title
                             </option>
                         }
                     </select>
@@ -625,31 +571,31 @@
                 @if (Model.SelectedModuleId.HasValue || !string.IsNullOrEmpty(Model.SelectedDifficulty) || 
                      !string.IsNullOrEmpty(Model.SelectedStatus) || !string.IsNullOrEmpty(Model.SearchTerm))
                 {
-                    <a href="/Question" class="btn btn-filter-reset">
+                    <a href="/Question/Index?courseId=@ViewBag.ActiveCourseId" class="btn btn-filter-reset">
                         <i class="fa-solid fa-rotate-left"></i> Xoá bộ lọc
                     </a>
                 }
             </form>
         </div>
 
-        <div class="main-content">
+        <div class="question-content">
             @if (ViewData["SuccessMessage"] != null)
             {
-                <div class="alert alert-success">
-                    <i class="fa-solid fa-circle-check"></i> @ViewData["SuccessMessage"]
+                <div class="alert alert-success border-0 shadow-sm mb-4" style="background-color: #ecfdf5; color: #065f46; border-radius: 8px;">
+                    <i class="fa-solid fa-circle-check me-2"></i> @ViewData["SuccessMessage"]
                 </div>
             }
             @if (ViewData["ErrorMessage"] != null)
             {
-                <div class="alert alert-error">
-                    <i class="fa-solid fa-circle-exclamation"></i> @ViewData["ErrorMessage"]
+                <div class="alert alert-danger border-0 shadow-sm mb-4" style="background-color: #fef2f2; color: #991b1b; border-radius: 8px;">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i> @ViewData["ErrorMessage"]
                 </div>
             }
 
             <div class="card">
                 <div class="card-header">
                     <h3>
-                        <i class="fa-solid fa-list-check" style="color:var(--primary)"></i>
+                        <i class="fa-solid fa-list-check" style="color:var(--q-primary)"></i>
                         Danh sách câu hỏi trong ngân hàng
                         <span class="badge-count">@Model.Questions.Count</span>
                     </h3>
@@ -660,7 +606,7 @@
                     <div class="empty">
                         <i class="fa-regular fa-folder-open"></i>
                         <p>Không tìm thấy câu hỏi nào phù hợp với bộ lọc hiện tại.</p>
-                        <span style="font-size: 13px; color: var(--muted)">Hãy thử thay đổi điều kiện tìm kiếm hoặc tạo câu hỏi mới.</span>
+                        <span style="font-size: 13px; color: var(--q-muted)">Hãy thử thay đổi điều kiện tìm kiếm hoặc tạo câu hỏi mới.</span>
                     </div>
                 }
                 else
@@ -668,10 +614,10 @@
                     <table>
                         <thead>
                             <tr>
-                                <th style="width:60%">Nội dung câu hỏi & Đáp án</th>
+                                <th style="width:62%">Nội dung câu hỏi & Đáp án</th>
                                 <th style="width:12%">Độ khó</th>
                                 <th style="width:12%">Trạng thái</th>
-                                <th style="width:16%">Thao tác</th>
+                                <th style="width:14%">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -724,7 +670,7 @@
                                                 <i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa
                                             </a>
                                             <form action="/Question/Delete/@q.Id" method="post" 
-                                                  onsubmit="return confirm('Bạn có chắc chắn muốn xoá câu hỏi này? Hành động này không thể hoàn tác.')">
+                                                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa câu hỏi này? Hành động này không thể hoàn tác.')">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="action-link-btn btn-del">
                                                     <i class="fa-solid fa-trash-can"></i> Xoá bỏ
@@ -740,16 +686,15 @@
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function toggleExp(id) {
-            const el = document.getElementById('exp-' + id);
-            if (el.style.display === 'block') {
-                el.style.display = 'none';
-            } else {
-                el.style.display = 'block';
-            }
+<script>
+    function toggleExp(id) {
+        const el = document.getElementById('exp-' + id);
+        if (el.style.display === 'block') {
+            el.style.display = 'none';
+        } else {
+            el.style.display = 'block';
         }
-    </script>
-</body>
-</html>
+    }
+</script>
