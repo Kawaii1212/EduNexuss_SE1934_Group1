@@ -1,507 +1,508 @@
 @model EduNexus.ViewModels.QuestionStagingViewModel
 @{
-    Layout = null;
+    Layout = "~/Views/Shared/_SmeLayout.cshtml";
+    ViewData["Title"] = "AI Question Staging - EduNexus";
+    ViewData["ActiveMenu"] = "MyCourses";
+    ViewData["ActiveSubMenu"] = "Question";
 }
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Question Staging - EduNexus</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #5c24ff;
-            --primary-light: #9b8cf8;
-            --primary-lighter: #f0edff;
-            --bg: #fafafa;
-            --surface: #fff;
-            --text: #111827;
-            --muted: #6b7280;
-            --border: #e5e7eb;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --radius: 10px;
-            --shadow: 0 1px 3px rgba(0,0,0,.08);
+
+<style>
+    .ai-staging-page {
+        --primary: #5c24ff;
+        --primary-light: #9b8cf8;
+        --primary-lighter: #f0edff;
+        --surface: #fff;
+        --text: #111827;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --radius: 10px;
+        --shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+
+    .ai-staging-page .topbar {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        margin-bottom: 24px;
+    }
+
+    .ai-staging-page .topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .ai-staging-page .back-btn {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        padding: 8px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surface);
+    }
+
+    .ai-staging-page .back-btn:hover {
+        color: var(--text);
+        background: #f8fafc;
+        border-color: var(--muted);
+    }
+
+    .ai-staging-page .page-badge {
+        background: var(--primary-lighter);
+        color: var(--primary);
+        padding: 8px 16px;
+        border-radius: 100px;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ai-staging-page .ai-container {
+        display: flex;
+        gap: 24px;
+    }
+
+    .ai-staging-page .main {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .ai-staging-page .panel {
+        width: 320px;
+        flex-shrink: 0;
+    }
+
+    .ai-staging-page .banner {
+        background: linear-gradient(135deg, var(--primary), #8b5cf6);
+        color: #fff;
+        padding: 20px 24px;
+        border-radius: var(--radius);
+        margin-bottom: 24px;
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(92, 36, 255, 0.15);
+    }
+
+    .ai-staging-page .banner-icon {
+        font-size: 28px;
+        background: rgba(255,255,255,.2);
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .ai-staging-page .banner h4 {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .ai-staging-page .banner p {
+        font-size: 13px;
+        opacity: .9;
+        line-height: 1.5;
+    }
+
+    .ai-staging-page .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .ai-staging-page .card-header {
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--border);
+        background: #fafafa;
+    }
+
+    .ai-staging-page .card-header h3 {
+        font-size: 15px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text);
+    }
+
+    .ai-staging-page .badge {
+        background: var(--primary-lighter);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 20px;
+    }
+
+    .ai-staging-page .empty {
+        padding: 64px 20px;
+        text-align: center;
+        color: var(--muted);
+    }
+
+    .ai-staging-page .empty i {
+        font-size: 44px;
+        color: var(--primary-light);
+        margin-bottom: 16px;
+        display: block;
+        opacity: .8;
+    }
+
+    .ai-staging-page .empty p {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .ai-staging-page table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .ai-staging-page th {
+        background: #fafafa;
+        padding: 14px 20px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .ai-staging-page td {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13.5px;
+        vertical-align: top;
+    }
+
+    .ai-staging-page tr:last-child td {
+        border-bottom: none;
+    }
+
+    .ai-staging-page .q-text {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 12px;
+        line-height: 1.5;
+    }
+
+    .ai-staging-page .q-opts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .ai-staging-page .q-opt {
+        padding: 8px 12px;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 12.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #475569;
+    }
+
+    .ai-staging-page .q-opt.ok {
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+        color: #065f46;
+        font-weight: 600;
+    }
+
+    .ai-staging-page .q-opt.ok i {
+        color: var(--success);
+    }
+
+    .ai-staging-page .exp-link {
+        font-size: 12.5px;
+        color: var(--primary);
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        user-select: none;
+    }
+
+    .ai-staging-page .exp-box {
+        display: none;
+        margin-top: 10px;
+        padding: 12px 16px;
+        background: #fdfcff;
+        border: 1px solid var(--primary-light);
+        border-radius: 8px;
+        font-size: 12.5px;
+        color: #553c9a;
+        line-height: 1.6;
+    }
+
+    .ai-staging-page .diff {
+        display: inline-flex;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .ai-staging-page .diff-EASY { background: #d1fae5; color: #065f46; }
+    .ai-staging-page .diff-MEDIUM { background: #fef3c7; color: #d97706; }
+    .ai-staging-page .diff-HARD { background: #fee2e2; color: #991b1b; }
+
+    .ai-staging-page .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .ai-staging-page .btn {
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .ai-staging-page .btn-success {
+        background: var(--success);
+        color: #fff;
+    }
+
+    .ai-staging-page .btn-success:hover {
+        background: #059669;
+    }
+
+    .ai-staging-page .btn-warning {
+        background: #f59e0b;
+        color: #fff;
+    }
+
+    .ai-staging-page .btn-warning:hover {
+        background: #d97706;
+    }
+
+    .ai-staging-page .btn-danger {
+        background: #fee2e2;
+        color: var(--danger);
+    }
+
+    .ai-staging-page .btn-danger:hover {
+        background: #fecaca;
+    }
+
+    .ai-staging-page .gen-panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        position: sticky;
+        top: 24px;
+        box-shadow: var(--shadow);
+    }
+
+    .ai-staging-page .gen-header {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ai-staging-page .gen-body {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .ai-staging-page .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .ai-staging-page .form-group label {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .ai-staging-page .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 13.5px;
+        outline: none;
+        transition: border-color .15s;
+        background: #fff;
+    }
+
+    .ai-staging-page .form-control:focus {
+        border-color: var(--primary-light);
+    }
+
+    .ai-staging-page .diff-btns {
+        display: flex;
+        gap: 8px;
+    }
+
+    .ai-staging-page .diff-btn {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--surface);
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: pointer;
+        color: var(--muted);
+        text-align: center;
+        transition: all 0.15s;
+    }
+
+    .ai-staging-page .diff-btn.active {
+        border-color: var(--primary);
+        background: var(--primary-lighter);
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .ai-staging-page .form-hint {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: -4px;
+    }
+
+    .ai-staging-page .info-box {
+        padding: 12px;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 12px;
+        color: #475569;
+        display: flex;
+        gap: 8px;
+        line-height: 1.5;
+    }
+
+    .ai-staging-page .info-box i {
+        color: var(--primary);
+        font-size: 14px;
+    }
+
+    .ai-staging-page .gen-btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, var(--primary), #8b5cf6);
+        color: #fff;
+        font-size: 13.5px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 4px 10px rgba(92, 36, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .ai-staging-page .gen-btn:hover {
+        transform: translateY(-1px);
+        opacity: .95;
+    }
+
+    .ai-staging-page .spinner {
+        display: none;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255,255,255,.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spinStaging .7s linear infinite;
+    }
+
+    .ai-staging-page .alert {
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 13.5px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ai-staging-page .alert-success {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+    }
+
+    .ai-staging-page .alert-error {
+        background: #fef2f2;
+        border: 1px solid #fca5a5;
+        color: #991b1b;
+    }
+
+    @@keyframes spinStaging {
+        to {
+            transform: rotate(360deg);
         }
+    }
+</style>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter',sans-serif;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .topbar {
-            height: 64px;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 32px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .back-btn {
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-            .back-btn:hover {
-                color: var(--text);
-            }
-
-        .page-badge {
-            background: var(--primary-lighter);
-            color: var(--primary);
-            padding: 5px 12px;
-            border-radius: 100px;
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn {
-            padding: 9px 18px;
-            border-radius: var(--radius);
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: .15s;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: #fff;
-        }
-
-            .btn-success:hover {
-                background: #059669;
-            }
-
-        .btn-warning {
-            background: var(--warning);
-            color: #fff;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: #fff;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-
-        .container {
-            display: flex;
-            gap: 28px;
-            padding: 28px 32px;
-            max-width: 1380px;
-            margin: 0 auto;
-        }
-
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .panel {
-            width: 360px;
-            flex-shrink: 0;
-        }
-
-        .alert {
-            padding: 12px 16px;
-            border-radius: var(--radius);
-            font-size: 14px;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        .alert-success {
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            color: #065f46;
-        }
-
-        .alert-error {
-            background: #fef2f2;
-            border: 1px solid #fca5a5;
-            color: #991b1b;
-        }
-
-        .banner {
-            background: #faf5ff;
-            border: 1px solid #e9d5ff;
-            border-radius: var(--radius);
-            padding: 14px 18px;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-        }
-
-        .banner-icon {
-            font-size: 20px;
-            background: linear-gradient(135deg,#5c24ff,#d946ef);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .banner h4 {
-            font-size: 14px;
-            font-weight: 700;
-            color: #6b21a8;
-            margin-bottom: 3px;
-        }
-
-        .banner p {
-            font-size: 13px;
-            color: #7e22ce;
-            line-height: 1.5;
-        }
-
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .card-header {
-            padding: 14px 20px;
-            background: #fafafa;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-            .card-header h3 {
-                font-size: 15px;
-                font-weight: 700;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-
-        .badge {
-            background: var(--primary-lighter);
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 100px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            padding: 10px 16px;
-            text-align: left;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--muted);
-            text-transform: uppercase;
-            background: #fafafa;
-            border-bottom: 1px solid var(--border);
-        }
-
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border);
-            font-size: 14px;
-            vertical-align: top;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background: #fafafa;
-        }
-
-        .q-text {
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .q-opts {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3px 12px;
-        }
-
-        .q-opt {
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-            .q-opt.ok {
-                color: var(--success);
-                font-weight: 600;
-            }
-
-        .exp-link {
-            font-size: 12px;
-            color: var(--primary);
-            cursor: pointer;
-            text-decoration: underline;
-            margin-top: 5px;
-            display: inline-block;
-        }
-
-        .exp-box {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 6px;
-            padding: 8px 10px;
-            background: var(--primary-lighter);
-            border-radius: 6px;
-            display: none;
-            line-height: 1.6;
-        }
-
-        .diff {
-            display: inline-flex;
-            padding: 3px 9px;
-            border-radius: 100px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .diff-EASY {
-            background: #ecfdf5;
-            color: #065f46;
-        }
-
-        .diff-MEDIUM {
-            background: #fffbeb;
-            color: #92400e;
-        }
-
-        .diff-HARD {
-            background: #fef2f2;
-            color: #991b1b;
-        }
-
-        .actions {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            min-width: 110px;
-        }
-
-        .empty {
-            padding: 50px 20px;
-            text-align: center;
-            color: var(--muted);
-        }
-
-            .empty i {
-                font-size: 36px;
-                margin-bottom: 10px;
-                display: block;
-            }
-
-        .gen-panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 80px;
-        }
-
-        .gen-header {
-            padding: 14px 18px;
-            background: #fafafa;
-            border-bottom: 1px solid var(--border);
-            font-weight: 700;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-            .gen-header i {
-                background: linear-gradient(135deg,#5c24ff,#d946ef);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-            }
-
-        .gen-body {
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 9px 11px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 13px;
-            font-family: inherit;
-            outline: none;
-        }
-
-            .form-control:focus {
-                border-color: var(--primary-light);
-                box-shadow: 0 0 0 3px rgba(92,36,255,.1);
-            }
-
-        .form-hint {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 3px;
-        }
-
-        .diff-btns {
-            display: flex;
-            gap: 6px;
-        }
-
-        .diff-btn {
-            flex: 1;
-            padding: 7px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            background: var(--surface);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            color: var(--muted);
-            text-align: center;
-            transition: .15s;
-        }
-
-            .diff-btn.active {
-                border-color: var(--primary);
-                background: var(--primary-lighter);
-                color: var(--primary);
-            }
-
-        .info-box {
-            font-size: 12px;
-            color: var(--muted);
-            padding: 9px 11px;
-            background: var(--bg);
-            border-radius: var(--radius);
-            display: flex;
-            gap: 6px;
-            align-items: flex-start;
-        }
-
-            .info-box i {
-                color: var(--warning);
-                margin-top: 1px;
-            }
-
-        .gen-btn {
-            width: 100%;
-            padding: 11px;
-            border: none;
-            border-radius: var(--radius);
-            background: linear-gradient(135deg,#5c24ff,#d946ef);
-            color: #fff;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: .2s;
-        }
-
-            .gen-btn:hover {
-                opacity: .9;
-                transform: translateY(-1px);
-            }
-
-            .gen-btn:disabled {
-                opacity: .5;
-                cursor: not-allowed;
-                transform: none;
-            }
-
-        .spinner {
-            display: none;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin .7s linear infinite;
-        }
-
-        @@keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
-</head>
-<body>
-
+<div class="ai-staging-page">
     <header class="topbar">
         <div class="topbar-left">
-            <a href="/Home/Index" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i> Quay lại
-            </a>
+            @if (ViewBag.ActiveCourseId != null)
+            {
+                <a href="/Question/Index?courseId=@ViewBag.ActiveCourseId" class="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại Ngân hàng
+                </a>
+            }
+            else
+            {
+                <a href="/Course/MyCourses" class="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Danh sách khóa học
+                </a>
+            }
             <div class="page-badge">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Question Staging — SCR-08
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Question Staging
             </div>
         </div>
         @if (Model.StagedQuestions.Count > 0)
@@ -515,7 +516,7 @@
         }
     </header>
 
-    <div class="container">
+    <div class="ai-container">
         <div class="main">
             @if (!string.IsNullOrEmpty(Model.SuccessMessage))
             {
@@ -533,10 +534,10 @@
             <div class="banner">
                 <div class="banner-icon"><i class="fa-solid fa-sparkles"></i></div>
                 <div>
-                    <h4>Khu vực chờ duyệt — AI Generated Questions</h4>
+                    <h4>Khu vực chờ duyệt &raquo; AI Generated Questions</h4>
                     <p>
                         Câu hỏi do AI sinh ra, chưa vào ngân hàng chính thức.
-                        SME nhấn <strong>Duyệt</strong> để chuyển vào ngân hàng hoặc
+                        SME chọn <strong>Duyệt</strong> để chuyển vào ngân hàng hoặc
                         <strong>Từ chối</strong> để loại bỏ.
                     </p>
                 </div>
@@ -576,15 +577,27 @@
                                     <td>
                                         <div class="q-text">@q.Content</div>
                                         <div class="q-opts">
-                                            <span class="q-opt @(q.CorrectOption == "A" ? "ok" : "")">A. @q.OptionA</span>
-                                            <span class="q-opt @(q.CorrectOption == "B" ? "ok" : "")">B. @q.OptionB</span>
-                                            <span class="q-opt @(q.CorrectOption == "C" ? "ok" : "")">C. @q.OptionC</span>
-                                            <span class="q-opt @(q.CorrectOption == "D" ? "ok" : "")">D. @q.OptionD</span>
+                                            <div class="q-opt @(q.CorrectOption == "A" ? "ok" : "")">
+                                                <i class="fa-regular @(q.CorrectOption == "A" ? "fa-circle-check" : "fa-circle")"></i>
+                                                A. @q.OptionA
+                                            </div>
+                                            <div class="q-opt @(q.CorrectOption == "B" ? "ok" : "")">
+                                                <i class="fa-regular @(q.CorrectOption == "B" ? "fa-circle-check" : "fa-circle")"></i>
+                                                B. @q.OptionB
+                                            </div>
+                                            <div class="q-opt @(q.CorrectOption == "C" ? "ok" : "")">
+                                                <i class="fa-regular @(q.CorrectOption == "C" ? "fa-circle-check" : "fa-circle")"></i>
+                                                C. @q.OptionC
+                                            </div>
+                                            <div class="q-opt @(q.CorrectOption == "D" ? "ok" : "")">
+                                                <i class="fa-regular @(q.CorrectOption == "D" ? "fa-circle-check" : "fa-circle")"></i>
+                                                D. @q.OptionD
+                                            </div>
                                         </div>
                                         @if (!string.IsNullOrEmpty(q.AiExplanation))
                                         {
                                             <span class="exp-link" onclick="toggleExp(@q.Id)">
-                                                <i class="fa-solid fa-lightbulb"></i> Xem giải thích
+                                                <i class="fa-regular fa-lightbulb"></i> Xem giải thích
                                             </span>
                                             <div class="exp-box" id="exp-@q.Id">@q.AiExplanation</div>
                                         }
@@ -600,23 +613,15 @@
                                             <form asp-action="Approve" asp-route-id="@q.Id"
                                                   asp-route-moduleId="@Model.Form.ModuleId" method="post">
                                                 @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-success btn-sm" style="width:100%">
+                                                <button type="submit" class="btn btn-success" style="width:100%">
                                                     <i class="fa-solid fa-check"></i> Duyệt
                                                 </button>
                                             </form>
                                             <form asp-action="Reject" asp-route-id="@q.Id"
                                                   asp-route-moduleId="@Model.Form.ModuleId" method="post">
                                                 @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-warning btn-sm" style="width:100%">
+                                                <button type="submit" class="btn btn-warning" style="width:100%">
                                                     <i class="fa-solid fa-ban"></i> Từ chối
-                                                </button>
-                                            </form>
-                                            <form asp-action="DeleteDraft" asp-route-id="@q.Id"
-                                                  asp-route-moduleId="@Model.Form.ModuleId" method="post"
-                                                  onsubmit="return confirm('Xoá câu hỏi này?')">
-                                                @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-danger btn-sm" style="width:100%">
-                                                    <i class="fa-solid fa-trash"></i> Xoá
                                                 </button>
                                             </form>
                                         </div>
@@ -632,26 +637,34 @@
         <div class="panel">
             <div class="gen-panel">
                 <div class="gen-header">
-                    <i class="fa-solid fa-robot"></i> Sinh câu hỏi bằng AI
+                    <i class="fa-solid fa-robot" style="color: var(--primary);"></i> Sinh câu hỏi bằng AI
                 </div>
                 <form asp-action="Generate" method="post" class="gen-body">
                     @Html.AntiForgeryToken()
 
+                    @if (ViewBag.ActiveCourseTitle != null)
+                    {
+                        <div class="form-group">
+                            <label>Khóa học</label>
+                            <input type="text" class="form-control" value="@ViewBag.ActiveCourseTitle" readonly style="background-color: #f1f5f9; cursor: not-allowed;" />
+                        </div>
+                    }
+
                     <div class="form-group">
-                        <label asp-for="Form.ModuleId">Module</label>
+                        <label asp-for="Form.ModuleId">Thuộc Module</label>
                         <select asp-for="Form.ModuleId" class="form-control"
                                 onchange="location.href='/QuestionStaging/Index?moduleId='+this.value">
                             @foreach (var m in Model.Modules)
                             {
                                 <option value="@m.Id" selected="@(m.Id == Model.Form.ModuleId ? "selected" : null)">
-                                    @m.Course.Title — @m.Title
+                                    Chương @m.OrderNo: @m.Title
                                 </option>
                             }
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="Form.Topic">Chủ đề / Từ khoá</label>
+                        <label asp-for="Form.Topic">Chủ đề / Từ khóa</label>
                         <input asp-for="Form.Topic" class="form-control"
                                placeholder="VD: React useEffect, SQL JOIN..." />
                         <span asp-validation-for="Form.Topic" style="font-size:12px;color:var(--danger)"></span>
@@ -686,7 +699,7 @@
                     {
                         <div class="info-box">
                             <i class="fa-solid fa-coins"></i>
-                            Lần trước tiêu ~<strong>@Model.LastTokensUsed</strong> token.
+                            <span>Lần trước tiêu tốn ~<strong>@Model.LastTokensUsed</strong> token.</span>
                         </div>
                     }
 
@@ -704,27 +717,25 @@
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function setDiff(val, btn) {
-            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('diffInput').value = val;
-        }
-        function onGenerate() {
-            document.getElementById('genIcon').style.display    = 'none';
-            document.getElementById('genSpinner').style.display = 'block';
-            document.getElementById('genText').textContent      = 'Đang gọi AI...';
-            
-            // Hoãn việc disable button 50ms để trình duyệt kịp gửi request đi
-            setTimeout(() => {
-                document.getElementById('genBtn').disabled = true;
-            }, 50);
-        }
-        function toggleExp(id) {
-            const el = document.getElementById('exp-' + id);
-            el.style.display = el.style.display === 'block' ? 'none' : 'block';
-        }
-    </script>
-</body>
-</html>
+<script>
+    function setDiff(val, btn) {
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('diffInput').value = val;
+    }
+    function onGenerate() {
+        document.getElementById('genIcon').style.display    = 'none';
+        document.getElementById('genSpinner').style.display = 'block';
+        document.getElementById('genText').textContent      = 'Đang gọi AI...';
+        
+        setTimeout(() => {
+            document.getElementById('genBtn').disabled = true;
+        }, 50);
+    }
+    function toggleExp(id) {
+        const el = document.getElementById('exp-' + id);
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+</script>

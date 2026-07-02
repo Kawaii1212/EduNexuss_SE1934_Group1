@@ -1,6 +1,14 @@
 @model List<EduNexus.ViewModels.SubmissionListViewModel>
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    if (User.IsInRole("SME") || User.IsInRole("sme"))
+    {
+        Layout = "~/Views/Shared/_SmeLayout.cshtml";
+        ViewData["ActiveMenu"] = "Assignments";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
     ViewData["Title"] = "Grading Dashboard";
 }
 

@@ -47,6 +47,10 @@ namespace EduNexus.Controllers
                 {
                     return RedirectToAction("StudentDashboard", "Common");
                 }
+                if (User.IsInRole("SME") || User.IsInRole("sme"))
+                {
+                    return RedirectToAction("MyCourses", "Course");
+                }
                 return RedirectToAction("Index", "Home");
             }
             return View();
@@ -98,6 +102,10 @@ namespace EduNexus.Controllers
             if (user.Role?.Equals("Student", StringComparison.OrdinalIgnoreCase) == true)
             {
                 return RedirectToAction("StudentDashboard", "Common");
+            }
+            if (user.Role?.Equals("SME", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return RedirectToAction("MyCourses", "Course");
             }
             
             return RedirectToAction("Index", "Home");
@@ -168,6 +176,10 @@ namespace EduNexus.Controllers
             if (user.Role?.Equals("Student", StringComparison.OrdinalIgnoreCase) == true)
             {
                 return RedirectToAction("StudentDashboard", "Common");
+            }
+            if (user.Role?.Equals("SME", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return RedirectToAction("MyCourses", "Course");
             }
             
             return RedirectToAction("Index", "Home");
@@ -370,9 +382,7 @@ namespace EduNexus.Controllers
                 }
             }
 
-            var optionsBuilder = new Microsoft.EntityFrameworkCore.DbContextOptionsBuilder<EduNexusContext>();
-            optionsBuilder.UseSqlServer(AppConfiguration.ConnectionString);
-            using var context = new EduNexusContext(optionsBuilder.Options);
+            using var context = new EduNexusContext(AppConfiguration.DbContextOptions);
 
             var now = DateTimeOffset.Now;
 

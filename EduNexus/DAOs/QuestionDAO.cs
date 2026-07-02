@@ -108,17 +108,20 @@ public class QuestionDAO : BaseDAO<Question>
 
         if (!string.IsNullOrEmpty(difficulty))
         {
-            query = query.Where(q => q.Difficulty == difficulty.ToUpper());
+            var diffUpper = difficulty.ToUpper();
+            query = query.Where(q => q.Difficulty.ToUpper() == diffUpper);
         }
 
         if (!string.IsNullOrEmpty(status))
         {
-            query = query.Where(q => q.Status == status.ToUpper());
+            var statusUpper = status.ToUpper();
+            query = query.Where(q => q.Status.ToUpper() == statusUpper);
         }
 
         if (!string.IsNullOrEmpty(searchTerm))
         {
-            query = query.Where(q => q.Content.Contains(searchTerm));
+            var searchLower = searchTerm.ToLower();
+            query = query.Where(q => q.Content.ToLower().Contains(searchLower));
         }
 
         return query.OrderByDescending(q => q.CreatedAt).ToList();

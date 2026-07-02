@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        :root {
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .nav-item {
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            color: var(--danger);
+        }
+
+        .logout-btn:hover {
+            background-color: #fef2f2;
+            color: var(--danger);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 40px;
+            max-width: 1300px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
+            Edu<span>Nexus</span>
+        </div>
+        <nav>
+            <a href="/Course/MyCourses" class="nav-item @(ViewData["ActiveMenu"]?.ToString() == "MyCourses" && ViewData["ActiveSubMenu"] == null ? "active" : "")">
+                <i class="fa-solid fa-book-open"></i> Khóa học phụ trách
+            </a>
+
+            @if (ViewBag.ActiveCourseId != null)
+            {
+                <div class="course-submenu" style="margin-left: 20px; padding-left: 12px; border-left: 2px solid var(--border); margin-top: -4px; margin-bottom: 12px;">
+                    <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-muted); padding: 6px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="@ViewBag.ActiveCourseTitle">
+                        @ViewBag.ActiveCourseTitle
+                    </div>
+                    <a href="/Course/Lessons?courseId=@ViewBag.ActiveCourseId" class="nav-item @(ViewData["ActiveSubMenu"]?.ToString() == "Lessons" ? "active" : "")" style="padding: 8px 12px; margin-bottom: 4px; font-size: 14px; gap: 10px;">
+                        <i class="fa-solid fa-play" style="font-size: 12px; color: #3b82f6;"></i> Lesson
+                    </a>
+                    <a href="/Course/Assignments?courseId=@ViewBag.ActiveCourseId" class="nav-item @(ViewData["ActiveSubMenu"]?.ToString() == "Assignments" ? "active" : "")" style="padding: 8px 12px; margin-bottom: 4px; font-size: 14px; gap: 10px;">
+                        <i class="fa-solid fa-file-pen" style="font-size: 12px; color: #f59e0b;"></i> Assignment
+                    </a>
+                    <a href="/Course/Flashcards?courseId=@ViewBag.ActiveCourseId" class="nav-item @(ViewData["ActiveSubMenu"]?.ToString() == "Flashcards" ? "active" : "")" style="padding: 8px 12px; margin-bottom: 4px; font-size: 14px; gap: 10px;">
+                        <i class="fa-solid fa-clone" style="font-size: 12px; color: #10b981;"></i> Flashcard
+                    </a>
+                    <a href="/Question/Index?courseId=@ViewBag.ActiveCourseId" class="nav-item @(ViewData["ActiveSubMenu"]?.ToString() == "Question" ? "active" : "")" style="padding: 8px 12px; margin-bottom: 4px; font-size: 14px; gap: 10px;">
+                        <i class="fa-solid fa-list-check" style="font-size: 12px; color: var(--primary);"></i> Question
+                    </a>
+                </div>
+            }
+
+            <a href="/Common/StudentSettings" class="nav-item @(ViewData["ActiveMenu"]?.ToString() == "Settings" ? "active" : "")">
+                <i class="fa-solid fa-gear"></i> Cài đặt
+            </a>
+            <a href="/Common/SignOut" class="nav-item logout-btn" style="color: var(--danger);">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

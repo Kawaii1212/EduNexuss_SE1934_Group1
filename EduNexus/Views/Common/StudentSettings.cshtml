@@ -350,28 +350,45 @@
             Edu<span>Nexus</span>
         </div>
         <nav>
-            <a href="@Url.Action("StudentDashboard", "Common")" class="nav-item">
-                <i class="fa-solid fa-chart-line"></i> Dashboard
-            </a>
-            <a href="@Url.Action("AllCourses", "Common")" class="nav-item">
-                <i class="fa-solid fa-book-open"></i> All Courses
-            </a>
-            <a href="@Url.Action("PersonalProgress", "Common")" class="nav-item">
-                <i class="fa-solid fa-bullseye"></i> Personal Progress
-            </a>
-            <a href="@Url.Action("StudentLibrary", "Common")" class="nav-item">
-                <i class="fa-solid fa-folder-open"></i> Library
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fa-solid fa-users"></i> Community
-            </a>
-            <div style="flex: 1;"></div>
-            <a href="@Url.Action("StudentSettings", "Common")" class="nav-item active">
-                <i class="fa-solid fa-gear"></i> Settings
-            </a>
-            <a href="@Url.Action("SignOut", "Common")" class="nav-item" style="color: var(--danger);">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
-            </a>
+            @if (User.IsInRole("SME") || User.IsInRole("sme"))
+            {
+                <a href="@Url.Action("MyCourses", "Course")" class="nav-item">
+                    <i class="fa-solid fa-book-open"></i> Khóa học phụ trách
+                </a>
+
+                <div style="flex: 1;"></div>
+                <a href="@Url.Action("StudentSettings", "Common")" class="nav-item active">
+                    <i class="fa-solid fa-gear"></i> Cài đặt
+                </a>
+                <a href="@Url.Action("SignOut", "Common")" class="nav-item logout-btn" style="color: var(--danger);">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("StudentDashboard", "Common")" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="@Url.Action("AllCourses", "Common")" class="nav-item">
+                    <i class="fa-solid fa-book-open"></i> All Courses
+                </a>
+                <a href="@Url.Action("PersonalProgress", "Common")" class="nav-item">
+                    <i class="fa-solid fa-bullseye"></i> Personal Progress
+                </a>
+                <a href="@Url.Action("StudentLibrary", "Common")" class="nav-item">
+                    <i class="fa-solid fa-folder-open"></i> Library
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-users"></i> Community
+                </a>
+                <div style="flex: 1;"></div>
+                <a href="@Url.Action("StudentSettings", "Common")" class="nav-item active">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </a>
+                <a href="@Url.Action("SignOut", "Common")" class="nav-item" style="color: var(--danger);">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </a>
+            }
         </nav>
     </aside>
 

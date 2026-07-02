@@ -1,0 +1,38 @@
+@model string
+@{
+    Layout = "~/Views/Shared/_SmeLayout.cshtml";
+    ViewData["Title"] = Model;
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="card border-0 shadow-sm p-5 text-center" style="border-radius: var(--radius-lg); background: white; max-width: 600px; width: 100%;">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px; border-radius: 50%; background-color: var(--primary-lighter); color: var(--primary); font-size: 40px;">
+                @if (Model.Contains("Lesson"))
+                {
+                    <i class="fa-solid fa-play"></i>
+                }
+                else if (Model.Contains("Assignment"))
+                {
+                    <i class="fa-solid fa-file-pen"></i>
+                }
+                else
+                {
+                    <i class="fa-solid fa-clone"></i>
+                }
+            </div>
+        </div>
+        
+        <h2 class="fw-bold mb-3" style="color: var(--text-main); font-size: 26px;">Tính năng @Model</h2>
+        
+        <p class="text-muted fs-6 mb-4 px-3" style="line-height: 1.6;">
+            Trang quản lý nội dung <strong>@Model</strong> hiện tại đang ở trạng thái thiết kế và chưa có dữ liệu bên trong. Chúng tôi đang tích cực hoàn thiện phần này!
+        </p>
+        
+        <div class="pt-2">
+            <a href="/Course/Structure?courseId=@ViewBag.ActiveCourseId" class="btn text-white px-4 py-2 border-0" style="background: var(--primary); border-radius: var(--radius-md); font-weight: 600; box-shadow: 0 4px 12px rgba(92, 36, 255, 0.2); transition: all 0.2s;">
+                <i class="fa-solid fa-arrow-left me-2"></i> Quay lại chi tiết khóa học
+            </a>
+        </div>
+    </div>
+</div>
