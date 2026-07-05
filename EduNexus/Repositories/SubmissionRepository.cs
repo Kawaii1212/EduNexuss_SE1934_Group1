@@ -25,8 +25,23 @@ public class SubmissionRepository : ISubmissionRepository
         return SubmissionDAO.Instance.GetByIdWithDetails(submissionId);
     }
 
+    public Submission? GetSubmissionResult(long submissionId)
+    {
+        return SubmissionDAO.Instance.GetResultWithDetails(submissionId);
+    }
+
     public List<Submission> GetAllSubmissions()
     {
         return SubmissionDAO.Instance.GetAllWithDetails();
+    }
+
+    public List<AssignmentRubricCriterion> GetAssignmentRubrics(long assignmentId)
+    {
+        return SubmissionDAO.Instance.GetAssignmentRubrics(assignmentId);
+    }
+
+    public void UpdateAiEvaluation(Submission submission, List<SubmissionCriterionScore> newScores)
+    {
+        SubmissionDAO.Instance.UpdateAiEvaluation(submission, newScores);
     }
 }

@@ -1,0 +1,221 @@
+@model EduNexus.ViewModels.SmeAssignmentCreateViewModel
+@{
+    Layout = "~/Views/Shared/_SmeLayout.cshtml";
+    ViewData["Title"] = "Tạo Assignment Mới";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-plus text-primary"></i> Tạo Assignment - @Model.CourseTitle</h2>
+        <a href="/Course/Assignments?courseId=@Model.CourseId" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <!-- AI Generation Box -->
+    <div class="card mb-4 border-warning">
+        <div class="card-header bg-warning text-white font-weight-bold">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Tạo nội dung tự động bằng AI
+        </div>
+        <div class="card-body">
+            <div class="input-group">
+                <input type="text" id="aiPrompt" class="form-control" placeholder="Ví dụ: Tạo bài tập về lịch sử cách mạng Pháp lớp 10, gồm 2 câu hỏi và rubric đánh giá...">
+                <button class="btn btn-warning text-white" type="button" id="btnGenerateAi">
+                    <i class="fa-solid fa-robot"></i> Tạo nội dung
+                </button>
+            </div>
+            <div id="aiLoading" class="mt-2 text-warning d-none">
+                <i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý yêu cầu, vui lòng đợi...
+            </div>
+            <div id="aiError" class="mt-2 text-danger d-none"></div>
+        </div>
+    </div>
+
+    <form method="post" action="/SmeAssignment/Create">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="CourseId" />
+
+        <div class="card mb-4">
+            <div class="card-header font-weight-bold">
+                <i class="fa-solid fa-circle-info text-info"></i> Thông tin chung
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ClassId" class="form-label">Chọn Lớp học</label>
+                        <select asp-for="ClassId" asp-items="Model.AvailableClasses" class="form-select" required>
+                            <option value="">-- Chọn Lớp --</option>
+                        </select>
+                        <span asp-validation-for="ClassId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Status" class="form-label">Trạng thái</label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="DRAFT">Bản nháp</option>
+                            <option value="PUBLISHED">Công bố</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label">Tiêu đề bài tập</label>
+                    <input asp-for="Title" class="form-control" required id="TitleField" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DescriptionMd" class="form-label">Mô tả chi tiết (Markdown)</label>
+                    <textarea asp-for="DescriptionMd" class="form-control" rows="5" id="DescriptionField"></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="MaxScore" class="form-label">Điểm tối đa</label>
+                        <input asp-for="MaxScore" type="number" step="0.5" class="form-control" required id="MaxScoreField" />
+                        <span asp-validation-for="MaxScore" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DueDate" class="form-label">Hạn nộp bài</label>
+                        <input asp-for="DueDate" type="datetime-local" class="form-control" required value="@Model.DueDate.ToString("yyyy-MM-ddTHH:mm")" />
+                        <span asp-validation-for="DueDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header font-weight-bold d-flex justify-content-between align-items-center">
+                <span><i class="fa-solid fa-list-check text-success"></i> Tiêu chí đánh giá (Rubric)</span>
+                <button type="button" class="btn btn-sm btn-outline-success" id="btnAddRubric">
+                    <i class="fa-solid fa-plus"></i> Thêm tiêu chí
+                </button>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered" id="rubricTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tên tiêu chí</th>
+                            <th width="150">Điểm tối đa</th>
+                            <th width="150">Trọng số (%)</th>
+                            <th width="80">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rubricBody">
+                        @if(Model.Rubrics != null && Model.Rubrics.Any())
+                        {
+                            for(int i = 0; i < Model.Rubrics.Count; i++)
+                            {
+                                <tr>
+                                    <td><input type="text" name="Rubrics[@i].Name" value="@Model.Rubrics[i].Name" class="form-control" required /></td>
+                                    <td><input type="number" step="0.5" name="Rubrics[@i].MaxScore" value="@Model.Rubrics[i].MaxScore" class="form-control max-score-input" required /></td>
+                                    <td><input type="number" step="1" name="Rubrics[@i].WeightPercent" value="@Model.Rubrics[i].WeightPercent" class="form-control" required /></td>
+                                    <td><button type="button" class="btn btn-danger btn-sm btn-remove-rubric"><i class="fa-solid fa-trash"></i></button></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                <div class="mt-2 text-muted">
+                    <small><i>Tổng điểm tối đa của các tiêu chí nên bằng Điểm tối đa của bài tập. Trọng số tổng cộng nên là 100%.</i></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mb-5">
+            <button type="submit" class="btn btn-primary px-4 py-2">
+                <i class="fa-solid fa-save"></i> Lưu Assignment
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            let rubricIndex = @(Model.Rubrics?.Count ?? 0);
+
+            function addRubricRow(name = '', maxScore = 0, weightPercent = 0) {
+                const row = `
+                    <tr>
+                        <td><input type="text" name="Rubrics[${rubricIndex}].Name" value="${name}" class="form-control" required /></td>
+                        <td><input type="number" step="0.5" name="Rubrics[${rubricIndex}].MaxScore" value="${maxScore}" class="form-control max-score-input" required /></td>
+                        <td><input type="number" step="1" name="Rubrics[${rubricIndex}].WeightPercent" value="${weightPercent}" class="form-control" required /></td>
+                        <td><button type="button" class="btn btn-danger btn-sm btn-remove-rubric"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+                $('#rubricBody').append(row);
+                rubricIndex++;
+            }
+
+            $('#btnAddRubric').click(function () {
+                addRubricRow();
+            });
+
+            $(document).on('click', '.btn-remove-rubric', function () {
+                $(this).closest('tr').remove();
+                // We should re-index in a real app, but for simplicity ASP.NET Core can handle non-sequential indices if we're careful, 
+                // wait, actually MVC requires sequential indices unless we use a specific prefixing trick. Let's re-index just in case.
+                reindexRubrics();
+            });
+
+            function reindexRubrics() {
+                $('#rubricBody tr').each(function(index) {
+                    $(this).find('input').each(function() {
+                        const name = $(this).attr('name');
+                        if (name) {
+                            const newName = name.replace(/\[\d+\]/, '[' + index + ']');
+                            $(this).attr('name', newName);
+                        }
+                    });
+                });
+                rubricIndex = $('#rubricBody tr').length;
+            }
+
+            $('#btnGenerateAi').click(function () {
+                const prompt = $('#aiPrompt').val();
+                if (!prompt) {
+                    alert('Vui lòng nhập yêu cầu cho AI.');
+                    return;
+                }
+
+                $('#btnGenerateAi').prop('disabled', true);
+                $('#aiLoading').removeClass('d-none');
+                $('#aiError').addClass('d-none');
+
+                $.ajax({
+                    url: '/SmeAssignment/GenerateWithAI',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ prompt: prompt }),
+                    success: function (res) {
+                        $('#btnGenerateAi').prop('disabled', false);
+                        $('#aiLoading').addClass('d-none');
+                        
+                        if (res.success && res.data) {
+                            $('#TitleField').val(res.data.title);
+                            $('#DescriptionField').val(res.data.descriptionMd);
+                            $('#MaxScoreField').val(res.data.maxScore);
+                            
+                            // Clear and append rubrics
+                            $('#rubricBody').empty();
+                            rubricIndex = 0;
+                            if (res.data.rubrics && res.data.rubrics.length > 0) {
+                                res.data.rubrics.forEach(r => {
+                                    addRubricRow(r.name, r.maxScore, r.weightPercent);
+                                });
+                            }
+                        } else {
+                            $('#aiError').text('Lỗi từ AI: ' + (res.message || 'Không xác định')).removeClass('d-none');
+                        }
+                    },
+                    error: function (err) {
+                        $('#btnGenerateAi').prop('disabled', false);
+                        $('#aiLoading').addClass('d-none');
+                        $('#aiError').text('Lỗi kết nối. Vui lòng thử lại.').removeClass('d-none');
+                        console.error(err);
+                    }
+                });
+            });
+        });
+    </script>
+}
