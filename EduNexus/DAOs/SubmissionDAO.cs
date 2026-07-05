@@ -42,6 +42,17 @@ public class SubmissionDAO : BaseDAO<Submission>
             .FirstOrDefault(s => s.Id == submissionId);
     }
 
+    public Submission? GetResultWithDetails(long submissionId)
+    {
+        using var context = GetContext();
+        return context.Submissions
+            .Include(s => s.Student)
+            .Include(s => s.Assignment)
+            .Include(s => s.SubmissionCriterionScores)
+                .ThenInclude(scs => scs.Criterion)
+            .FirstOrDefault(s => s.Id == submissionId);
+    }
+
     public List<Submission> GetAllWithDetails()
     {
         using var context = GetContext();
@@ -50,5 +61,40 @@ public class SubmissionDAO : BaseDAO<Submission>
             .Include(s => s.Assignment)
             .OrderByDescending(s => s.SubmittedAt)
             .ToList();
+    }
+
+    public List<AssignmentRubricCriterion> GetAssignmentRubrics(long assignmentId)
+    {
+        using var context = GetContext();
+        return context.AssignmentRubricCriteria
+            .Where(r => r.AssignmentId == assignmentId)
+            .ToList();
+    }
+
+    public void UpdateAiEvaluation(Submission submission, List<SubmissionCriterionScore> newScores)
+    {
+        using var context = GetContext();
+        // Update submission fields
+        context.Submissions.Update(submission);
+        
+        // Handle SubmissionCriterionScores
+        foreach (var score in newScores)
+        {
+            var existing = context.SubmissionCriterionScores
+                .FirstOrDefault(s => s.SubmissionId == score.SubmissionId && s.CriterionId == score.CriterionId);
+            
+            if (existing != null)
+            {
+                existing.AiScore = score.AiScore;
+                existing.AiFeedback = score.AiFeedback;
+                context.SubmissionCriterionScores.Update(existing);
+            }
+            else
+            {
+                context.SubmissionCriterionScores.Add(score);
+            }
+        }
+        
+        context.SaveChanges();
     }
 }

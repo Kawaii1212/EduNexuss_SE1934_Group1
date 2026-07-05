@@ -152,7 +152,35 @@ namespace EduNexus.Controllers
             ViewData["ActiveMenu"] = "MyCourses";
             ViewData["ActiveSubMenu"] = "Assignments";
 
-            return View("Placeholder", "Bài tập (Assignment)");
+            string userName = User.FindFirst(ClaimTypes.Name)?.Value ?? "SME";
+
+            var assignments = _context.Assignments
+                .Include(a => a.Class)
+                .Include(a => a.Submissions)
+                .Where(a => a.Class.CourseId == courseId)
+                .Select(a => new SmeAssignmentItemViewModel
+                {
+                    Id = a.Id,
+                    Title = a.Title,
+                    ClassName = a.Class.Name,
+                    MaxScore = a.MaxScore,
+                    DueDate = a.DueDate,
+                    Status = a.Status,
+                    SubmissionCount = a.Submissions.Count
+                })
+                .ToList();
+
+            var viewModel = new SmeAssignmentsViewModel
+            {
+                CourseId = course.Id,
+                CourseTitle = course.Title,
+                SmeName = userName,
+                Assignments = assignments,
+                ActiveAssignments = assignments.Count(a => a.Status == "PUBLISHED" && a.DueDate > DateTimeOffset.UtcNow),
+                DraftAssignments = assignments.Count(a => a.Status == "DRAFT" || a.Status == "CLOSED" || a.DueDate <= DateTimeOffset.UtcNow)
+            };
+
+            return View(viewModel);
         }
 
         [HttpGet]
