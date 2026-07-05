@@ -10,4 +10,14 @@ public class QuizAttemptRepository : IQuizAttemptRepository
     {
         return QuizAttemptDAO.Instance.GetByStudentIdWithDetails(studentId);
     }
+
+    public QuizAttempt? GetAttemptForResult(long attemptId)
+    {
+        return QuizAttemptDAO.Instance.GetAttemptForResult(attemptId);
+    }
+
+    public QuizAttempt? GetAttemptForReviewAndAnalysis(long attemptId)
+    {
+        return QuizAttemptDAO.Instance.GetAttemptForReviewAndAnalysis(attemptId);
+    }
 }
