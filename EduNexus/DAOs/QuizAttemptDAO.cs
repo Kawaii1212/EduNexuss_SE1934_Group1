@@ -37,4 +37,22 @@ public class QuizAttemptDAO : BaseDAO<QuizAttempt>
             .OrderByDescending(qa => qa.StartTime)
             .ToList();
     }
+    public QuizAttempt? GetAttemptForResult(long attemptId)
+    {
+        using var context = GetContext();
+        return context.QuizAttempts
+            .Include(a => a.Quiz)
+            .ThenInclude(q => q.QuizQuestions)
+            .FirstOrDefault(a => a.Id == attemptId);
+    }
+
+    public QuizAttempt? GetAttemptForReviewAndAnalysis(long attemptId)
+    {
+        using var context = GetContext();
+        return context.QuizAttempts
+            .Include(a => a.Quiz)
+            .Include(a => a.QuizAttemptAnswers)
+                .ThenInclude(aa => aa.Question)
+            .FirstOrDefault(a => a.Id == attemptId);
+    }
 }

@@ -1,0 +1,325 @@
+@model EduNexus.ViewModels.QuizReviewViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Review - EduNexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5c24ff;
+            --primary-light: #9b8cf8;
+            --primary-lighter: #f0edff;
+            --primary-hover: #481ce0;
+            --bg-color: #fafafa;
+            --surface: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --warning: #f59e0b;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        .breadcrumbs {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumbs span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* Layout */
+        .container {
+            padding: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Score Alert */
+        .score-alert {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .score-alert h4 {
+            color: #1e40af;
+            font-size: 18px;
+        }
+
+        .score-badge {
+            background: #3b82f6;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Question Cards */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card.correct { border-color: var(--success); }
+        .card.incorrect { border-color: var(--danger); }
+
+        .card-header {
+            padding: 16px 24px;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card.correct .card-header { background-color: var(--success); color: white; }
+        .card.incorrect .card-header { background-color: var(--danger); color: white; }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-item {
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .option-item.correct {
+            background-color: var(--success-bg);
+            border-color: var(--success);
+            font-weight: 600;
+        }
+
+        .option-item.incorrect {
+            background-color: var(--danger-bg);
+            border-color: var(--danger);
+        }
+
+        .option-letter {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .badge-tag {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-tag.selected {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .badge-tag.is-correct {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .ai-explanation {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #fffbeb;
+            border-left: 4px solid var(--warning);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        }
+        
+        .ai-title {
+            color: #b45309;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="/StudentQuiz/Result?attemptId=@Model.AttemptId" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Result
+            </a>
+            <div class="breadcrumbs">
+                Quiz <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> <span>Review Answers</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">@Model.QuizName</h1>
+                <p style="color: var(--text-muted);">Review your answers and learn from your mistakes.</p>
+            </div>
+        </div>
+
+        <div class="score-alert">
+            <h4>Overall Performance</h4>
+            <div class="score-badge">@Model.Score.ToString("0") / @Model.TotalQuestions</div>
+        </div>
+
+        <div>
+            @{ int index = 1; }
+            @foreach (var q in Model.Questions)
+            {
+                var cardClass = q.IsCorrect ? "correct" : "incorrect";
+                var iconClass = q.IsCorrect ? "fa-check-circle" : "fa-times-circle";
+
+                <div class="card @cardClass mb-4">
+                    <div class="card-header">
+                        <i class="fa-solid @iconClass"></i> Question @index
+                    </div>
+                    <div class="card-body">
+                        <div class="question-text">@q.Content</div>
+
+                        <div class="options-list">
+                            @foreach (var opt in new[] { new { Key = "A", Text = q.OptionA }, new { Key = "B", Text = q.OptionB }, new { Key = "C", Text = q.OptionC }, new { Key = "D", Text = q.OptionD } })
+                            {
+                                var optClass = "option-item";
+                                if (opt.Key == q.CorrectOption)
+                                {
+                                    optClass += " correct";
+                                }
+                                else if (opt.Key == q.SelectedOption && !q.IsCorrect)
+                                {
+                                    optClass += " incorrect";
+                                }
+
+                                <div class="@optClass">
+                                    <div>
+                                        <span class="option-letter">@opt.Key.</span> @opt.Text
+                                    </div>
+                                    <div>
+                                        @if (opt.Key == q.SelectedOption)
+                                        {
+                                            <span class="badge-tag selected"><i class="fa-solid fa-user"></i> Your Answer</span>
+                                        }
+                                        @if (opt.Key == q.CorrectOption)
+                                        {
+                                            <span class="badge-tag is-correct"><i class="fa-solid fa-check"></i> Correct Answer</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(q.AiExplanation))
+                        {
+                            <div class="ai-explanation">
+                                <div class="ai-title"><i class="fa-solid fa-robot"></i> AI Explanation</div>
+                                <div>@q.AiExplanation</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                index++;
+            }
+        </div>
+
+    </div>
+
+</body>
+</html>
