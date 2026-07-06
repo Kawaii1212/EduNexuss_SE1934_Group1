@@ -96,7 +96,7 @@ namespace EduNexus.Controllers
             ViewBag.ActiveCourseId = course.Id;
             ViewBag.ActiveCourseTitle = course.Title;
             ViewData["ActiveMenu"] = "MyCourses";
-            ViewData["ActiveSubMenu"] = null;
+            ViewData["ActiveSubMenu"] = "Lessons";
 
             var viewModel = new SmeCourseStructureViewModel
             {
@@ -130,15 +130,7 @@ namespace EduNexus.Controllers
         [HttpGet]
         public IActionResult Lessons(long courseId)
         {
-            var course = _context.Courses.FirstOrDefault(c => c.Id == courseId && c.DeletedAt == null);
-            if (course == null) return NotFound("Khóa học không tồn tại.");
-
-            ViewBag.ActiveCourseId = course.Id;
-            ViewBag.ActiveCourseTitle = course.Title;
-            ViewData["ActiveMenu"] = "MyCourses";
-            ViewData["ActiveSubMenu"] = "Lessons";
-
-            return View("Placeholder", "Bài học (Lesson)");
+            return RedirectToAction("Structure", new { courseId });
         }
 
         [HttpGet]

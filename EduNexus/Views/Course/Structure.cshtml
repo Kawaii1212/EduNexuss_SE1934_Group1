@@ -268,9 +268,9 @@
                                     </div>
                                     <div style="display: flex; align-items: center; gap: 16px;">
                                         <!-- Nút Sửa bài học -->
-                                        <button type="button" onclick="event.stopPropagation(); openEditLessonModal(@lesson.Id, '@Html.Raw(JavaScriptEncoder.Default.Encode(lesson.Title))')" style="background: none; border: none; color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer; padding: 0; display: inline-flex; align-items: center; gap: 4px;" title="Sửa bài học">
+                                        <a href="/Lesson/LessonEditor?id=@lesson.Id" onclick="event.stopPropagation();" style="text-decoration: none; color: var(--primary); font-size: 13px; font-weight: 600; padding: 0; display: inline-flex; align-items: center; gap: 4px;" title="Sửa chi tiết bài học">
                                             <i class="fa-solid fa-pen-to-square"></i> Sửa
-                                        </button>
+                                        </a>
                                         <!-- Nút Xóa bài học -->
                                         <form asp-controller="Course" asp-action="DeleteLesson" asp-route-lessonId="@lesson.Id" method="post" style="display:inline; margin: 0; padding: 0;" onclick="event.stopPropagation();" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài học này?')">
                                             @Html.AntiForgeryToken()
@@ -292,9 +292,9 @@
                     </div>
 
                     <!-- Nút thêm bài học siêu to khổng lồ rộng 100% -->
-                    <button type="button" class="btn-add-lesson-large" onclick="openAddLessonModal(@module.Id)" style="width: 100%; padding: 16px; background: #faf8ff; border: 2px dashed var(--primary-light); border-radius: 10px; color: var(--primary); font-weight: 700; font-size: 14.5px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.2s; outline: none;">
+                    <a href="/Lesson/LessonEditor?moduleId=@module.Id" class="btn-add-lesson-large" style="width: 100%; padding: 16px; background: #faf8ff; border: 2px dashed var(--primary-light); border-radius: 10px; color: var(--primary); font-weight: 700; font-size: 14.5px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; text-decoration: none; transition: all 0.2s; outline: none;">
                         <i class="fa-solid fa-plus" style="font-size: 15px;"></i> Thêm bài học mới
-                    </button>
+                    </a>
 
                     <!-- Nút quizzes nhỏ ở dưới, hiển thị câu hỏi của riêng module đó -->
                     <div style="display: flex; justify-content: flex-end; margin-top: 14px;">

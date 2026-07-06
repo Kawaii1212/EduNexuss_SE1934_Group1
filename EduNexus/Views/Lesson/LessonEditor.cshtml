@@ -1,3 +1,4 @@
+@model EduNexus.ViewModels.LessonEditorViewModel
 @{
     Layout = null;
 }
@@ -245,6 +246,31 @@
             line-height: 1.6;
             color: var(--text-main);
             overflow-y: auto;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .editor-content pre {
+            background-color: #f6f8fa;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 16px;
+        }
+        
+        .editor-content code {
+            background-color: #f6f8fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .editor-content pre code {
+            padding: 0;
+            background-color: transparent;
         }
 
         .editor-content[placeholder]:empty:before {
@@ -398,66 +424,64 @@
     <!-- Top Navigation -->
     <header class="topbar">
         <div class="topbar-left">
-            <a href="/Home/CourseStructure" class="back-btn">
+            <a href="/Course/Structure?courseId=@Model.CourseId" class="back-btn">
                 <i class="fa-solid fa-arrow-left"></i> Back
             </a>
             <div class="breadcrumbs">
-                Course Structure <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> Module 1 <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> <span>Edit Lesson</span>
+                Course Structure <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> Module @Model.ModuleId <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> <span>Edit Lesson</span>
             </div>
         </div>
         <div class="topbar-right">
-            <span style="color: var(--text-muted); font-size: 13px; margin-right: 12px;">Saved a few seconds ago</span>
-            <button class="btn btn-outline">Preview</button>
-            <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Publish</button>
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <span style="color: var(--success); font-size: 13px; margin-right: 12px;"><i class="fa-solid fa-check"></i> @TempData["SuccessMessage"]</span>
+            }
+            <a href="/Lesson/AILessonStaging?id=@Model.LessonId" class="btn" style="background: #f0edff; color: #5c24ff; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Staging
+            </a>
+            <a href="/Lesson/LessonView?id=@Model.LessonId&isPreview=true" target="_blank" class="btn btn-outline" style="text-decoration:none;">Preview</a>
+            <button type="submit" form="lessonForm" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Publish</button>
         </div>
     </header>
 
     <!-- Main Editor Area -->
-    <main class="editor-container">
+    <form id="lessonForm" asp-action="LessonEditor" asp-controller="Lesson" method="POST" enctype="multipart/form-data" class="editor-container">
+        <input type="hidden" asp-for="LessonId" />
+        <input type="hidden" asp-for="ModuleId" />
+        <input type="hidden" id="hiddenContent" asp-for="Content" />
         
         <!-- Left: Editor Column -->
         <div class="main-col">
-            <input type="text" class="title-input" placeholder="Lesson Title..." value="1.2 Environment Setup Guide">
+            <input type="text" asp-for="Title" class="title-input" placeholder="Lesson Title...">
+            <span asp-validation-for="Title" style="color: red; font-size: 12px;"></span>
             
             <div class="editor-box">
                 <!-- Rich Text Toolbar Mockup -->
                 <div class="editor-toolbar">
-                    <select class="form-select" style="width: auto; padding: 6px 12px; font-size: 13px; border-color: transparent; background-color: transparent;">
-                        <option>Normal text</option>
-                        <option>Heading 1</option>
-                        <option>Heading 2</option>
-                        <option>Heading 3</option>
+                    <select class="form-select" onchange="execCmd('formatBlock', this.value)" style="width: auto; padding: 6px 12px; font-size: 13px; border-color: transparent; background-color: transparent;">
+                        <option value="P">Normal text</option>
+                        <option value="H1">Heading 1</option>
+                        <option value="H2">Heading 2</option>
+                        <option value="H3">Heading 3</option>
                     </select>
                     <div class="toolbar-divider"></div>
-                    <button class="toolbar-btn active" title="Bold"><i class="fa-solid fa-bold"></i></button>
-                    <button class="toolbar-btn" title="Italic"><i class="fa-solid fa-italic"></i></button>
-                    <button class="toolbar-btn" title="Underline"><i class="fa-solid fa-underline"></i></button>
-                    <button class="toolbar-btn" title="Strikethrough"><i class="fa-solid fa-strikethrough"></i></button>
+                    <button type="button" class="toolbar-btn" title="Bold" onclick="execCmd('bold')"><i class="fa-solid fa-bold"></i></button>
+                    <button type="button" class="toolbar-btn" title="Italic" onclick="execCmd('italic')"><i class="fa-solid fa-italic"></i></button>
+                    <button type="button" class="toolbar-btn" title="Underline" onclick="execCmd('underline')"><i class="fa-solid fa-underline"></i></button>
                     <div class="toolbar-divider"></div>
-                    <button class="toolbar-btn" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
-                    <button class="toolbar-btn" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
-                    <button class="toolbar-btn" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+                    <button type="button" class="toolbar-btn" title="Align Left" onclick="execCmd('justifyLeft')"><i class="fa-solid fa-align-left"></i></button>
+                    <button type="button" class="toolbar-btn" title="Align Center" onclick="execCmd('justifyCenter')"><i class="fa-solid fa-align-center"></i></button>
+                    <button type="button" class="toolbar-btn" title="Align Right" onclick="execCmd('justifyRight')"><i class="fa-solid fa-align-right"></i></button>
                     <div class="toolbar-divider"></div>
-                    <button class="toolbar-btn" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
-                    <button class="toolbar-btn" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+                    <button type="button" class="toolbar-btn" title="Bullet List" onclick="execCmd('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i></button>
+                    <button type="button" class="toolbar-btn" title="Numbered List" onclick="execCmd('insertOrderedList')"><i class="fa-solid fa-list-ol"></i></button>
                     <div class="toolbar-divider"></div>
-                    <button class="toolbar-btn" title="Insert Link"><i class="fa-solid fa-link"></i></button>
-                    <button class="toolbar-btn" title="Insert Image"><i class="fa-regular fa-image"></i></button>
-                    <button class="toolbar-btn" title="Insert Code Block"><i class="fa-solid fa-code"></i></button>
+                    <button type="button" class="toolbar-btn" title="Insert Link" onclick="insertLink()"><i class="fa-solid fa-link"></i></button>
                 </div>
 
                 <!-- Editable Content Area -->
-                <div class="editor-content" contenteditable="true" placeholder="Start typing your lesson content here...">
-                    <h2>Prerequisites</h2>
-                    <p>Before we begin developing with ASP.NET Core, you need to ensure your local environment is correctly configured. Please follow the steps below carefully.</p>
-                    <br>
-                    <ul>
-                        <li>Download and install the latest <strong>.NET 8 SDK</strong>.</li>
-                        <li>Install <strong>Visual Studio 2022</strong> (Community edition is fine) or <strong>Visual Studio Code</strong>.</li>
-                        <li>If using VS Code, make sure to install the C# Dev Kit extension.</li>
-                    </ul>
-                    <br>
-                    <p>Once installed, open your terminal and run <code>dotnet --version</code> to verify.</p>
+                <div class="editor-content" id="editorContent" contenteditable="true" placeholder="Start typing your lesson content here...">
+                    @Html.Raw(Model?.Content ?? "")
                 </div>
             </div>
         </div>
@@ -468,24 +492,10 @@
             <!-- Lesson Settings -->
             <div class="settings-card">
                 <div class="card-title"><i class="fa-solid fa-sliders"></i> Lesson Settings</div>
-                
-                <div class="form-group">
-                    <label class="form-label">Lesson Type</label>
-                    <select class="form-select">
-                        <option value="video">Video Lesson</option>
-                        <option value="document" selected>Reading / Document</option>
-                        <option value="quiz">Quiz</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Estimated Duration (minutes)</label>
-                    <input type="number" class="form-control" value="10">
-                </div>
 
                 <div class="form-group">
                     <label class="form-label">Video URL (Optional)</label>
-                    <input type="url" class="form-control" placeholder="https://youtube.com/...">
+                    <input type="url" asp-for="VideoUrl" class="form-control" placeholder="https://youtube.com/...">
                 </div>
             </div>
 
@@ -494,28 +504,63 @@
                 <div class="card-title"><i class="fa-solid fa-paperclip"></i> Study Materials</div>
                 <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Attach PDFs, slides, or zip files for students to download.</p>
                 
-                <div class="upload-area">
+                <label for="fileUpload" class="upload-area" style="cursor: pointer; display: block; text-align: center;">
                     <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-                    <div class="upload-text">Click to upload or drag & drop</div>
-                    <div class="upload-subtext">SVG, PNG, JPG, PDF or ZIP (max. 10MB)</div>
-                </div>
+                    <div class="upload-text">Click to upload files</div>
+                    <div class="upload-subtext">PDF, DOCX, ZIP (max. 10MB)</div>
+                    <input type="file" id="fileUpload" name="Attachments" multiple style="display: none;" onchange="updateFileList()" />
+                </label>
 
-                <!-- Uploaded File Mockup -->
-                <div class="attached-file">
-                    <div class="file-info">
-                        <div class="file-icon"><i class="fa-solid fa-file-pdf"></i></div>
-                        <div>
-                            <div class="file-name">DotNet_CheatSheet.pdf</div>
-                            <div class="file-size">1.2 MB</div>
-                        </div>
-                    </div>
-                    <button class="btn-remove" title="Remove attachment"><i class="fa-solid fa-xmark"></i></button>
-                </div>
+                <!-- Uploaded File List -->
+                <div id="fileListContainer"></div>
             </div>
 
         </div>
 
-    </main>
+    </form>
 
+    <script>
+        // Sync content editable innerHTML to hidden input on form submit
+        document.getElementById('lessonForm').addEventListener('submit', function() {
+            var contentHtml = document.getElementById('editorContent').innerHTML;
+            document.getElementById('hiddenContent').value = contentHtml;
+        });
+
+        // Editor commands
+        function execCmd(command, value = null) {
+            document.execCommand(command, false, value);
+            document.getElementById('editorContent').focus();
+        }
+
+        function insertLink() {
+            let url = prompt("Nhập đường dẫn (URL):");
+            if (url) {
+                document.execCommand("createLink", false, url);
+            }
+        }
+
+        // Update file list on upload
+        function updateFileList() {
+            var input = document.getElementById('fileUpload');
+            var container = document.getElementById('fileListContainer');
+            container.innerHTML = '';
+            
+            for (var i = 0; i < input.files.length; i++) {
+                var file = input.files[i];
+                var fileSize = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+                var html = `
+                <div class="attached-file" style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background-color: #f9fafb;">
+                    <div class="file-info" style="display: flex; align-items: center; gap: 12px;">
+                        <div class="file-icon" style="color: var(--primary); font-size: 20px;"><i class="fa-solid fa-file"></i></div>
+                        <div>
+                            <div class="file-name" style="font-weight: 600; font-size: 13px;">${file.name}</div>
+                            <div class="file-size" style="font-size: 12px; color: var(--text-muted);">${fileSize}</div>
+                        </div>
+                    </div>
+                </div>`;
+                container.innerHTML += html;
+            }
+        }
+    </script>
 </body>
 </html>

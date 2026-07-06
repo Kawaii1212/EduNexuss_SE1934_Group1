@@ -112,6 +112,52 @@ namespace EduNexus.Controllers
         }
 
         [HttpGet]
+        public IActionResult UserRegister()
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult UserRegister(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            if (!model.AgreeTerms)
+            {
+                ModelState.AddModelError("AgreeTerms", "You must agree to the terms of services.");
+                return View(model);
+            }
+
+            var existingUser = _userService.GetUserByEmail(model.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "Email already exists.");
+                return View(model);
+            }
+
+            var newUser = new User
+            {
+                FullName = model.FullName,
+                Email = model.Email,
+                PasswordHash = model.Password,
+                Role = "STUDENT",
+                Status = "ACTIVE",
+                CreatedAt = System.DateTimeOffset.UtcNow,
+                UpdatedAt = System.DateTimeOffset.UtcNow
+            };
+
+            _userService.AddUser(newUser);
+
+            return RedirectToAction("UserLogin", "Common");
+        }
+
+        [HttpGet]
         public new async Task<IActionResult> SignOut()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

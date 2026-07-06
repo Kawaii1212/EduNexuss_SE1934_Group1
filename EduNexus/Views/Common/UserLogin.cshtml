@@ -218,7 +218,7 @@
             letter-spacing: -1px;
         }
 
-        media (max-width: 900px) {
+        @@media (max-width: 900px) {
             body {
                 flex-direction: column;
             }
@@ -232,7 +232,7 @@
 
     <div class="left-panel">
         <div class="top-nav">
-            Don't have an account? <a href="/Auth/SignUp">Sign Up</a>
+            Don't have an account? <a href="@Url.Action("UserRegister", "Common")">Sign Up</a>
         </div>
         
         <div class="form-container">

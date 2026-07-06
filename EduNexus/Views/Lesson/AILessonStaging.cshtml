@@ -1,5 +1,6 @@
 @{
     Layout = null;
+    long lessonId = ViewBag.LessonId ?? 0;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -11,9 +12,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Marked.js for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            /* Synchronized with EduNexus */
             --primary: #5c24ff;
             --primary-light: #9b8cf8;
             --primary-lighter: #f0edff;
@@ -22,14 +24,10 @@
             --text-main: #111827;
             --text-muted: #6b7280;
             --border: #e5e7eb;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
             --ai-gradient: linear-gradient(135deg, #5c24ff 0%, #d946ef 100%);
             --radius-md: 8px;
             --radius-lg: 12px;
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -42,9 +40,11 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            min-height: 100vh;
+            height: 100vh;
+            margin: 0;
             display: flex;
             flex-direction: column;
+            overflow: hidden; /* We handle scrolling inside panes */
         }
 
         /* Topbar */
@@ -55,9 +55,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 40px;
-            position: sticky;
-            top: 0;
+            padding: 0 24px;
             z-index: 100;
         }
 
@@ -71,10 +69,7 @@
             font-size: 14px;
             transition: 0.2s;
         }
-
-        .back-btn:hover {
-            color: var(--text-main);
-        }
+        .back-btn:hover { color: var(--text-main); }
 
         .ai-status-badge {
             background: var(--primary-lighter);
@@ -88,440 +83,440 @@
             gap: 6px;
         }
 
-        .topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
         .btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: var(--radius-md);
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
             border: none;
-            transition: all 0.2s ease;
+            transition: 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-main);
-        }
-
-        .btn-outline:hover {
-            background-color: var(--bg-color);
-        }
-
-        .btn-primary {
-            background-color: var(--primary-light);
-            color: white;
-            box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary);
-            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
-            transform: translateY(-1px);
-        }
-
-        .btn-ai {
-            background: var(--ai-gradient);
-            color: white;
-            border: none;
-        }
-
-        .btn-ai:hover {
-            opacity: 0.9;
-            box-shadow: 0 6px 16px rgba(217, 70, 239, 0.4);
-        }
+        .btn-primary { background: var(--ai-gradient); color: white; }
+        .btn-primary:hover { opacity: 0.9; }
 
         /* Layout */
-        .staging-container {
+        .staging-layout {
+            display: flex;
             flex: 1;
-            display: flex;
-            padding: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-            gap: 32px;
-        }
-
-        .editor-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .ai-col {
-            width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        /* Notice Banner */
-        .ai-banner {
-            background: #faf5ff; /* light purple */
-            border: 1px solid #e9d5ff;
-            border-radius: var(--radius-lg);
-            padding: 16px 24px;
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-        }
-
-        .ai-banner-icon {
-            font-size: 24px;
-            background: var(--ai-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .ai-banner-content h4 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #6b21a8;
-            margin-bottom: 4px;
-        }
-
-        .ai-banner-content p {
-            font-size: 14px;
-            color: #7e22ce;
-            line-height: 1.5;
-        }
-
-        /* Main Editor */
-        .title-input {
-            width: 100%;
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--text-main);
-            border: none;
-            background: transparent;
-            outline: none;
-            padding: 10px 0;
-            border-bottom: 1px solid transparent;
-            transition: 0.2s;
-        }
-
-        .title-input:focus {
-            border-bottom: 1px solid var(--primary-light);
-        }
-
-        .editor-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            display: flex;
-            flex-direction: column;
-            min-height: 500px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .editor-toolbar {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background-color: #fafafa;
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-        }
-
-        .toolbar-btn {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            border-radius: 6px;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-
-        .toolbar-btn:hover {
-            background-color: #e5e7eb;
-            color: var(--text-main);
-        }
-
-        .editor-content {
-            padding: 32px;
-            flex: 1;
-            outline: none;
-            font-size: 16px;
-            line-height: 1.7;
-            color: var(--text-main);
-            overflow-y: auto;
-        }
-
-        /* AI Assistant Sidebar */
-        .assistant-card {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            flex-direction: column;
+            height: calc(100vh - 70px);
             overflow: hidden;
         }
 
-        .assistant-header {
-            padding: 20px;
-            background: #fafafa;
-            border-bottom: 1px solid var(--border);
+        /* Left Pane - Input Workspace */
+        .pane-left {
+            width: 40%;
+            border-right: 1px solid var(--border);
+            background: var(--surface);
             display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            color: var(--text-main);
+            flex-direction: column;
+            overflow-y: auto;
         }
 
-        .assistant-header i {
-            background: var(--ai-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 20px;
-        }
-
-        /* Prompt History */
-        .prompt-info {
-            padding: 20px;
+        .tabs {
+            display: flex;
             border-bottom: 1px solid var(--border);
         }
 
-        .prompt-label {
-            font-size: 12px;
+        .tab {
+            flex: 1;
+            padding: 16px 0;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
             color: var(--text-muted);
-            text-transform: uppercase;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            padding: 24px;
+            flex: 1;
+            display: none;
+            flex-direction: column;
+        }
+
+        .tab-content.active { display: flex; }
+
+        .form-label {
+            font-size: 14px;
             font-weight: 600;
             margin-bottom: 8px;
+            display: block;
         }
 
-        .prompt-bubble {
-            background: var(--primary-lighter);
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            color: var(--text-main);
-            line-height: 1.5;
-            position: relative;
-        }
-
-        /* Suggestions */
-        .suggestions-list {
-            padding: 20px;
-        }
-
-        .suggestion-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px;
-            background: #fafafa;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            margin-bottom: 12px;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-
-        .suggestion-item:hover {
-            border-color: var(--primary-light);
-            background: var(--surface);
-        }
-
-        .suggestion-item i {
-            color: #d946ef;
-            margin-top: 2px;
-        }
-
-        .suggestion-text {
-            font-size: 13px;
-            color: var(--text-main);
-            line-height: 1.5;
-        }
-
-        /* Chat Input */
-        .ai-chat-input {
-            padding: 20px;
-            background: #fafafa;
-            border-top: 1px solid var(--border);
-        }
-
-        .chat-box {
-            position: relative;
-        }
-
-        .chat-textarea {
+        .form-control {
             width: 100%;
+            padding: 12px;
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 12px 48px 12px 16px;
+            border-radius: var(--radius-md);
             font-size: 14px;
-            font-family: inherit;
             outline: none;
-            resize: none;
-            height: 80px;
-            transition: 0.2s;
+            transition: border-color 0.2s;
+            resize: vertical;
         }
 
-        .chat-textarea:focus {
-            border-color: #d946ef;
-            box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.1);
-        }
+        .form-control:focus { border-color: var(--primary); }
 
-        .send-btn {
-            position: absolute;
-            right: 8px;
-            bottom: 8px;
-            width: 32px;
-            height: 32px;
-            background: var(--ai-gradient);
-            color: white;
-            border: none;
-            border-radius: 50%;
+        .generate-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            gap: 8px;
+            margin-top: 16px;
             transition: 0.2s;
         }
+        .generate-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-        .send-btn:hover {
-            transform: scale(1.05);
+        /* Right Pane - Preview */
+        .pane-right {
+            width: 60%;
+            background: var(--bg-color);
+            display: block;
+            padding: 32px;
+            overflow-y: auto;
         }
 
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .preview-header h2 { font-size: 18px; font-weight: 600; }
+
+        .preview-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+            min-height: 500px;
+            height: auto;
+            overflow: visible;
+        }
+
+        /* Generated Markdown Styles */
+        .markdown-body {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-main);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .markdown-body p { margin-bottom: 16px; }
+        .markdown-body ul, .markdown-body ol { margin-bottom: 16px; padding-left: 24px; }
+        .markdown-body li { margin-bottom: 8px; }
+        .markdown-body pre {
+            background-color: #f6f8fa;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            white-space: pre-wrap; /* Forces text to wrap inside code blocks */
+            word-wrap: break-word;
+            margin-bottom: 16px;
+        }
+        .markdown-body code {
+            background-color: #f6f8fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .markdown-body pre code {
+            padding: 0;
+            background-color: transparent;
+        }
+
+        /* Skeleton Loading */
+        .skeleton {
+            background: #eee;
+            background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+            border-radius: 4px;
+            background-size: 200% 100%;
+            animation: 1.5s shine linear infinite;
+        }
+        
+        .skeleton-title { width: 50%; height: 28px; margin-bottom: 24px; }
+        .skeleton-text { width: 100%; height: 16px; margin-bottom: 12px; }
+        .skeleton-text-short { width: 80%; height: 16px; margin-bottom: 24px; }
+
+        @@keyframes shine {
+            to { background-position-x: -200%; }
+        }
+
+        .loading-view { display: none; }
+        .loading-view.active { display: block; }
+        .empty-view { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center;}
+        .empty-view i { font-size: 48px; margin-bottom: 16px; color: #e5e7eb; }
+        .content-view { display: none; }
     </style>
 </head>
 <body>
 
     <!-- Topbar -->
     <header class="topbar">
-        <div class="topbar-left">
-            <a href="/Home/CourseStructure" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i> Cancel
-            </a>
-            <div class="ai-status-badge">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Generated Draft
-            </div>
+        <a href="/Lesson/LessonEditor?id=@lessonId" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Back to Lesson Editor
+        </a>
+        <div class="ai-status-badge">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Copilot Staging
         </div>
-        <div class="topbar-right">
-            <button class="btn btn-outline"><i class="fa-solid fa-rotate-left"></i> Discard</button>
-            <button class="btn btn-primary"><i class="fa-solid fa-check"></i> Approve & Save to Course</button>
+        <div>
+            <button class="btn btn-primary" id="btnImport" onclick="importToLesson()" style="display: none;">
+                <i class="fa-solid fa-download"></i> Save & Import to Lesson
+            </button>
         </div>
     </header>
 
-    <main class="staging-container">
+    <!-- Layout -->
+    <div class="staging-layout">
         
-        <!-- Left: Editor Content -->
-        <div class="editor-col">
-            
-            <div class="ai-banner">
-                <div class="ai-banner-icon"><i class="fa-solid fa-sparkles"></i></div>
-                <div class="ai-banner-content">
-                    <h4>Draft Ready for Review</h4>
-                    <p>The AI has generated the lesson based on your syllabus. Please review the content, make any manual edits directly in the editor below, or use the assistant on the right to regenerate specific sections.</p>
-                </div>
+        <!-- Left Pane: Tools -->
+        <aside class="pane-left">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('text')">Text Generator</div>
+                <div class="tab" onclick="switchTab('video')">Video Summarizer</div>
             </div>
 
-            <input type="text" class="title-input" value="Understanding React Context API">
-
-            <div class="editor-box">
-                <!-- Toolbar -->
-                <div class="editor-toolbar">
-                    <button class="toolbar-btn active"><i class="fa-solid fa-bold"></i></button>
-                    <button class="toolbar-btn"><i class="fa-solid fa-italic"></i></button>
-                    <button class="toolbar-btn"><i class="fa-solid fa-list-ul"></i></button>
-                    <button class="toolbar-btn"><i class="fa-solid fa-link"></i></button>
-                    <button class="toolbar-btn"><i class="fa-regular fa-image"></i></button>
-                </div>
-
-                <!-- Editor Content -->
-                <div class="editor-content" contenteditable="true">
-                    <h2>Introduction to Context API</h2>
-                    <p>In a typical React application, data is passed top-down (parent to child) via props. However, this can become cumbersome for certain types of props (e.g., locale preference, UI theme) that are required by many components within an application.</p>
-                    <br>
-                    <p>Context provides a way to share values like these between components without having to explicitly pass a prop through every level of the tree. This problem is commonly referred to as <strong>"prop drilling"</strong>.</p>
-                    <br>
-                    <h3>When to Use Context</h3>
-                    <ul>
-                        <li>Theming (Dark/Light mode)</li>
-                        <li>User Authentication State (Logged in user profile)</li>
-                        <li>Localization / Language preferences</li>
-                    </ul>
-                    <br>
-                    <p><em>Note: Context is primarily used when some data needs to be accessible by many components at different nesting levels. Apply it sparingly because it makes component reuse more difficult.</em></p>
-                </div>
+            <!-- Tab 1: Text Generator -->
+            <div class="tab-content active" id="tab-text">
+                <label class="form-label">Lesson Outline (Markdown / Bullet points)</label>
+                <textarea id="txtOutline" class="form-control" rows="12" placeholder="e.g.&#10;- Introduction to Object Oriented Programming&#10;- 4 Pillars: Abstraction, Encapsulation, Inheritance, Polymorphism&#10;- Real world examples in C#"></textarea>
+                
+                <button class="generate-btn" onclick="generateText()">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary);"></i> Generate Full Lesson
+                </button>
             </div>
 
-        </div>
-
-        <!-- Right: AI Assistant Panel -->
-        <div class="ai-col">
-            
-            <div class="assistant-card">
-                <div class="assistant-header">
-                    <i class="fa-solid fa-robot"></i> EduNexus Copilot
+            <!-- Tab 2: Video Summarizer -->
+            <div class="tab-content" id="tab-video">
+                <label class="form-label">YouTube Video URL</label>
+                <input type="url" id="txtVideoUrl" class="form-control" placeholder="https://youtube.com/watch?v=...">
+                
+                <div style="margin-top: 24px;">
+                    <button class="generate-btn" onclick="summarizeVideo()">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary);"></i> Analyze & Summarize Video
+                    </button>
                 </div>
-
-                <!-- Original Prompt Context -->
-                <div class="prompt-info">
-                    <div class="prompt-label">Original Prompt</div>
-                    <div class="prompt-bubble">
-                        "Create a beginner-friendly lesson on React Context API. Explain what prop drilling is. Include a bulleted list of common use cases. Keep the tone encouraging."
+                
+                <div id="videoPreviewContainer" style="margin-top: 24px; display: none;">
+                    <label class="form-label">Video Preview</label>
+                    <div style="aspect-ratio: 16/9; background: #000; border-radius: var(--radius-md); overflow: hidden;">
+                        <iframe id="videoIframe" src="" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
                     </div>
                 </div>
+            </div>
+        </aside>
 
-                <!-- One-click suggestions -->
-                <div class="suggestions-list">
-                    <div class="prompt-label" style="margin-bottom: 12px;">Quick Actions</div>
+        <!-- Right Pane: Preview -->
+        <main class="pane-right">
+            <div class="preview-header">
+                <h2>Generated Result Preview</h2>
+            </div>
+            
+            <div class="preview-card">
+                
+                <!-- Empty State -->
+                <div id="emptyView" class="empty-view">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <p>Enter your outline or video URL on the left and<br>click Generate to see AI results here.</p>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingView" class="loading-view">
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text-short"></div>
                     
-                    <div class="suggestion-item">
-                        <i class="fa-solid fa-code"></i>
-                        <div class="suggestion-text">
-                            <strong>Add Code Example</strong><br>
-                            Generate a practical code snippet showing Provider and useContext usage.
-                        </div>
-                    </div>
-
-                    <div class="suggestion-item">
-                        <i class="fa-solid fa-list-check"></i>
-                        <div class="suggestion-text">
-                            <strong>Generate Quiz</strong><br>
-                            Create a 5-question multiple choice quiz based on this text.
-                        </div>
-                    </div>
-
-                    <div class="suggestion-item">
-                        <i class="fa-solid fa-compress"></i>
-                        <div class="suggestion-text">
-                            <strong>Summarize</strong><br>
-                            Make the text more concise and easier to scan.
-                        </div>
-                    </div>
+                    <div class="skeleton skeleton-title" style="margin-top: 32px;"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text-short"></div>
                 </div>
 
-                <!-- Refine Input -->
-                <div class="ai-chat-input">
-                    <div class="prompt-label" style="margin-bottom: 8px;">Refine Content</div>
-                    <div class="chat-box">
-                        <textarea class="chat-textarea" placeholder="E.g. Make the introduction more engaging, or translate to Vietnamese..."></textarea>
-                        <button class="send-btn"><i class="fa-solid fa-arrow-up"></i></button>
-                    </div>
+                <!-- Content State -->
+                <div id="contentView" class="content-view markdown-body" contenteditable="true" style="outline: none;">
+                    <!-- Markdown will be rendered here -->
                 </div>
+
             </div>
+        </main>
 
-        </div>
+    </div>
 
-    </main>
+    <!-- Scripts -->
+    <script>
+        const lessonId = @lessonId;
+        let currentGeneratedMarkdown = "";
+        let currentVideoUrl = "";
 
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'text') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('tab-text').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('tab-video').classList.add('active');
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('emptyView').style.display = 'none';
+            document.getElementById('contentView').style.display = 'none';
+            document.getElementById('loadingView').classList.add('active');
+            document.getElementById('btnImport').style.display = 'none';
+        }
+
+        function showResult(markdownHtml) {
+            document.getElementById('loadingView').classList.remove('active');
+            const contentView = document.getElementById('contentView');
+            contentView.innerHTML = markdownHtml;
+            contentView.style.display = 'block';
+            document.getElementById('btnImport').style.display = 'inline-flex';
+        }
+
+        function cleanMarkdown(md) {
+            if (!md) return "";
+            md = md.trim();
+            if (md.startsWith("```markdown")) {
+                md = md.substring(11);
+                if (md.endsWith("```")) md = md.substring(0, md.length - 3);
+            } else if (md.startsWith("```html")) {
+                md = md.substring(7);
+                if (md.endsWith("```")) md = md.substring(0, md.length - 3);
+            }
+            return md.trim();
+        }
+
+        function showError(msg) {
+            document.getElementById('loadingView').classList.remove('active');
+            document.getElementById('emptyView').style.display = 'flex';
+            document.getElementById('emptyView').innerHTML = `<i class="fa-solid fa-circle-exclamation" style="color: red;"></i><p style="color: red;">${msg}</p>`;
+        }
+
+        async function generateText() {
+            const outline = document.getElementById('txtOutline').value;
+            if (!outline.trim()) return alert("Please enter an outline first.");
+            
+            showLoading();
+            currentVideoUrl = ""; // clear video url
+
+            try {
+                const res = await fetch('/Lesson/GenerateLessonText', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ Outline: outline })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    currentGeneratedMarkdown = cleanMarkdown(data.content);
+                    showResult(marked.parse(currentGeneratedMarkdown));
+                } else {
+                    showError(data.message);
+                }
+            } catch (err) {
+                showError("An error occurred while calling AI.");
+            }
+        }
+
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return "";
+            var match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+            return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+        }
+
+        async function summarizeVideo() {
+            const url = document.getElementById('txtVideoUrl').value;
+            if (!url.trim()) return alert("Please enter a YouTube URL.");
+            
+            // Show video preview
+            const embedUrl = getYouTubeEmbedUrl(url);
+            document.getElementById('videoPreviewContainer').style.display = 'block';
+            document.getElementById('videoIframe').src = embedUrl;
+            currentVideoUrl = url;
+            
+            showLoading();
+
+            try {
+                const res = await fetch('/Lesson/SummarizeVideo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ VideoUrl: url })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    currentGeneratedMarkdown = cleanMarkdown(data.content);
+                    showResult(marked.parse(currentGeneratedMarkdown));
+                } else {
+                    showError(data.message);
+                }
+            } catch (err) {
+                showError("An error occurred while calling AI.");
+            }
+        }
+
+        async function importToLesson() {
+            // Get the edited HTML directly from the content view
+            const finalHtml = document.getElementById('contentView').innerHTML;
+            
+            const btn = document.getElementById('btnImport');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/Lesson/SaveStaging', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        LessonId: lessonId, 
+                        Content: finalHtml,
+                        VideoUrl: currentVideoUrl
+                    })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    window.location.href = `/Lesson/LessonEditor?id=${lessonId}`;
+                } else {
+                    alert("Error saving staging.");
+                    btn.innerHTML = '<i class="fa-solid fa-download"></i> Save & Import to Lesson';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert("Error saving staging.");
+                btn.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>
