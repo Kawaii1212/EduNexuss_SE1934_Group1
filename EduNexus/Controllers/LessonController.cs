@@ -189,7 +189,7 @@ Chỉ trả về nội dung Markdown.";
         public class SaveStagingRequest { public long LessonId { get; set; } public string Content { get; set; } public string VideoUrl { get; set; } }
 
         [HttpGet]
-        public IActionResult LessonView(long? id, bool isPreview = false)
+        public IActionResult LessonView(long? id)
         {
             if (!id.HasValue) return RedirectToAction("Index", "Home");
             
@@ -216,7 +216,41 @@ Chỉ trả về nội dung Markdown.";
                 CurrentLesson = lesson,
                 Course = lesson.Module.Course,
                 Modules = modules,
-                IsPreview = isPreview
+                IsPreview = false
+            };
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult LessonPreview(long? id)
+        {
+            if (!id.HasValue) return RedirectToAction("Index", "Home");
+            
+            var lesson = _context.Lessons
+                .Include(l => l.Module)
+                .ThenInclude(m => m.Course)
+                .FirstOrDefault(l => l.Id == id.Value);
+                
+            if (lesson == null) return NotFound();
+
+            var modules = _context.Modules
+                .Include(m => m.Lessons)
+                .Where(m => m.CourseId == lesson.Module.CourseId)
+                .OrderBy(m => m.OrderNo)
+                .ToList();
+                
+            foreach (var m in modules)
+            {
+                m.Lessons = m.Lessons.OrderBy(l => l.OrderNo).ToList();
+            }
+
+            var model = new EduNexus.ViewModels.LessonViewModel
+            {
+                CurrentLesson = lesson,
+                Course = lesson.Module.Course,
+                Modules = modules,
+                IsPreview = true
             };
 
             return View(model);

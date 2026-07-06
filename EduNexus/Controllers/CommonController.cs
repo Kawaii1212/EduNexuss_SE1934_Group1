@@ -311,6 +311,60 @@ namespace EduNexus.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public IActionResult UpdateProfile(StudentSettingsViewModel model)
+        {
+            var studentIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (studentIdClaim == null) return RedirectToAction("UserLogin", "Common");
+
+            long studentId = long.Parse(studentIdClaim.Value);
+            var user = _userService.GetUserById(studentId);
+            if (user == null) return RedirectToAction("UserLogin", "Common");
+
+            if (!string.IsNullOrEmpty(model.FullName)) user.FullName = model.FullName;
+            if (!string.IsNullOrEmpty(model.Email)) user.Email = model.Email;
+            if (!string.IsNullOrEmpty(model.Phone)) user.Phone = model.Phone;
+
+            _userService.UpdateUser(user);
+            TempData["Success"] = "Profile updated successfully.";
+            
+            return RedirectToAction("StudentSettings");
+        }
+
+        [HttpPost]
+        public IActionResult ChangePassword(StudentSettingsViewModel model)
+        {
+            var studentIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (studentIdClaim == null) return RedirectToAction("UserLogin", "Common");
+
+            long studentId = long.Parse(studentIdClaim.Value);
+            var user = _userService.GetUserById(studentId);
+            if (user == null) return RedirectToAction("UserLogin", "Common");
+
+            // Assuming simple plain text password check based on UserLogin implementation
+            if (user.PasswordHash != model.CurrentPassword)
+            {
+                TempData["Error"] = "Current password is incorrect.";
+                TempData["ActiveTab"] = "security";
+                return RedirectToAction("StudentSettings");
+            }
+
+            if (string.IsNullOrEmpty(model.NewPassword) || model.NewPassword != model.ConfirmPassword)
+            {
+                TempData["Error"] = "New passwords do not match or are empty.";
+                TempData["ActiveTab"] = "security";
+                return RedirectToAction("StudentSettings");
+            }
+
+            user.PasswordHash = model.NewPassword;
+            _userService.UpdateUser(user);
+
+            TempData["Success"] = "Password updated successfully.";
+            TempData["ActiveTab"] = "security";
+            
+            return RedirectToAction("StudentSettings");
+        }
+
         [HttpGet]
         public IActionResult StudentLibrary()
         {

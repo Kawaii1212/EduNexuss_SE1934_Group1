@@ -625,7 +625,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="@Url.Action("LessonView", "Lesson")" class="btn-white">
+                        <a href="@Url.Action("LessonView", "Lesson", new { id = 1 })" class="btn-white">
                             <i class="fa-solid fa-play"></i> Continue
                         </a>
                     </div>
@@ -655,7 +655,7 @@
                         {
                             @foreach (var course in Model.OngoingCourses)
                             {
-                                <a href="@Url.Action("LessonView", "Lesson")" class="course-item">
+                                <a href="@Url.Action("LessonView", "Lesson", new { id = 1 })" class="course-item">
                                     <div class="course-icon" style="color: @course.IconColorHex; background: @course.IconColorHex; background-color: rgba(0,0,0,0.05);">
                                         <i class="@course.IconClass"></i>
                                     </div>

@@ -19,7 +19,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson View - EduNexus</title>
+    <title>Preview Lesson - EduNexus</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -498,13 +498,14 @@
     <!-- Topbar -->
     <header class="topbar">
         <div class="topbar-left">
-            <a href="/Common/StudentDashboard" class="back-btn" title="Back to Dashboard">
+            <a href="javascript:void(0)" class="back-btn" title="Disabled in Preview" style="pointer-events: none; opacity: 0.5;">
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div class="course-title-top">
                 @Model.Course.Title
                 <span>|</span>
                 <span>Module @Model.CurrentLesson.Module.OrderNo: @Model.CurrentLesson.Module.Title</span>
+                <span style="background: var(--warning); color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-left: 8px;">PREVIEW MODE</span>
             </div>
         </div>
         <div class="topbar-right">
@@ -514,6 +515,9 @@
                     <div class="progress-fill-mini"></div>
                 </div>
             </div>
+            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;">
+                <i class="fa-regular fa-star"></i> Leave Rating
+            </button>
         </div>
     </header>
 
@@ -535,11 +539,24 @@
                     <div class="lesson-header-left">
                         <h1>@Model.CurrentLesson.OrderNo. @Model.CurrentLesson.Title</h1>
                     </div>
-                    <button class="btn btn-primary">
-                        <i class="fa-solid fa-check"></i> Mark as Complete
-                    </button>
                 </div>
 
+                <!-- AI Tools Bar -->
+                <div class="ai-tools-bar" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; padding: 16px; background: linear-gradient(to right, var(--primary-lighter), #ffffff); border-radius: var(--radius-md); border: 1px solid var(--primary-light); align-items: center;">
+                    <div style="font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Assistant
+                    </div>
+                    <div style="flex: 1;"></div>
+                    <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
+                        <i class="fa-solid fa-file-waveform"></i> Summarize Video
+                    </button>
+                    <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
+                        <i class="fa-solid fa-clone"></i> Create Flashcards
+                    </button>
+                    <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
+                        <i class="fa-solid fa-clipboard-question"></i> Practice Quiz
+                    </button>
+                </div>
 
                 <div class="tabs">
                     <div class="tab active">Overview</div>
@@ -571,7 +588,7 @@
                             @foreach (var lesson in module.Lessons)
                             {
                                 var isActive = lesson.Id == Model.CurrentLesson.Id;
-                                <a href="/Lesson/LessonView?id=@lesson.Id" class="lesson-item @(isActive ? "active" : "")">
+                                <a href="/Lesson/LessonPreview?id=@lesson.Id" class="lesson-item @(isActive ? "active" : "")">
                                     <i class="fa-regular @(isActive ? "fa-circle-play" : "fa-circle") lesson-status"></i>
                                     <span class="lesson-title">@lesson.OrderNo. @lesson.Title</span>
                                 </a>
