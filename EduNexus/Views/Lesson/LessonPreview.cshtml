@@ -498,7 +498,7 @@
     <!-- Topbar -->
     <header class="topbar">
         <div class="topbar-left">
-            <a href="javascript:void(0)" class="back-btn" title="Disabled in Preview" style="pointer-events: none; opacity: 0.5;">
+            <a href="@Url.Action("AllCourses", "Common")" class="back-btn" title="Back to Courses">
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div class="course-title-top">
@@ -509,15 +509,15 @@
             </div>
         </div>
         <div class="topbar-right">
-            <div class="course-progress">
-                <span>45% Complete</span>
-                <div class="progress-bar-mini">
-                    <div class="progress-fill-mini"></div>
+            @if (!Model.IsGuest)
+            {
+                <div class="course-progress">
+                    <span>45% Complete</span>
+                    <div class="progress-bar-mini">
+                        <div class="progress-fill-mini"></div>
+                    </div>
                 </div>
-            </div>
-            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;">
-                <i class="fa-regular fa-star"></i> Leave Rating
-            </button>
+            }
         </div>
     </header>
 
@@ -527,46 +527,69 @@
         <!-- Left: Video & Details -->
         <main class="main-col">
             
-            @if (!string.IsNullOrEmpty(Model.CurrentLesson.VideoUrl))
+            @if (Model.IsGuest)
+            {
+                <div class="video-container" style="background: #111; display: flex; flex-direction: column; gap: 16px;">
+                    <i class="fa-solid fa-lock" style="font-size: 48px; color: #444;"></i>
+                    <h2 style="color: white;">Video is locked</h2>
+                    <p style="color: var(--text-muted);">Please sign in to view this lesson video.</p>
+                    <a href="@Url.Action("UserLogin", "Common")" class="btn btn-primary">Sign In Now</a>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(Model.CurrentLesson.VideoUrl))
             {
                 <div class="video-container" style="background: #000;">
                     <iframe src="@GetYouTubeEmbedUrl(Model.CurrentLesson.VideoUrl)" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
                 </div>
             }
 
-            <div class="content-card">
+            <div class="content-card" style="@(Model.IsGuest ? "position: relative; overflow: hidden;" : "")">
                 <div class="lesson-header">
                     <div class="lesson-header-left">
                         <h1>@Model.CurrentLesson.OrderNo. @Model.CurrentLesson.Title</h1>
                     </div>
                 </div>
 
-                <!-- AI Tools Bar -->
-                <div class="ai-tools-bar" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; padding: 16px; background: linear-gradient(to right, var(--primary-lighter), #ffffff); border-radius: var(--radius-md); border: 1px solid var(--primary-light); align-items: center;">
-                    <div style="font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Assistant
+                <div style="@(Model.IsGuest ? "filter: blur(8px); pointer-events: none; user-select: none; opacity: 0.5;" : "")">
+                    <!-- AI Tools Bar -->
+                    <div class="ai-tools-bar" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; padding: 16px; background: linear-gradient(to right, var(--primary-lighter), #ffffff); border-radius: var(--radius-md); border: 1px solid var(--primary-light); align-items: center;">
+                        <div style="font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Assistant
+                        </div>
+                        <div style="flex: 1;"></div>
+                        <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
+                            <i class="fa-solid fa-file-waveform"></i> Summarize Video
+                        </button>
+                        <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
+                            <i class="fa-solid fa-clone"></i> Create Flashcards
+                        </button>
+                        <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
+                            <i class="fa-solid fa-clipboard-question"></i> Practice Quiz
+                        </button>
                     </div>
-                    <div style="flex: 1;"></div>
-                    <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
-                        <i class="fa-solid fa-file-waveform"></i> Summarize Video
-                    </button>
-                    <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
-                        <i class="fa-solid fa-clone"></i> Create Flashcards
-                    </button>
-                    <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
-                        <i class="fa-solid fa-clipboard-question"></i> Practice Quiz
-                    </button>
-                </div>
 
-                <div class="tabs">
-                    <div class="tab active">Overview</div>
-                    <div class="tab">Q&A Discussion</div>
-                    <div class="tab">Notes</div>
-                </div>
+                    <div class="tabs">
+                        <div class="tab active">Overview</div>
+                        <div class="tab">Q&A Discussion</div>
+                        <div class="tab">Notes</div>
+                    </div>
 
-                <div class="tab-content" style="padding-top: 16px;">
-                    @Html.Raw(Model.CurrentLesson.Content)
+                    <div class="tab-content" style="padding-top: 16px;">
+                        @Html.Raw(Model.CurrentLesson.Content)
+                    </div>
                 </div>
+                
+                @if (Model.IsGuest)
+                {
+                    <div style="position: absolute; top: 80px; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; z-index: 10;">
+                        <div style="background: white; padding: 24px 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-hover); text-align: center; border: 1px solid var(--border);">
+                            <i class="fa-solid fa-lock" style="font-size: 32px; color: var(--text-muted); margin-bottom: 16px;"></i>
+                            <h3 style="margin-bottom: 8px;">Content Locked</h3>
+                            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Create a free account to unlock this lesson's content.</p>
+                            <a href="@Url.Action("UserRegister", "Common")" class="btn btn-primary">Create Account</a>
+                        </div>
+                    </div>
+                }
             </div>
 
         </main>

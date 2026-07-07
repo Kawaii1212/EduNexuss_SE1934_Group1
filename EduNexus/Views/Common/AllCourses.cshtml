@@ -373,37 +373,40 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="logo">
-            <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
-            Edu<span>Nexus</span>
-        </div>
-        <nav>
-            <a href="@Url.Action("StudentDashboard", "Common")" class="nav-item">
-                <i class="fa-solid fa-chart-line"></i> Dashboard
-            </a>
-            <a href="@Url.Action("AllCourses", "Common")" class="nav-item active">
-                <i class="fa-solid fa-book-open"></i> All Courses
-            </a>
-            <a href="@Url.Action("PersonalProgress", "Common")" class="nav-item">
-                <i class="fa-solid fa-bullseye"></i> Personal Progress
-            </a>
-            <a href="@Url.Action("StudentLibrary", "Common")" class="nav-item">
-                <i class="fa-solid fa-folder-open"></i> Library
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fa-solid fa-users"></i> Community
-            </a>
-            <div style="flex: 1;"></div>
-            <a href="@Url.Action("StudentSettings", "Common")" class="nav-item">
-                <i class="fa-solid fa-gear"></i> Settings
-            </a>
-            <a href="@Url.Action("SignOut", "Common")" class="nav-item" style="color: var(--danger);">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
-            </a>
-        </nav>
-    </aside>
+    <!-- Sidebar (Only for logged in users) -->
+    @if (!Model.IsGuest)
+    {
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
+                Edu<span>Nexus</span>
+            </div>
+            <nav>
+                <a href="@Url.Action("StudentDashboard", "Common")" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="@Url.Action("AllCourses", "Common")" class="nav-item active">
+                    <i class="fa-solid fa-book-open"></i> All Courses
+                </a>
+                <a href="@Url.Action("PersonalProgress", "Common")" class="nav-item">
+                    <i class="fa-solid fa-bullseye"></i> Personal Progress
+                </a>
+                <a href="@Url.Action("StudentLibrary", "Common")" class="nav-item">
+                    <i class="fa-solid fa-folder-open"></i> Library
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-users"></i> Community
+                </a>
+                <div style="flex: 1;"></div>
+                <a href="@Url.Action("StudentSettings", "Common")" class="nav-item">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </a>
+                <a href="@Url.Action("SignOut", "Common")" class="nav-item" style="color: var(--danger);">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </a>
+            </nav>
+        </aside>
+    }
 
     <!-- Main Content -->
     <main class="main-content">
@@ -422,12 +425,22 @@
                     </div>
                 </form>
 
-                <div class="user-profile">
-                    <span style="font-weight: 600; font-size: 14px;">@(Model.StudentName)</span>
-                    <div class="avatar">
-                        @(Model.StudentName.Substring(0, 1).ToUpper())
+                @if (Model.IsGuest)
+                {
+                    <div style="margin-left: 24px; display: flex; gap: 12px;">
+                        <a href="@Url.Action("UserLogin", "Common")" style="text-decoration: none; font-weight: 600; color: var(--text-main); padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-full);">Sign In</a>
+                        <a href="@Url.Action("UserRegister", "Common")" style="text-decoration: none; font-weight: 600; color: white; background: var(--primary); padding: 8px 16px; border-radius: var(--radius-full);">Sign Up</a>
                     </div>
-                </div>
+                }
+                else
+                {
+                    <div class="user-profile">
+                        <span style="font-weight: 600; font-size: 14px;">@(Model.StudentName)</span>
+                        <div class="avatar">
+                            @(Model.StudentName.Substring(0, 1).ToUpper())
+                        </div>
+                    </div>
+                }
             </div>
         </header>
 
@@ -488,7 +501,21 @@
                                     {
                                         <div class="course-price">$@course.Price.ToString("N0")</div>
                                     }
-                                    <a href="#" class="btn-enroll">Explore</a>
+                                    @if (Model.IsGuest)
+                                    {
+                                        if (course.FirstLessonId.HasValue)
+                                        {
+                                            <a href="@Url.Action("LessonPreview", "Lesson", new { id = course.FirstLessonId })" class="btn-enroll">Try Learning</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("UserLogin", "Common")" class="btn-enroll">Try Learning</a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <a href="#" class="btn-enroll">Explore</a>
+                                    }
                                 </div>
                             </div>
                         </div>

@@ -7,6 +7,7 @@ namespace EduNexus.ViewModels
         public string SearchQuery { get; set; } = string.Empty;
         public List<CourseItemViewModel> Courses { get; set; } = new List<CourseItemViewModel>();
         public string StudentName { get; set; } = "Student";
+        public bool IsGuest { get; set; } = false;
     }
 
     public class CourseItemViewModel
@@ -19,5 +20,6 @@ namespace EduNexus.ViewModels
         public string ThumbnailUrl { get; set; } = string.Empty;
         public int Version { get; set; }
         public string CourseGroupName { get; set; } = string.Empty;
+        public long? FirstLessonId { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace EduNexus.Controllers
 {
@@ -17,19 +18,25 @@ namespace EduNexus.Controllers
         private readonly IProgressService _progressService;
         private readonly IUserService _userService;
         private readonly EduNexusContext _context;
+        private readonly IMemoryCache _cache;
+        private readonly IEmailService _emailService;
 
         public CommonController(
             ILogger<CommonController> logger, 
             IClassMaterialService classMaterialService, 
             IProgressService progressService,
             IUserService userService,
-            EduNexusContext context)
+            EduNexusContext context,
+            IMemoryCache cache,
+            IEmailService emailService)
         {
             _logger = logger;
             _classMaterialService = classMaterialService;
             _progressService = progressService;
             _userService = userService;
             _context = context;
+            _cache = cache;
+            _emailService = emailService;
         }
 
         public IActionResult CourseList()
@@ -155,6 +162,115 @@ namespace EduNexus.Controllers
             _userService.AddUser(newUser);
 
             return RedirectToAction("UserLogin", "Common");
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = _userService.GetUserByEmail(model.Email);
+            if (user == null)
+            {
+                // To prevent email enumeration attacks, do not reveal if the email exists or not.
+                // But for a school project, it might be better to show an error so the user knows.
+                ModelState.AddModelError("Email", "No account found with this email.");
+                return View(model);
+            }
+
+            if (!string.Equals(user.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(string.Empty, "Your account is not active.");
+                return View(model);
+            }
+
+            // Generate 6 digit code
+            Random random = new Random();
+            string code = random.Next(100000, 999999).ToString();
+
+            // Store in cache for 5 minutes
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+            _cache.Set($"ResetCode_{model.Email}", code, cacheOptions);
+
+            // Send email
+            string subject = "EduNexus - Password Reset Verification Code";
+            string body = $@"
+                <div style='font-family: Arial, sans-serif; padding: 20px;'>
+                    <h2>Password Reset Request</h2>
+                    <p>We received a request to reset your password for your EduNexus account.</p>
+                    <p>Your verification code is: <strong><span style='font-size: 24px; color: #5c24ff;'>{code}</span></strong></p>
+                    <p>This code will expire in 5 minutes.</p>
+                    <p>If you did not request this, please ignore this email.</p>
+                </div>";
+
+            await _emailService.SendEmailAsync(model.Email, subject, body);
+
+            TempData["Success"] = "Verification code has been sent to your email.";
+            return RedirectToAction("ResetPassword", new { email = model.Email });
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction("ForgotPassword");
+            }
+            
+            var model = new ResetPasswordViewModel { Email = email };
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            if (!_cache.TryGetValue($"ResetCode_{model.Email}", out string? savedCode))
+            {
+                ModelState.AddModelError(string.Empty, "Verification code has expired. Please request a new one.");
+                return View(model);
+            }
+
+            if (model.Code != savedCode)
+            {
+                ModelState.AddModelError("Code", "Invalid verification code.");
+                return View(model);
+            }
+
+            var user = _userService.GetUserByEmail(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "User not found.");
+                return View(model);
+            }
+
+            // Update password
+            user.PasswordHash = model.NewPassword;
+            _userService.UpdateUser(user);
+
+            // Remove code from cache
+            _cache.Remove($"ResetCode_{model.Email}");
+
+            TempData["Success"] = "Password has been successfully reset. Please log in.";
+            return RedirectToAction("UserLogin");
         }
 
         [HttpGet]
@@ -393,8 +509,8 @@ namespace EduNexus.Controllers
         public IActionResult AllCourses(string search = "")
         {
             var studentIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-            if (studentIdClaim == null) return RedirectToAction("UserLogin", "Common");
-            var studentName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "Student";
+            bool isGuest = studentIdClaim == null;
+            var studentName = isGuest ? "Guest" : User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "Student";
 
             var coursesQuery = _context.Courses
                 .Include(c => c.CourseGroup)
@@ -406,6 +522,7 @@ namespace EduNexus.Controllers
                 coursesQuery = coursesQuery.Where(c => c.Title.Contains(search) || c.Description.Contains(search));
             }
 
+            // We need to fetch modules and lessons to find the first lesson ID.
             var courses = coursesQuery
                 .OrderByDescending(c => c.CreatedAt)
                 .Select(c => new CourseItemViewModel
@@ -415,16 +532,18 @@ namespace EduNexus.Controllers
                     Description = c.Description ?? "No description available.",
                     Price = c.Price,
                     InstructorName = c.CreatedByNavigation != null ? c.CreatedByNavigation.FullName : "System",
-                    ThumbnailUrl = "", // Set an empty or placeholder thumbnail for now
+                    ThumbnailUrl = "",
                     Version = c.Version,
-                    CourseGroupName = c.CourseGroup != null ? c.CourseGroup.Name : ""
+                    CourseGroupName = c.CourseGroup != null ? c.CourseGroup.Name : "",
+                    FirstLessonId = _context.Modules.Where(m => m.CourseId == c.Id).SelectMany(m => m.Lessons).OrderBy(l => l.OrderNo).Select(l => (long?)l.Id).FirstOrDefault()
                 }).ToList();
 
             var model = new AllCoursesViewModel
             {
                 SearchQuery = search,
                 Courses = courses,
-                StudentName = studentName
+                StudentName = studentName,
+                IsGuest = isGuest
             };
 
             return View(model);

@@ -245,12 +245,16 @@ Chỉ trả về nội dung Markdown.";
                 m.Lessons = m.Lessons.OrderBy(l => l.OrderNo).ToList();
             }
 
+            var studentIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            bool isGuest = studentIdClaim == null;
+
             var model = new EduNexus.ViewModels.LessonViewModel
             {
                 CurrentLesson = lesson,
                 Course = lesson.Module.Course,
                 Modules = modules,
-                IsPreview = true
+                IsPreview = true,
+                IsGuest = isGuest
             };
 
             return View(model);
