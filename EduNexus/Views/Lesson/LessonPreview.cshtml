@@ -534,74 +534,84 @@
     <div class="layout-container">
         
         <!-- Left: Video & Details -->
-        <main class="main-col">
-            
-            @if (Model.IsGuest)
-            {
-                <div class="video-container" style="background: #111; display: flex; flex-direction: column; gap: 16px;">
-                    <i class="fa-solid fa-lock" style="font-size: 48px; color: #444;"></i>
-                    <h2 style="color: white;">Video is locked</h2>
-                    <p style="color: var(--text-muted);">Please sign in to view this lesson video.</p>
-                    <a href="@Url.Action("UserLogin", "Auth")" class="btn btn-primary">Sign In Now</a>
-                </div>
-            }
-            else if (!string.IsNullOrEmpty(Model.CurrentLesson.VideoUrl))
-            {
-                <div class="video-container" style="background: #000;">
-                    <iframe src="@GetYouTubeEmbedUrl(Model.CurrentLesson.VideoUrl)" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
-                </div>
-            }
-
-            <div class="content-card" style="@(Model.IsGuest ? "position: relative; overflow: hidden;" : "")">
-                <div class="lesson-header">
-                    <div class="lesson-header-left">
-                        <h1>@Model.CurrentLesson.OrderNo. @Model.CurrentLesson.Title</h1>
-                    </div>
-                </div>
-
-                <div style="@(Model.IsGuest ? "filter: blur(8px); pointer-events: none; user-select: none; opacity: 0.5;" : "")">
-                    <!-- AI Tools Bar -->
-                    <div class="ai-tools-bar" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; padding: 16px; background: linear-gradient(to right, var(--primary-lighter), #ffffff); border-radius: var(--radius-md); border: 1px solid var(--primary-light); align-items: center;">
-                        <div style="font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Assistant
-                        </div>
-                        <div style="flex: 1;"></div>
-                        <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
-                            <i class="fa-solid fa-file-waveform"></i> Summarize Video
-                        </button>
-                        <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
-                            <i class="fa-solid fa-clone"></i> Create Flashcards
-                        </button>
-                        <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
-                            <i class="fa-solid fa-clipboard-question"></i> Practice Quiz
-                        </button>
-                    </div>
-
-                    <div class="tabs">
-                        <div class="tab active">Overview</div>
-                        <div class="tab">Q&A Discussion</div>
-                        <div class="tab">Notes</div>
-                    </div>
-
-                    <div class="tab-content" style="padding-top: 16px;">
-                        @Html.Raw(Model.CurrentLesson.Content)
-                    </div>
-                </div>
-                
-                @if (Model.IsGuest)
+        @if (User.IsInRole("SME") || User.IsInRole("ADMIN"))
+        {
+            <main class="main-col">
+                @if (!string.IsNullOrEmpty(Model.CurrentLesson.VideoUrl))
                 {
-                    <div style="position: absolute; top: 80px; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; z-index: 10;">
-                        <div style="background: white; padding: 24px 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-hover); text-align: center; border: 1px solid var(--border);">
-                            <i class="fa-solid fa-lock" style="font-size: 32px; color: var(--text-muted); margin-bottom: 16px;"></i>
-                            <h3 style="margin-bottom: 8px;">Content Locked</h3>
-                            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Create a free account to unlock this lesson's content.</p>
-                            <a href="@Url.Action("UserRegister", "Auth")" class="btn btn-primary">Create Account</a>
-                        </div>
+                    <div class="video-container" style="background: #000;">
+                        <iframe src="@GetYouTubeEmbedUrl(Model.CurrentLesson.VideoUrl)" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
                     </div>
                 }
-            </div>
 
-        </main>
+                <div class="content-card">
+                    <div class="lesson-header">
+                        <div class="lesson-header-left">
+                            <h1>@Model.CurrentLesson.OrderNo. @Model.CurrentLesson.Title</h1>
+                        </div>
+                    </div>
+
+                    <div>
+                        <!-- AI Tools Bar -->
+                        <div class="ai-tools-bar" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; padding: 16px; background: linear-gradient(to right, var(--primary-lighter), #ffffff); border-radius: var(--radius-md); border: 1px solid var(--primary-light); align-items: center;">
+                            <div style="font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Assistant
+                            </div>
+                            <div style="flex: 1;"></div>
+                            <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
+                                <i class="fa-solid fa-file-waveform"></i> Summarize Video
+                            </button>
+                            <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
+                                <i class="fa-solid fa-clone"></i> Create Flashcards
+                            </button>
+                            <button class="btn btn-outline" style="border-color: var(--primary-light); color: var(--primary); padding: 8px 14px; font-size: 13px; font-weight: 600; background: white;">
+                                <i class="fa-solid fa-clipboard-question"></i> Practice Quiz
+                            </button>
+                        </div>
+
+                        <div class="tabs">
+                            <div class="tab active">Overview</div>
+                            <div class="tab">Q&A Discussion</div>
+                            <div class="tab">Notes</div>
+                        </div>
+
+                        <div class="tab-content" style="padding-top: 16px;">
+                            @Html.Raw(Model.CurrentLesson.Content)
+                        </div>
+                    </div>
+                </div>
+            </main>
+        }
+        else
+        {
+            <main class="main-col" style="justify-content: center; align-items: center; background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 40px; text-align: center;">
+                <div style="max-width: 480px;">
+                    <div style="width: 80px; height: 80px; background: var(--primary-lighter); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                        <i class="fa-solid fa-lock" style="font-size: 36px; color: var(--primary);"></i>
+                    </div>
+                    <h2 style="font-size: 28px; margin-bottom: 16px; color: var(--text-main);">Course Preview</h2>
+                    <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 32px; font-size: 16px;">
+                        You are exploring the course syllabus for <strong>@Model.Course.Title</strong>. Enroll in this course to access high-quality video lessons, detailed materials, and interactive quizzes.
+                    </p>
+                    @if (Model.IsGuest)
+                    {
+                        <a href="@Url.Action("UserLogin", "Auth")" class="btn btn-primary" style="padding: 14px 32px; font-size: 16px;">
+                            Sign In to Enroll
+                        </a>
+                    }
+                    else
+                    {
+                        <form action="/CourseExplorer/Enroll" method="post" style="display: inline;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="courseId" value="@Model.Course.Id" />
+                            <button type="submit" class="btn btn-primary" style="padding: 14px 32px; font-size: 16px;">
+                                Enroll Now
+                            </button>
+                        </form>
+                    }
+                </div>
+            </main>
+        }
 
         <!-- Right: Syllabus Sidebar -->
         <aside class="syllabus-col">
