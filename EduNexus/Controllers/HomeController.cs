@@ -45,8 +45,11 @@ namespace EduNexus.Controllers
             return View();
         }
 
+<<<<<<< Updated upstream
 
 
+=======
+>>>>>>> Stashed changes
         public IActionResult QuizTaking()
         {
             return View();
