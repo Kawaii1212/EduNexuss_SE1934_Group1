@@ -628,42 +628,15 @@
                             </div>
 
                             <div class="col-action">
-                                <a href="#" class="btn-text" onclick="alert('Chức năng Review chi tiết sẽ được cập nhật sau!'); return false;">Review</a>
+                                <a href="/Quiz/Review?attemptId=@item.QuizAttemptId" class="btn-text">Review Answers</a>
                             </div>
                         </div>
-<<<<<<<< Updated upstream:EduNexus/Views/Quiz/QuizHistory.cshtml
                     }
                 }
                 else
                 {
                     <div style="padding: 40px; text-align: center; color: var(--text-muted);" id="noDataMessage">
                         You haven't taken any quizzes yet.
-========
-                        <div class="col-date">
-                            @item.DateTaken.LocalDateTime.ToString("MMM dd, yyyy")
-                            <span>@item.DateTaken.LocalDateTime.ToString("hh:mm tt")</span>
-                        </div>
-                        <div class="col-score @(item.Score >= 80 ? "score-high" : (item.Score >= 60 ? "score-medium" : "score-low"))">
-                            @(item.Score.HasValue ? item.Score.Value.ToString("0.0") : "-")
-                        </div>
-                        <div class="col-status">
-                            @if (item.Status == "PASSED")
-                            {
-                                <span class="badge badge-passed">Passed</span>
-                            }
-                            else if (item.Status == "FAILED")
-                            {
-                                <span class="badge badge-failed">Failed</span>
-                            }
-                            else
-                            {
-                                <span class="badge" style="background: #f3f4f6; color: var(--text-muted);">@item.Status</span>
-                            }
-                        </div>
-                        <div class="col-action">
-                            <a href="/Quiz/Review?attemptId=@item.QuizAttemptId" class="btn-text">Review Answers</a>
-                        </div>
->>>>>>>> Stashed changes:EduNexus/Views/Quiz/History.cshtml
                     </div>
                 }
             </div>
