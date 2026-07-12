@@ -7,7 +7,7 @@ public interface IFlashcardRepository
 {
     List<FlashcardDeck> GetDecksByCourse(long courseId, long? moduleId = null, string? search = null);
     FlashcardDeck? GetDeckWithCards(long deckId);
-    List<FlashcardDeck> GetPublishedDecks(long? courseId, string? search = null, string? category = null);
+    List<FlashcardDeck> GetPublishedDecks(IReadOnlyCollection<long> allowedCourseIds, long? courseId, string? search = null, string? category = null);
     void AddDeck(FlashcardDeck deck);
     void UpdateDeck(FlashcardDeck deck);
     void DeleteDeck(long deckId);

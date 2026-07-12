@@ -55,14 +55,22 @@ public class FlashcardDAO : BaseDAO<FlashcardDeck>
             .FirstOrDefault(d => d.Id == deckId);
     }
 
-    public List<FlashcardDeck> GetPublishedDecks(long? courseId, string? search = null, string? category = null)
+    public List<FlashcardDeck> GetPublishedDecks(
+        IReadOnlyCollection<long> allowedCourseIds,
+        long? courseId,
+        string? search = null,
+        string? category = null)
     {
         using var context = GetContext();
+        if (allowedCourseIds.Count == 0)
+            return new List<FlashcardDeck>();
+
         var query = context.FlashcardDecks
             .Include(d => d.Flashcards)
             .Include(d => d.Course)
             .Include(d => d.Module)
-            .Where(d => d.Status == DbStatus.FlashcardDeck.Published);
+            .Where(d => d.Status == DbStatus.FlashcardDeck.Published)
+            .Where(d => allowedCourseIds.Contains(d.CourseId));
 
         if (courseId.HasValue && courseId.Value > 0)
             query = query.Where(d => d.CourseId == courseId);

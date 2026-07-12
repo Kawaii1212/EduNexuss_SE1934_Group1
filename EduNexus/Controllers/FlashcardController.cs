@@ -229,11 +229,6 @@ public class FlashcardController : Controller
     {
         var studentId = GetCurrentUserId();
         var vm = _flashcardService.GetLibraryForStudent(studentId, courseId, search, category);
-        vm.Courses = _context.Courses
-            .Where(c => c.DeletedAt == null)
-            .OrderBy(c => c.Title)
-            .Select(c => new CourseOptionViewModel { Id = c.Id, Title = c.Title })
-            .ToList();
         return View(vm);
     }
 
