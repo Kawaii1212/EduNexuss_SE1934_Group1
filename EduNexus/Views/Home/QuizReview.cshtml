@@ -370,7 +370,7 @@
     <!-- Topbar -->
     <header class="topbar">
         <div class="topbar-left">
-            <a href="/Quiz/QuizHistory" class="back-btn">
+            <a href="/Quiz/History" class="back-btn">
                 <i class="fa-solid fa-arrow-left"></i> Back to History
             </a>
         </div>
@@ -410,79 +410,10 @@
             </div>
         </div>
 
-        <div class="toolbar">
-            <div style="font-weight: 600; font-size: 18px;">Questions Overview</div>
-            <div class="filter-group">
-                <button class="filter-btn active">All (10)</button>
-                <button class="filter-btn">Correct (7)</button>
-                <button class="filter-btn">Incorrect (3)</button>
-            </div>
-        </div>
-
-        <!-- Question 1: Correct -->
-        <div class="review-card is-correct">
-            <div class="q-meta">
-                <span class="q-number">Question 1</span>
-                <span class="q-points" style="color: var(--success);">10 / 10 Points</span>
-            </div>
-            <div class="q-text">What command is used to create a new migration in Entity Framework Core via the .NET CLI?</div>
-            
-            <div class="options-list">
-                <div class="opt-row">
-                    <div class="opt-icon"></div>
-                    <div class="opt-text">dotnet ef database update</div>
-                </div>
-                <div class="opt-row correct-user">
-                    <div class="opt-icon"><i class="fa-solid fa-check"></i></div>
-                    <div class="opt-text">dotnet ef migrations add [MigrationName]</div>
-                    <span class="badge-answer your">Your Answer</span>
-                </div>
-                <div class="opt-row">
-                    <div class="opt-icon"></div>
-                    <div class="opt-text">dotnet add migration [MigrationName]</div>
-                </div>
-                <div class="opt-row">
-                    <div class="opt-icon"></div>
-                    <div class="opt-text">ef core add migration</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Question 2: Incorrect -->
-        <div class="review-card is-incorrect">
-            <div class="q-meta">
-                <span class="q-number">Question 2</span>
-                <span class="q-points" style="color: var(--danger);">0 / 10 Points</span>
-            </div>
-            <div class="q-text">Which of the following is NOT a valid relationship type natively supported by Entity Framework Core without extra configuration?</div>
-            
-            <div class="options-list">
-                <div class="opt-row">
-                    <div class="opt-icon"></div>
-                    <div class="opt-text">One-to-One</div>
-                </div>
-                <div class="opt-row">
-                    <div class="opt-icon"></div>
-                    <div class="opt-text">One-to-Many</div>
-                </div>
-                <div class="opt-row incorrect-user">
-                    <div class="opt-icon"><i class="fa-solid fa-xmark"></i></div>
-                    <div class="opt-text">Many-to-Many (using skip navigations)</div>
-                    <span class="badge-answer your">Your Answer</span>
-                </div>
-                <div class="opt-row correct-missed">
-                    <div class="opt-icon"><i class="fa-solid fa-check"></i></div>
-                    <div class="opt-text">Many-to-Any</div>
-                    <span style="font-size: 12px; color: var(--success); font-weight: 600; margin-left: 12px;">Correct Answer</span>
-                </div>
-            </div>
-
-            <div class="feedback-box">
-                <div class="feedback-title">
-                    <i class="fa-solid fa-lightbulb"></i> Explanation
-                </div>
-                EF Core natively supports One-to-One, One-to-Many, and Many-to-Many (introduced natively without a join entity class in EF Core 5.0). "Many-to-Any" is not a recognized relational database relationship type in EF Core.
-            </div>
+        <div style="margin-top: 40px; text-align: center; padding: 40px; background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+            <i class="fa-solid fa-tools" style="font-size: 48px; color: var(--primary-light); margin-bottom: 16px;"></i>
+            <h3 style="font-weight: 700; color: var(--text-main); margin-bottom: 8px;">Tính năng đang phát triển</h3>
+            <p style="color: var(--text-muted); font-size: 15px;">Chức năng xem lại câu trả lời chi tiết sẽ được cập nhật trong phiên bản sau.</p>
         </div>
 
     </div>
