@@ -88,5 +88,16 @@ namespace EduNexus.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        public IActionResult Enroll(long courseId)
+        {
+            return RedirectToAction("UnderDevelopment");
+        }
+
+        public IActionResult UnderDevelopment()
+        {
+            return View();
+        }
     }
 }

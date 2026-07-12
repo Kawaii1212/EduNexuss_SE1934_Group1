@@ -200,7 +200,10 @@
     </div>
     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px;">
         <div class="course-badges">
-            <span class="badge-item badge-group">@Model.CourseGroupName</span>
+            @if (!string.IsNullOrEmpty(Model.CourseGroupName))
+            {
+                <span class="badge-item badge-group">@Model.CourseGroupName</span>
+            }
             @if (Model.Status == "PUBLISHED")
             {
                 <span class="badge-item badge-status-published">Đang chạy</span>

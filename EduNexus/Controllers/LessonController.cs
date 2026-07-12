@@ -280,16 +280,21 @@ Chỉ trả về nội dung Markdown.";
             var totalLessons = await _context.Lessons
                 .CountAsync(l => l.Module.CourseId == courseId);
 
-            var completedLessons = await _context.LearningProgresses
-                .CountAsync(lp => lp.StudentId == studentId && 
-                                  lp.ActivityType == "LESSON" && 
-                                  lp.CompletionStatus == "COMPLETED" && 
-                                  lp.Lesson != null && lp.Lesson.Module.CourseId == courseId);
+            var completedLessonIds = await _context.LearningProgresses
+                .Where(lp => lp.StudentId == studentId && 
+                             lp.ActivityType == "LESSON" && 
+                             lp.CompletionStatus == "COMPLETED" && 
+                             lp.LessonId != null)
+                .Select(lp => lp.LessonId!.Value)
+                .ToListAsync();
+
+            var completedLessons = await _context.Lessons
+                .CountAsync(l => l.Module.CourseId == courseId && completedLessonIds.Contains(l.Id));
 
             decimal progressPercent = 0;
             if (totalLessons > 0)
             {
-                progressPercent = Math.Min(100, (decimal)completedLessons / totalLessons * 100);
+                progressPercent = Math.Min(100m, Math.Round((decimal)completedLessons / (decimal)totalLessons * 100m, 2));
             }
 
             var enrollments = await _context.Enrollments

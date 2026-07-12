@@ -411,7 +411,10 @@
                         <span class="course-status-badge badge-draft">Bản nháp</span>
                     }
 
-                    <span class="course-group-tag">@course.CourseGroupName</span>
+                    @if (!string.IsNullOrEmpty(course.CourseGroupName))
+                    {
+                        <span class="course-group-tag">@course.CourseGroupName</span>
+                    }
                 </div>
                 <div class="course-body">
                     <h3>@course.Title</h3>

@@ -482,15 +482,7 @@
                     <p>@Model.LearningHours h</p>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-orange">
-                    <i class="fa-solid fa-fire"></i>
-                </div>
-                <div class="stat-info">
-                    <h4>Current Streak</h4>
-                    <p>@Model.CurrentStreak Days</p>
-                </div>
-            </div>
+
         </div>
 
         <!-- Ongoing Courses -->
@@ -529,7 +521,7 @@
                         </div>
                     </div>
 
-                    <a href="@Url.Action("LessonView", "Lesson", new { id = 1 })" class="action-btn">Continue Learning</a>
+                    <a href="@Url.Action("LessonView", "Lesson", new { id = course.TargetLessonId })" class="action-btn">Continue Learning</a>
                 </div>
             }
         </div>
@@ -565,50 +557,13 @@
                             </div>
                         </div>
 
-                        <a href="@Url.Action("LessonView", "Lesson", new { id = 1 })" class="action-btn" style="background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border);">Review Course</a>
+                        <a href="@Url.Action("LessonView", "Lesson", new { id = course.TargetLessonId })" class="action-btn" style="background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border);">Review Course</a>
                     </div>
                 }
             </div>
         }
 
-        <!-- Recent Achievements -->
-        <div class="section-title">
-            <span>Recent Achievements</span>
-        </div>
 
-        <div class="achievements-grid">
-            <div class="achievement-card">
-                <div class="achievement-icon badge-gold">
-                    <i class="fa-solid fa-trophy"></i>
-                </div>
-                <h5>Fast Learner</h5>
-                <p>Completed 5 modules in a single week</p>
-            </div>
-            
-            <div class="achievement-card">
-                <div class="achievement-icon badge-silver">
-                    <i class="fa-solid fa-medal"></i>
-                </div>
-                <h5>Quiz Master</h5>
-                <p>Scored 100% on 3 consecutive quizzes</p>
-            </div>
-
-            <div class="achievement-card">
-                <div class="achievement-icon badge-bronze">
-                    <i class="fa-solid fa-fire"></i>
-                </div>
-                <h5>7-Day Streak</h5>
-                <p>Learned for 7 consecutive days</p>
-            </div>
-
-            <div class="achievement-card">
-                <div class="achievement-icon badge-gold" style="color: var(--primary); border-color: var(--primary-light);">
-                    <i class="fa-solid fa-certificate"></i>
-                </div>
-                <h5>Course Graduate</h5>
-                <p>Completed the UI/UX Design Basics course</p>
-            </div>
-        </div>
 
     </main>
 

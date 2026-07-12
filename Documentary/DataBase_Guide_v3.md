@@ -1,9 +1,41 @@
 **EduNexus --- Hướng dẫn Database cho Backend Team**
 
 **Database:** Microsoft SQL Server 2019+ / Azure SQL (T-SQL) **File
-schema:** edunexus_schema_sqlserver.sql **Đối tượng đọc:** Backend
+schema:** EduNexus_Database_Full.sql (bao gồm CREATE TABLE + seed data)
+**Đối tượng đọc:** Backend
 Developer triển khai API theo từng actor (Admin, SME, Course Manager,
 Teacher, Student, Guest)
+
+**0. Changelog (07/2026)**
+
+  ------------------------------------------------------------------------------------------------
+  **Thay đổi**                          **Chi tiết**
+  -------------------------------------- --------------------------------------------------------
+  `ALTER TABLE assignment ADD lesson_id  Đã được tích hợp trực tiếp vào `CREATE TABLE assignment`
+  BIGINT NULL REFERENCES lesson(id);`    trong file schema mới (không cần chạy ALTER riêng khi
+                                          tạo DB mới). Cho phép 1 assignment liên kết **tùy
+                                          chọn** tới đúng 1 `lesson` cụ thể trong course gốc mà
+                                          class đang học — ví dụ bài tập cuối bài của 1 lesson —
+                                          thay vì chỉ gắn chung với `class` như trước.
+                                          `lesson_id = NULL` nếu assignment áp dụng chung cho cả
+                                          class, không gắn với lesson cụ thể nào. Index mới:
+                                          `idx_assignment_lesson`.
+
+  Seed data đầy đủ                       File schema giờ có thêm phần **INSERT** cho toàn bộ 38
+                                          bảng ở cuối file, đảm bảo mỗi giá trị trạng thái/loại
+                                          (status, role, enrollment_type, difficulty...) có
+                                          **tối thiểu 6 bản ghi**, và mỗi `module` có tối thiểu
+                                          **6 lesson**. Xem mục 7 bên dưới để biết chi tiết số
+                                          lượng và thứ tự chạy.
+  ------------------------------------------------------------------------------------------------
+
+**Lưu ý khi dùng `assignment.lesson_id`:**
+- Khi tạo/sửa assignment ở SCR-11 (Create Essay Assignments), FE có thể cho SME/Teacher chọn
+  "Áp dụng cho cả lớp" (lesson_id = NULL) hoặc "Gắn với 1 lesson cụ thể" (chọn lesson thuộc đúng
+  course của class đó — Service Layer nên validate `lesson.module.course_id == class.course_id`,
+  DB không tự enforce ràng buộc chéo bảng này).
+- Không có CHECK constraint nào ràng buộc lesson phải cùng course với class — đây là rule nghiệp
+  vụ cần xử lý ở Service Layer, tương tự các rule GB-01, GB-04 khác đã liệt kê ở mục 6.
 
 **1. Tổng quan kỹ thuật --- Đọc trước khi code**
 
@@ -178,7 +210,11 @@ phải tự check ở Service Layer**, DB không tự enforce được).
   assignment,                   C, R, U     SCR-11 --- **Lưu ý:** khi set
   assignment_rubric_criterion               assignment.status=\'PUBLISHED\',
                                             trigger trg_rubric_weight_check sẽ chặn
-                                            nếu tổng weight_percent ≠ 100
+                                            nếu tổng weight_percent ≠ 100.
+                                            **(Mới 07/2026)** assignment.lesson_id
+                                            (NULL được) --- gắn assignment với 1
+                                            lesson cụ thể nếu cần, thay vì chỉ
+                                            gắn chung class.
 
   ai_request, ai_response       C, R        Mọi lần gọi AI (gen
                                             quiz/flashcard/expand outline) phải
@@ -248,7 +284,9 @@ liệu, chấm bài luận (AI hỗ trợ, Teacher duyệt cuối).
                                               lớp, không ảnh hưởng lesson gốc
 
   assignment,                   C, R, U       SCR-11 (Teacher cũng có thể tạo,
-  assignment_rubric_criterion                 theo PRD FT-05)
+  assignment_rubric_criterion                 theo PRD FT-05). **(Mới 07/2026)**
+                                              có thể set lesson_id để gắn bài tập
+                                              với 1 lesson cụ thể của class.
 
   submission                    R, U          SCR-19/20 --- xem danh sách bài nộp
                                               (UC-29), chấm chi tiết
@@ -504,6 +542,94 @@ khi UPDATE**, cứ để trigger làm.
     viết script xoá theo đúng thứ tự con → cha, hoặc đơn giản nhất:
     **không xoá cứng, dùng ARCHIVED/soft delete.**
 
+8.  **assignment.lesson_id (Mới 07/2026):** cột NULL được, không có
+    ràng buộc CHECK/FK phụ ép lesson phải cùng course với class của
+    assignment đó --- Backend Service Layer khi cho phép chọn lesson_id
+    ở SCR-11 phải tự validate `lesson → module → course_id` trùng với
+    `class.course_id`, nếu không sẽ tạo ra dữ liệu vô nghĩa (assignment
+    của lớp A trỏ tới lesson thuộc course của lớp B).
+
+**7. Seed Data (dữ liệu mẫu) --- có sẵn trong EduNexus_Database_Full.sql**
+
+File `EduNexus_Database_Full.sql` = toàn bộ DDL (mục 1-6 ở trên) **+**
+phần **INSERT** cho đủ 38 bảng, chạy tuần tự **1 lần duy nhất** trên
+DB rỗng (không dùng `SET IDENTITY_INSERT`, ID được sinh tự động theo
+đúng thứ tự insert --- nếu chạy lại phải drop & tạo lại DB, không insert
+đè lên dữ liệu cũ).
+
+**Nguyên tắc sinh dữ liệu:** mọi cột dạng "trạng thái/loại" (role,
+status, enrollment_type, difficulty, gateway, activity_type, task_type,
+memory_state, resource_type...) đều có **tối thiểu 6 bản ghi** cho mỗi
+giá trị hợp lệ; mỗi `module` có đúng **6 lesson**; mỗi `course` có 2
+module. Số lượng cụ thể theo từng bảng chính:
+
+  --------------------------------------------------------------------------------
+  **Bảng**              **Số dòng**  **Phân bổ theo trạng thái/loại (mỗi loại ≥6)**
+  ---------------------- ----------- --------------------------------------------
+  users                  54          ADMIN 6 · SME 6 · COURSE_MANAGER 6 · TEACHER
+                                     6 · STUDENT 30 \| ACTIVE 41 · LOCKED 7 ·
+                                     INACTIVE 6
+
+  course_group           12          ACTIVE 6 · ARCHIVED 6
+
+  course                 24          DRAFT 6 · PENDING_REVIEW 6 · PUBLISHED 6 ·
+                                     ARCHIVED 6
+
+  module                 48          2 module / course
+
+  lesson                 288         6 lesson / module (DRAFT 48 · PUBLISHED 240)
+
+  question               144         EASY/MEDIUM/HARD 48 mỗi loại · DRAFT/
+                                     APPROVED/REJECTED 48 mỗi loại · MANUAL 72 ·
+                                     AI_GENERATED 72
+
+  quiz                   36          DRAFT 12 · PUBLISHED 24 \| official 24 ·
+                                     practice (is_practice_generated=1) 12
+
+  flashcard_deck         16          DRAFT 8 · PUBLISHED 8
+
+  flashcard              96          6 flashcard / deck
+
+  class                  30          6 mỗi trạng thái (PLANNED/ACTIVE/COMPLETED/
+                                     EXPIRED/CLOSED)
+
+  subscription_package   12          ACTIVE 6 · INACTIVE 6
+
+  enrollment              84          H1 12 · H2 60 · H3 12 \| mỗi status
+                                     (ACTIVE/COMPLETED/CANCELLED/EXPIRED) 21
+
+  payment                84          PENDING 6 · PAID 52 · FAILED 6 · REFUNDED 20
+
+  refund_request         24          6 mỗi trạng thái (PENDING/APPROVED/
+                                     REJECTED/COMPLETED)
+
+  assignment              18          DRAFT 6 · PUBLISHED 6 · CLOSED 6 (9/18 có
+                                     lesson_id được gán, 9/18 để NULL)
+
+  submission              24          8 mỗi trạng thái (SUBMITTED/AI_GRADED/
+                                     GRADED)
+
+  quiz_attempt            20          IN_PROGRESS 7 · SUBMITTED 13
+
+  learning_progress       48          12 mỗi activity_type
+
+  ai_request              40          8 mỗi task_type · 10 mỗi status
+
+  ai_quota                24          12 user (SME+Teacher) x 2 tháng
+
+  background_job_log      18          6 mỗi trạng thái (RUNNING/SUCCESS/FAILED)
+  --------------------------------------------------------------------------------
+
+**Lưu ý kỹ thuật khi seed `assignment` + `assignment_rubric_criterion`:**
+trigger `trg_rubric_weight_check` kiểm tra tổng `weight_percent` mỗi khi
+có INSERT/UPDATE/DELETE trên `assignment_rubric_criterion` **nếu**
+assignment liên quan đang ở status = 'PUBLISHED'. Vì vậy script seed
+luôn **insert assignment ở status='DRAFT' trước, insert đủ 3 tiêu chí
+rubric (tổng = 100%), rồi mới UPDATE assignment.status → PUBLISHED/
+CLOSED** ở bước sau cùng --- tránh lỗi rollback do tổng trọng số chưa
+đủ 100% giữa chừng. Backend khi build tính năng "tạo assignment mới"
+nên áp dụng đúng thứ tự này (tạo nháp → thêm rubric → publish).
+
 📎 Tham khảo thêm: file EduNexus_Database_Design.md (lý do thiết kế từng
-bảng, mâu thuẫn tài liệu đã phát hiện) và edunexus_schema_sqlserver.sql
-(DDL đầy đủ).
+bảng, mâu thuẫn tài liệu đã phát hiện) và EduNexus_Database_Full.sql
+(DDL + seed data đầy đủ).

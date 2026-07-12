@@ -55,17 +55,37 @@ namespace EduNexus.Controllers
             string[] defaultColors = { "#3b82f6", "#10b981", "#3b82f6", "#f59e0b", "#ef4444" };
             int i = 0;
 
-            foreach (var e in enrollments)
+            using var context = new EduNexusContext(AppConfiguration.DbContextOptions);
+            var addedCourseIds = new System.Collections.Generic.HashSet<long>();
+
+            foreach (var e in enrollments.OrderByDescending(e => e.ClassId.HasValue))
             {
                 var actualCourse = e.Course ?? e.Class?.Course;
-                if (actualCourse != null)
+                if (actualCourse != null && !addedCourseIds.Contains(actualCourse.Id))
                 {
+                    addedCourseIds.Add(actualCourse.Id);
+                    var lastProgress = context.LearningProgresses
+                        .Where(lp => lp.StudentId == studentId && lp.Lesson != null && lp.Lesson.Module.CourseId == actualCourse.Id)
+                        .OrderByDescending(lp => lp.LastActiveAt)
+                        .FirstOrDefault();
+                    long? targetLessonId = lastProgress?.LessonId;
+
+                    if (targetLessonId == null)
+                    {
+                        var firstLesson = context.Lessons
+                            .Where(l => l.Module.CourseId == actualCourse.Id)
+                            .OrderBy(l => l.Module.OrderNo).ThenBy(l => l.OrderNo)
+                            .FirstOrDefault();
+                        targetLessonId = firstLesson?.Id;
+                    }
+
                     var courseVm = new OngoingCourseViewModel
                     {
                         CourseId = actualCourse.Id,
                         CourseName = actualCourse.Title,
                         CurrentModuleOrLesson = e.Class != null ? "Enrolled in Class: " + e.Class.Name : "Self-paced Course", 
                         ProgressPercent = e.ProgressPercent,
+                        TargetLessonId = targetLessonId,
                         IconClass = "fa-brands " + defaultIcons[i % defaultIcons.Length],
                         IconColorHex = defaultColors[i % defaultColors.Length]
                     };
@@ -215,17 +235,37 @@ namespace EduNexus.Controllers
             string[] defaultColors = { "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#3b82f6" };
             int i = 0;
 
-            foreach (var e in enrollments.Where(e => e.ProgressPercent < 100).OrderByDescending(e => e.CreatedAt))
+            using var context = new EduNexusContext(AppConfiguration.DbContextOptions);
+            var addedDashboardCourseIds = new System.Collections.Generic.HashSet<long>();
+
+            foreach (var e in enrollments.Where(e => e.ProgressPercent < 100).OrderByDescending(e => e.ClassId.HasValue).ThenByDescending(e => e.CreatedAt))
             {
                 var actualCourse = e.Course ?? e.Class?.Course;
-                if (actualCourse != null)
+                if (actualCourse != null && !addedDashboardCourseIds.Contains(actualCourse.Id))
                 {
+                    addedDashboardCourseIds.Add(actualCourse.Id);
+                    var lastProgress = context.LearningProgresses
+                        .Where(lp => lp.StudentId == studentId && lp.Lesson != null && lp.Lesson.Module.CourseId == actualCourse.Id)
+                        .OrderByDescending(lp => lp.LastActiveAt)
+                        .FirstOrDefault();
+                    long? targetLessonId = lastProgress?.LessonId;
+
+                    if (targetLessonId == null)
+                    {
+                        var firstLesson = context.Lessons
+                            .Where(l => l.Module.CourseId == actualCourse.Id)
+                            .OrderBy(l => l.Module.OrderNo).ThenBy(l => l.OrderNo)
+                            .FirstOrDefault();
+                        targetLessonId = firstLesson?.Id;
+                    }
+
                     var courseVm = new OngoingCourseViewModel
                     {
                         CourseId = actualCourse.Id,
                         CourseName = actualCourse.Title,
                         CurrentModuleOrLesson = e.Class != null ? "Enrolled in Class: " + e.Class.Name : "Self-paced Course", 
                         ProgressPercent = e.ProgressPercent,
+                        TargetLessonId = targetLessonId,
                         IconClass = "fa-brands " + defaultIcons[i % defaultIcons.Length],
                         IconColorHex = defaultColors[i % defaultColors.Length]
                     };
@@ -235,10 +275,9 @@ namespace EduNexus.Controllers
                 }
             }
 
-            using var context = new EduNexusContext(AppConfiguration.DbContextOptions);
             var now = DateTimeOffset.Now;
 
-            var studentClassIds = enrollments.Where(e => e.ClassId != null).Select(e => e.ClassId).ToList();
+            var studentClassIds = enrollments.Where(e => e.ClassId != null).Select(e => e.ClassId!.Value).ToList();
             var assignments = context.Assignments
                 .Where(a => studentClassIds.Contains(a.ClassId) && a.DueDate > now)
                 .OrderBy(a => a.DueDate)
