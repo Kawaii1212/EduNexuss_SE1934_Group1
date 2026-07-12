@@ -357,22 +357,22 @@
                 </a>
 
                 <div style="flex: 1;"></div>
-                <a href="@Url.Action("StudentSettings", "Common")" class="nav-item active">
+                <a href="@Url.Action("StudentSettings", "Student")" class="nav-item active">
                     <i class="fa-solid fa-gear"></i> Cài đặt
                 </a>
-                <a href="@Url.Action("SignOut", "Common")" class="nav-item logout-btn" style="color: var(--danger);">
+                <a href="@Url.Action("SignOut", "Auth")" class="nav-item logout-btn" style="color: var(--danger);">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
                 </a>
             }
             else
             {
-                <a href="@Url.Action("StudentDashboard", "Common")" class="nav-item">
+                <a href="@Url.Action("StudentDashboard", "Student")" class="nav-item">
                     <i class="fa-solid fa-chart-line"></i> Dashboard
                 </a>
-                <a href="@Url.Action("AllCourses", "Common")" class="nav-item">
+                <a href="@Url.Action("AllCourses", "CourseExplorer")" class="nav-item">
                     <i class="fa-solid fa-book-open"></i> All Courses
                 </a>
-                <a href="@Url.Action("PersonalProgress", "Common")" class="nav-item">
+                <a href="@Url.Action("PersonalProgress", "Student")" class="nav-item">
                     <i class="fa-solid fa-bullseye"></i> Personal Progress
                 </a>
                 <div class="progress-submenu" style="margin-left: 20px; padding-left: 12px; border-left: 2px solid var(--border); margin-top: -4px; margin-bottom: 12px;">
@@ -387,10 +387,10 @@
                     <i class="fa-solid fa-folder-open"></i> Library
                 </a>
                 <div style="flex: 1;"></div>
-                <a href="@Url.Action("StudentSettings", "Common")" class="nav-item active">
+                <a href="@Url.Action("StudentSettings", "Student")" class="nav-item active">
                     <i class="fa-solid fa-gear"></i> Settings
                 </a>
-                <a href="@Url.Action("SignOut", "Common")" class="nav-item" style="color: var(--danger);">
+                <a href="@Url.Action("SignOut", "Auth")" class="nav-item" style="color: var(--danger);">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
                 </a>
             }
@@ -444,7 +444,7 @@
 
                 <!-- Profile Tab -->
                 <div id="profile" class="tab-section @(TempData["ActiveTab"] == null || TempData["ActiveTab"].ToString() == "profile" ? "active" : "")">
-                    <form method="post" action="@Url.Action("UpdateProfile", "Common")">
+                    <form method="post" action="@Url.Action("UpdateProfile", "Student")">
                         <div class="settings-section-title">Public Profile</div>
                         
                         <div class="avatar-upload">
@@ -480,7 +480,7 @@
 
                 <!-- Security Tab -->
                 <div id="security" class="tab-section @(TempData["ActiveTab"]?.ToString() == "security" ? "active" : "")">
-                    <form method="post" action="@Url.Action("ChangePassword", "Common")">
+                    <form method="post" action="@Url.Action("ChangePassword", "Student")">
                         <div class="settings-section-title">Change Password</div>
 
                         <div class="form-group">

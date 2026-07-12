@@ -409,6 +409,37 @@
             </a>
         </nav>
     </aside>
+    <!-- Sidebar (Only for logged in users) -->
+    @if (!Model.IsGuest)
+    {
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
+                Edu<span>Nexus</span>
+            </div>
+            <nav>
+                <a href="@Url.Action("StudentDashboard", "Student")" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="@Url.Action("AllCourses", "CourseExplorer")" class="nav-item active">
+                    <i class="fa-solid fa-book-open"></i> All Courses
+                </a>
+                <a href="@Url.Action("PersonalProgress", "Student")" class="nav-item">
+                    <i class="fa-solid fa-bullseye"></i> Personal Progress
+                </a>
+                <a href="@Url.Action("StudentLibrary", "Student")" class="nav-item">
+                    <i class="fa-solid fa-folder-open"></i> Library
+                </a>
+                <div style="flex: 1;"></div>
+                <a href="@Url.Action("StudentSettings", "Student")" class="nav-item">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </a>
+                <a href="@Url.Action("SignOut", "Auth")" class="nav-item" style="color: var(--danger);">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </a>
+            </nav>
+        </aside>
+    }
 
     <!-- Main Content -->
     <main class="main-content">
@@ -420,7 +451,7 @@
             </div>
             
             <div style="display: flex; align-items: center;">
-                <form method="get" action="@Url.Action("AllCourses", "Common")">
+                <form method="get" action="@Url.Action("AllCourses", "CourseExplorer")">
                     <div class="search-bar">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <input type="text" name="search" value="@Model.SearchQuery" placeholder="Search for courses...">
@@ -430,8 +461,8 @@
                 @if (Model.IsGuest)
                 {
                     <div style="margin-left: 24px; display: flex; gap: 12px;">
-                        <a href="@Url.Action("UserLogin", "Common")" style="text-decoration: none; font-weight: 600; color: var(--text-main); padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-full);">Sign In</a>
-                        <a href="@Url.Action("UserRegister", "Common")" style="text-decoration: none; font-weight: 600; color: white; background: var(--primary); padding: 8px 16px; border-radius: var(--radius-full);">Sign Up</a>
+                        <a href="@Url.Action("UserLogin", "Auth")" style="text-decoration: none; font-weight: 600; color: var(--text-main); padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-full);">Sign In</a>
+                        <a href="@Url.Action("UserRegister", "Auth")" style="text-decoration: none; font-weight: 600; color: white; background: var(--primary); padding: 8px 16px; border-radius: var(--radius-full);">Sign Up</a>
                     </div>
                 }
                 else
@@ -511,7 +542,7 @@
                                         }
                                         else
                                         {
-                                            <a href="@Url.Action("UserLogin", "Common")" class="btn-enroll">Try Learning</a>
+                                            <a href="@Url.Action("UserLogin", "Auth")" class="btn-enroll">Try Learning</a>
                                         }
                                     }
                                     else
@@ -539,7 +570,7 @@
                     <p>Try adjusting your search query to find what you're looking for.</p>
                     @if (!string.IsNullOrEmpty(Model.SearchQuery))
                     {
-                        <a href="@Url.Action("AllCourses", "Common")" style="color: var(--primary); font-weight: 600; text-decoration: none; margin-top: 16px; display: inline-block;">Clear Search</a>
+                        <a href="@Url.Action("AllCourses", "CourseExplorer")" style="color: var(--primary); font-weight: 600; text-decoration: none; margin-top: 16px; display: inline-block;">Clear Search</a>
                     }
                 </div>
             }

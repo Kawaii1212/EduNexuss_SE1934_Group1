@@ -506,7 +506,7 @@
             }
             else
             {
-                <a href="@Url.Action("AllCourses", "Common")" class="back-btn" title="Back to Courses">
+                <a href="@Url.Action("AllCourses", "CourseExplorer")" class="back-btn" title="Back to Courses">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
             }
@@ -542,7 +542,7 @@
                     <i class="fa-solid fa-lock" style="font-size: 48px; color: #444;"></i>
                     <h2 style="color: white;">Video is locked</h2>
                     <p style="color: var(--text-muted);">Please sign in to view this lesson video.</p>
-                    <a href="@Url.Action("UserLogin", "Common")" class="btn btn-primary">Sign In Now</a>
+                    <a href="@Url.Action("UserLogin", "Auth")" class="btn btn-primary">Sign In Now</a>
                 </div>
             }
             else if (!string.IsNullOrEmpty(Model.CurrentLesson.VideoUrl))
@@ -595,7 +595,7 @@
                             <i class="fa-solid fa-lock" style="font-size: 32px; color: var(--text-muted); margin-bottom: 16px;"></i>
                             <h3 style="margin-bottom: 8px;">Content Locked</h3>
                             <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Create a free account to unlock this lesson's content.</p>
-                            <a href="@Url.Action("UserRegister", "Common")" class="btn btn-primary">Create Account</a>
+                            <a href="@Url.Action("UserRegister", "Auth")" class="btn btn-primary">Create Account</a>
                         </div>
                     </div>
                 }
