@@ -12,6 +12,7 @@ AppConfiguration.ConnectionString = builder.Configuration.GetConnectionString("D
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddDbContext<EduNexusContext>(options =>
     options.UseSqlServer(AppConfiguration.ConnectionString));
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<EduNexusContext>(options =>
 // Register Repositories and Services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 builder.Services.AddScoped<ISubmissionService, SubmissionService>();
 builder.Services.AddScoped<IClassMaterialRepository, ClassMaterialRepository>();
@@ -33,6 +35,10 @@ builder.Services.AddScoped<IUserOauthIdentityRepository, UserOauthIdentityReposi
 builder.Services.AddHttpClient<GeminiService>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
+
+// Admin Module DAOs & Services
+builder.Services.AddScoped<ISystemSettingService, SystemSettingService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -68,6 +74,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Common}/{action=UserLogin}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

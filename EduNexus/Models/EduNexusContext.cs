@@ -195,6 +195,7 @@ public partial class EduNexusContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ClassId).HasColumnName("class_id");
+            entity.Property(e => e.LessonId).HasColumnName("lesson_id");
             entity.Property(e => e.CreatedAt)
                 .HasPrecision(3)
                 .HasDefaultValueSql("(sysdatetimeoffset())")
@@ -219,6 +220,10 @@ public partial class EduNexusContext : DbContext
                 .HasForeignKey(d => d.ClassId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__assignmen__class__57DD0BE4");
+
+            entity.HasOne(d => d.Lesson).WithMany(p => p.Assignments)
+                .HasForeignKey(d => d.LessonId)
+                .HasConstraintName("FK_Assignment_Lesson");
 
             entity.HasOne(d => d.CreatedByNavigation).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.CreatedBy)

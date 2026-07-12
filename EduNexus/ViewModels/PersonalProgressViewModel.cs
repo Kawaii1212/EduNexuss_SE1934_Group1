@@ -10,6 +10,7 @@ namespace EduNexus.ViewModels
         public int CurrentStreak { get; set; }
         
         public List<OngoingCourseViewModel> OngoingCourses { get; set; } = new List<OngoingCourseViewModel>();
+        public List<OngoingCourseViewModel> CompletedCourses { get; set; } = new List<OngoingCourseViewModel>();
     }
 
     public class OngoingCourseViewModel

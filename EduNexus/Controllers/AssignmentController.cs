@@ -25,11 +25,12 @@ public class AssignmentController : Controller
     }
 
     [HttpGet]
-    public IActionResult SubmitEssay(long assignmentId)
+    public IActionResult SubmitEssay(long assignmentId, long? lessonId)
     {
         var model = new SubmitEssayViewModel
         {
-            AssignmentId = assignmentId
+            AssignmentId = assignmentId,
+            LessonId = lessonId
         };
         return View("~/Views/Home/EssaySubmit.cshtml", model);
     }

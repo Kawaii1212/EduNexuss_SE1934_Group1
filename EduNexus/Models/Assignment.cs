@@ -9,6 +9,8 @@ public partial class Assignment
 
     public long ClassId { get; set; }
 
+    public long? LessonId { get; set; }
+
     public string Title { get; set; } = null!;
 
     public string? DescriptionMd { get; set; }
@@ -26,6 +28,8 @@ public partial class Assignment
     public virtual ICollection<AssignmentRubricCriterion> AssignmentRubricCriteria { get; set; } = new List<AssignmentRubricCriterion>();
 
     public virtual Class Class { get; set; } = null!;
+
+    public virtual Lesson? Lesson { get; set; }
 
     public virtual User? CreatedByNavigation { get; set; }
 
