@@ -331,19 +331,35 @@
         .course-price.free {
             color: var(--success);
         }
-        .btn-enroll {
-            background: var(--primary-lighter);
-            color: var(--primary);
+        .btn-enroll, .btn-explore {
             padding: 8px 16px;
             border-radius: var(--radius-full);
             font-weight: 600;
             font-size: 13px;
             text-decoration: none;
             transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-enroll {
+            background: var(--primary-lighter);
+            color: var(--primary);
+            border: 1px solid transparent;
         }
         .course-card:hover .btn-enroll {
             background: var(--primary);
             color: white;
+        }
+        .btn-explore {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary-light);
+        }
+        .course-card:hover .btn-explore {
+            background: var(--primary-lighter);
+            color: var(--primary);
+            border-color: transparent;
         }
 
         .empty-state {
@@ -521,28 +537,35 @@
                                     {
                                         <div class="course-price">$@course.Price.ToString("N0")</div>
                                     }
-                                    @if (Model.IsGuest)
-                                    {
-                                        if (course.FirstLessonId.HasValue)
+                                    <div style="display: flex; gap: 8px;">
+                                        @if (Model.IsGuest)
                                         {
-                                            <a href="@Url.Action("LessonPreview", "Lesson", new { id = course.FirstLessonId })" class="btn-enroll">Try Learning</a>
+                                            if (course.FirstLessonId.HasValue)
+                                            {
+                                                <a href="@Url.Action("LessonPreview", "Lesson", new { id = course.FirstLessonId })" class="btn-explore">Explore</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="@Url.Action("UserLogin", "Auth")" class="btn-explore">Explore</a>
+                                            }
+                                            <a href="@Url.Action("UnderDevelopment", "CourseExplorer")" class="btn-enroll">Đăng ký</a>
                                         }
                                         else
                                         {
-                                            <a href="@Url.Action("UserLogin", "Auth")" class="btn-enroll">Try Learning</a>
+                                            if (course.FirstLessonId.HasValue)
+                                            {
+                                                <a href="@Url.Action("LessonPreview", "Lesson", new { id = course.FirstLessonId })" class="btn-explore">Explore</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="#" class="btn-explore">Explore</a>
+                                            }
+                                            <form method="post" action="@Url.Action("Enroll", "CourseExplorer")" style="margin: 0;">
+                                                <input type="hidden" name="courseId" value="@course.Id" />
+                                                <button type="submit" class="btn-enroll" style="border: none; cursor: pointer; height: 100%;">Đăng ký</button>
+                                            </form>
                                         }
-                                    }
-                                    else
-                                    {
-                                        if (course.FirstLessonId.HasValue)
-                                        {
-                                            <a href="@Url.Action("LessonPreview", "Lesson", new { id = course.FirstLessonId })" class="btn-enroll">Explore</a>
-                                        }
-                                        else
-                                        {
-                                            <a href="#" class="btn-enroll">Explore</a>
-                                        }
-                                    }
+                                    </div>
                                 </div>
                             </div>
                         </div>
