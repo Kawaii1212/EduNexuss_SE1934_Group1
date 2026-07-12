@@ -425,9 +425,6 @@
             <a href="@Url.Action("StudentLibrary", "Common")" class="nav-item">
                 <i class="fa-solid fa-folder-open"></i> Library
             </a>
-            <a href="#" class="nav-item">
-                <i class="fa-solid fa-users"></i> Community
-            </a>
             <div style="flex: 1;"></div>
             <a href="@Url.Action("StudentSettings", "Common")" class="nav-item">
                 <i class="fa-solid fa-gear"></i> Settings
@@ -528,6 +525,43 @@
                 </div>
             }
         </div>
+
+        <!-- Completed Courses -->
+        @if (Model.CompletedCourses.Count > 0)
+        {
+            <div class="section-title">
+                <span>Completed Courses</span>
+            </div>
+            
+            <div class="progress-list">
+                @foreach(var course in Model.CompletedCourses)
+                {
+                    <div class="progress-card" style="border-left: 4px solid var(--success);">
+                        <div class="course-info">
+                            <div class="course-icon" style="color: var(--success); background: #ecfdf5; border-color: #a7f3d0;">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </div>
+                            <div class="course-details">
+                                <h4>@course.CourseName</h4>
+                                <p style="color: var(--success); font-weight: 500;">Completed</p>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-bar-container">
+                            <div class="progress-info">
+                                <span class="label">Progress</span>
+                                <span style="color: var(--success);">100%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: 100%; background-color: var(--success);"></div>
+                            </div>
+                        </div>
+
+                        <a href="@Url.Action("LessonView", "Lesson", new { id = 1 })" class="action-btn" style="background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border);">Review Course</a>
+                    </div>
+                }
+            </div>
+        }
 
         <!-- Recent Achievements -->
         <div class="section-title">

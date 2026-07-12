@@ -509,9 +509,9 @@
         </div>
         <div class="topbar-right">
             <div class="course-progress">
-                <span>45% Complete</span>
+                <span>@Model.ProgressPercent.ToString("0.##")% Complete</span>
                 <div class="progress-bar-mini">
-                    <div class="progress-fill-mini"></div>
+                    <div class="progress-fill-mini" style="width: @Model.ProgressPercent.ToString("0.##").Replace(",", ".")%;"></div>
                 </div>
             </div>
         </div>
@@ -535,16 +535,33 @@
                     <div class="lesson-header-left">
                         <h1>@Model.CurrentLesson.OrderNo. @Model.CurrentLesson.Title</h1>
                     </div>
-                    <button class="btn btn-primary">
-                        <i class="fa-solid fa-check"></i> Mark as Complete
-                    </button>
+                    @if (Model.IsCompleted)
+                    {
+                        <button class="btn" style="background: var(--success); color: white; cursor: default;">
+                            <i class="fa-solid fa-check-double"></i> Completed
+                        </button>
+                    }
+                    else
+                    {
+                        <form method="post" action="/Lesson/MarkAsComplete" style="margin:0;">
+                            <input type="hidden" name="lessonId" value="@Model.CurrentLesson.Id" />
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa-solid fa-check"></i> Mark as Complete
+                            </button>
+                        </form>
+                    }
                 </div>
 
 
-                <div class="tabs">
+                <div class="tabs" style="align-items: center;">
                     <div class="tab active">Overview</div>
-                    <div class="tab">Q&A Discussion</div>
-                    <div class="tab">Notes</div>
+                    @if (Model.CurrentLesson.Assignments != null && Model.CurrentLesson.Assignments.Any())
+                    {
+                        <div style="margin-left: auto; display: flex; gap: 12px; margin-bottom: 8px;">
+                            <a href="/Home/EssaySubmit?lessonId=@Model.CurrentLesson.Id" class="btn btn-primary">Assignment Submit</a>
+                            <a href="/Home/EssayResults?lessonId=@Model.CurrentLesson.Id" class="btn btn-outline">Assignment Results</a>
+                        </div>
+                    }
                 </div>
 
                 <div class="tab-content" style="padding-top: 16px;">

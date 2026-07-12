@@ -427,8 +427,8 @@
     <!-- Top Navigation -->
     <header class="topbar">
         <div class="topbar-left">
-            <a href="/Home/CourseStructure" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            <a href="@(Model.LessonId.HasValue ? $"/Lesson/LessonView/{Model.LessonId}" : "/Home/CourseStructure")" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Lesson
             </a>
             <div class="breadcrumbs">
                 Advanced Full-Stack Development <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> Module 3 <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> <span>Final Essay</span>
@@ -437,8 +437,8 @@
     </header>
 
     <form class="submit-container" asp-controller="Assignment" asp-action="SubmitEssay" method="post" enctype="multipart/form-data" id="essayForm" onsubmit="return validateForm()">
-        
         <input type="hidden" asp-for="AssignmentId" value="1" />
+        <input type="hidden" asp-for="LessonId" />
         
         @if (TempData["SuccessMessage"] != null)
         {
@@ -551,7 +551,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Assignment</button>
-                <button type="button" class="btn btn-outline" onclick="window.location.href='/Home/CourseStructure'">Cancel</button>
+                <button type="button" class="btn btn-outline" onclick="window.location.href='@(Model.LessonId.HasValue ? $"/Lesson/LessonView/{Model.LessonId}" : "/Home/CourseStructure")'">Cancel</button>
             </div>
 
             <div class="status-card">
