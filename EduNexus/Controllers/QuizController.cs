@@ -36,7 +36,7 @@ namespace EduNexus.Controllers
             }
 
             model.QuizzesTaken = attempts.Count;
-
+            
             if (attempts.Any(a => a.Score.HasValue))
             {
                 model.AverageScore = attempts.Where(a => a.Score.HasValue).Average(a => a.Score.Value);
@@ -57,7 +57,6 @@ namespace EduNexus.Controllers
                 CorrectAnswers = a.QuizAttemptAnswers?.Count(ans => ans.IsCorrect == true) ?? 0,
                 TotalQuestions = a.Quiz?.QuestionCount ?? 0
             }).ToList();
-
             return View(model);
         }
 

@@ -634,7 +634,7 @@ namespace EduNexus.Controllers
 
             var now = DateTimeOffset.Now;
 
-            var studentClassIds = enrollments.Where(e => e.ClassId != null).Select(e => e.ClassId).ToList();
+            var studentClassIds = enrollments.Where(e => e.ClassId != null).Select(e => e.ClassId!.Value).ToList();
             var assignments = context.Assignments
                 .Where(a => studentClassIds.Contains(a.ClassId) && a.DueDate > now)
                 .OrderBy(a => a.DueDate)
