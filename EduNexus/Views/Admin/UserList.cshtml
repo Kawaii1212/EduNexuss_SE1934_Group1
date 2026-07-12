@@ -1,0 +1,77 @@
+@model EduNexus.ViewModels.AdminUserListViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "User List";
+}
+
+<div class="admin-header mb-5">
+    <div>
+        <h1>User List</h1>
+        <p style="color: var(--text-muted); font-size: 15px; margin-top: 6px;">Quản lý tài khoản hệ thống (SCR-07)</p>
+    </div>
+</div>
+
+<div class="glass-card mb-4">
+    <div class="card-body p-4">
+        <form method="get" class="d-flex flex-wrap gap-3 align-items-center">
+            <select name="role" class="form-select" style="width: 180px;">
+                <option value="">Tất cả vai trò</option>
+                @foreach (var r in new[] { "ADMIN", "SME", "COURSE_MANAGER", "TEACHER", "STUDENT" })
+                {
+                    <option value="@r" selected="@(Model.RoleFilter == r)">@r</option>
+                }
+            </select>
+            <select name="status" class="form-select" style="width: 160px;">
+                <option value="">Tất cả trạng thái</option>
+                @foreach (var s in new[] { "ACTIVE", "LOCKED", "INACTIVE" })
+                {
+                    <option value="@s" selected="@(Model.StatusFilter == s)">@s</option>
+                }
+            </select>
+            <input type="text" name="search" value="@Model.Search" class="form-control" placeholder="Tìm tên hoặc email..." style="width: 260px;" />
+            <button type="submit" class="btn btn-primary" style="background: var(--admin-primary); border-color: var(--admin-primary);">
+                <i class="fa-solid fa-filter"></i> Lọc
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="py-3 px-4 text-muted text-uppercase" style="font-size:12px;">Họ tên</th>
+                    <th class="py-3 px-4 text-muted text-uppercase" style="font-size:12px;">Email</th>
+                    <th class="py-3 px-4 text-muted text-uppercase" style="font-size:12px;">Vai trò</th>
+                    <th class="py-3 px-4 text-muted text-uppercase" style="font-size:12px;">Trạng thái</th>
+                    <th class="py-3 px-4 text-muted text-uppercase" style="font-size:12px;">Ngày tạo</th>
+                    <th class="py-3 px-4 text-end text-muted text-uppercase" style="font-size:12px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Users.Any())
+                {
+                    <tr><td colspan="6" class="text-center py-5 text-muted">Không có user nào.</td></tr>
+                }
+                @foreach (var u in Model.Users)
+                {
+                    <tr>
+                        <td class="px-4 py-3"><strong>@u.FullName</strong></td>
+                        <td class="px-4 py-3">@u.Email</td>
+                        <td class="px-4 py-3"><span class="badge bg-secondary">@u.Role</span></td>
+                        <td class="px-4 py-3">
+                            <span class="badge @(u.Status == "ACTIVE" ? "bg-success" : u.Status == "LOCKED" ? "bg-warning text-dark" : "bg-danger")">@u.Status</span>
+                        </td>
+                        <td class="px-4 py-3 text-muted">@u.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        <td class="px-4 py-3 text-end">
+                            <a href="@Url.Action("UserDetail", "Admin", new { id = u.Id })" class="btn btn-sm btn-outline-primary">
+                                Chi tiết <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

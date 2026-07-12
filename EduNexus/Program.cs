@@ -27,6 +27,8 @@ builder.Services.AddScoped<IClassMaterialRepository, ClassMaterialRepository>();
 builder.Services.AddScoped<IClassMaterialService, ClassMaterialService>();
 builder.Services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
 builder.Services.AddScoped<IQuizAttemptService, QuizAttemptService>();
+builder.Services.AddScoped<IFlashcardRepository, FlashcardRepository>();
+builder.Services.AddScoped<IFlashcardService, FlashcardService>();
 builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
 builder.Services.AddScoped<IUserOauthIdentityRepository, UserOauthIdentityRepository>();
@@ -39,6 +41,8 @@ builder.Services.AddScoped<IQuestionService, QuestionService>();
 // Admin Module DAOs & Services
 builder.Services.AddScoped<ISystemSettingService, SystemSettingService>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+builder.Services.AddScoped<ICourseGroupService, CourseGroupService>();
 
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

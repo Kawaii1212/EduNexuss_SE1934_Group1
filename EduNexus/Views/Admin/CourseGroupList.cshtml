@@ -1,0 +1,98 @@
+@model EduNexus.ViewModels.AdminCourseGroupListViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Course Group List";
+}
+
+<div class="admin-header mb-5">
+    <div>
+        <h1>Course Group List</h1>
+        <p style="color: var(--text-muted); font-size: 15px; margin-top: 6px;">Quản lý nhóm khóa học và phân quyền SME / Course Manager</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="glass-card">
+            <div class="card-body p-4">
+                <form method="get" class="d-flex flex-wrap gap-3">
+                    <select name="status" class="form-select" style="width: 160px;">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="ACTIVE" selected="@(Model.StatusFilter == "ACTIVE")">ACTIVE</option>
+                        <option value="ARCHIVED" selected="@(Model.StatusFilter == "ARCHIVED")">ARCHIVED</option>
+                    </select>
+                    <input type="text" name="search" value="@Model.Search" class="form-control" placeholder="Tìm tên nhóm..." style="flex:1; min-width:200px;" />
+                    <button type="submit" class="btn btn-primary" style="background: var(--admin-primary); border-color: var(--admin-primary);">Lọc</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="glass-card">
+            <div class="card-body p-4">
+                <h6 class="mb-3">Tạo nhóm mới</h6>
+                <form asp-action="CreateCourseGroup" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="CreateForm.Name" class="form-control mb-2" placeholder="Tên nhóm *" />
+                    <textarea asp-for="CreateForm.Description" class="form-control mb-3" rows="2" placeholder="Mô tả"></textarea>
+                    <button type="submit" class="btn btn-primary w-100" style="background: var(--admin-primary); border-color: var(--admin-primary);">
+                        <i class="fa-solid fa-plus"></i> Tạo nhóm
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="py-3 px-4 text-muted text-uppercase" style="font-size:12px;">Tên nhóm</th>
+                    <th class="py-3 px-4 text-muted text-uppercase" style="font-size:12px;">Khóa học</th>
+                    <th class="py-3 px-4 text-muted text-uppercase" style="font-size:12px;">Thành viên</th>
+                    <th class="py-3 px-4 text-muted text-uppercase" style="font-size:12px;">Trạng thái</th>
+                    <th class="py-3 px-4 text-end text-muted text-uppercase" style="font-size:12px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Groups.Any())
+                {
+                    <tr><td colspan="5" class="text-center py-5 text-muted">Chưa có nhóm khóa học.</td></tr>
+                }
+                @foreach (var g in Model.Groups)
+                {
+                    <tr>
+                        <td class="px-4 py-3">
+                            <strong>@g.Name</strong>
+                            @if (!string.IsNullOrEmpty(g.Description))
+                            {
+                                <div class="text-muted small text-truncate" style="max-width:280px;">@g.Description</div>
+                            }
+                        </td>
+                        <td class="px-4 py-3">@g.CourseCount</td>
+                        <td class="px-4 py-3">@g.MemberCount</td>
+                        <td class="px-4 py-3">
+                            <span class="badge @(g.Status == "ACTIVE" ? "bg-success" : "bg-secondary")">@g.Status</span>
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                            <a href="@Url.Action("CourseGroupDetail", "Admin", new { id = g.Id })" class="btn btn-sm btn-outline-primary">
+                                Chi tiết <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -44,6 +44,7 @@ public class QuizAttemptDAO : BaseDAO<QuizAttempt>
         return context.QuizAttempts
             .Include(a => a.Quiz)
             .ThenInclude(q => q.QuizQuestions)
+            .Include(a => a.QuizAttemptAnswers)
             .FirstOrDefault(a => a.Id == attemptId);
     }
 
