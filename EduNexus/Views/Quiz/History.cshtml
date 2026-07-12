@@ -471,14 +471,16 @@
             <a href="@Url.Action("PersonalProgress", "Common")" class="nav-item">
                 <i class="fa-solid fa-bullseye"></i> Personal Progress
             </a>
-            <a href="@Url.Action("History", "Quiz")" class="nav-item active" style="padding-left: 40px; font-size: 14px;">
-                <i class="fa-solid fa-clipboard-check"></i> Quiz History
-            </a>
+            <div class="progress-submenu" style="margin-left: 20px; padding-left: 12px; border-left: 2px solid var(--border); margin-top: -4px; margin-bottom: 12px;">
+                <a href="@Url.Action("History", "Quiz")" class="nav-item active" style="padding: 8px 12px; margin-bottom: 4px; font-size: 14px; gap: 10px;">
+                    <i class="fa-solid fa-clipboard-check" style="font-size: 12px; color: #f59e0b;"></i> Quiz History
+                </a>
+                <a href="@Url.Action("FlashcardLibrary", "Home")" class="nav-item" style="padding: 8px 12px; margin-bottom: 4px; font-size: 14px; gap: 10px;">
+                    <i class="fa-solid fa-clone" style="font-size: 12px; color: #10b981;"></i> Flashcard
+                </a>
+            </div>
             <a href="@Url.Action("StudentLibrary", "Common")" class="nav-item">
                 <i class="fa-solid fa-folder-open"></i> Library
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fa-solid fa-users"></i> Community
             </a>
             <div style="flex: 1;"></div>
             <a href="@Url.Action("StudentSettings", "Common")" class="nav-item">

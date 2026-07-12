@@ -238,8 +238,8 @@
     <!-- Top Navigation -->
     <header class="topbar">
         <div class="topbar-left">
-            <a href="/Quiz/Result?attemptId=@Model.AttemptId" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i> Back to Result
+            <a href="/Quiz/History" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Quiz History
             </a>
             <div class="breadcrumbs">
                 Quiz <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i> <span>Review Answers</span>
@@ -256,67 +256,10 @@
             </div>
         </div>
 
-        <div class="score-alert">
-            <h4>Overall Performance</h4>
-            <div class="score-badge">@Model.Score.ToString("0") / @Model.TotalQuestions</div>
-        </div>
-
-        <div>
-            @{ int index = 1; }
-            @foreach (var q in Model.Questions)
-            {
-                var cardClass = q.IsCorrect ? "correct" : "incorrect";
-                var iconClass = q.IsCorrect ? "fa-check-circle" : "fa-times-circle";
-
-                <div class="card @cardClass mb-4">
-                    <div class="card-header">
-                        <i class="fa-solid @iconClass"></i> Question @index
-                    </div>
-                    <div class="card-body">
-                        <div class="question-text">@q.Content</div>
-
-                        <div class="options-list">
-                            @foreach (var opt in new[] { new { Key = "A", Text = q.OptionA }, new { Key = "B", Text = q.OptionB }, new { Key = "C", Text = q.OptionC }, new { Key = "D", Text = q.OptionD } })
-                            {
-                                var optClass = "option-item";
-                                if (opt.Key == q.CorrectOption)
-                                {
-                                    optClass += " correct";
-                                }
-                                else if (opt.Key == q.SelectedOption && !q.IsCorrect)
-                                {
-                                    optClass += " incorrect";
-                                }
-
-                                <div class="@optClass">
-                                    <div>
-                                        <span class="option-letter">@opt.Key.</span> @opt.Text
-                                    </div>
-                                    <div>
-                                        @if (opt.Key == q.SelectedOption)
-                                        {
-                                            <span class="badge-tag selected"><i class="fa-solid fa-user"></i> Your Answer</span>
-                                        }
-                                        @if (opt.Key == q.CorrectOption)
-                                        {
-                                            <span class="badge-tag is-correct"><i class="fa-solid fa-check"></i> Correct Answer</span>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        </div>
-
-                        @if (!string.IsNullOrEmpty(q.AiExplanation))
-                        {
-                            <div class="ai-explanation">
-                                <div class="ai-title"><i class="fa-solid fa-robot"></i> AI Explanation</div>
-                                <div>@q.AiExplanation</div>
-                            </div>
-                        }
-                    </div>
-                </div>
-                index++;
-            }
+        <div style="margin-top: 40px; text-align: center; padding: 40px; background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+            <i class="fa-solid fa-tools" style="font-size: 48px; color: var(--primary); margin-bottom: 16px;"></i>
+            <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 8px;">Chức năng phát triển sau</h2>
+            <p style="color: var(--text-muted);">Tính năng xem lại câu trả lời đang được chúng tôi phát triển và sẽ sớm ra mắt.</p>
         </div>
 
     </div>
