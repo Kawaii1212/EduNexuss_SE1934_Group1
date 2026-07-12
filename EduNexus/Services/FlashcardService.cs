@@ -233,8 +233,19 @@ public class FlashcardService : IFlashcardService
 
     public FlashcardLibraryViewModel GetLibraryForStudent(long studentId, long? courseId, string? search, string? category)
     {
-        var decks = _repo.GetPublishedDecks(courseId, search, category);
-        var vm = new FlashcardLibraryViewModel { Search = search, Category = category, CourseId = courseId };
+        var enrolledCourseIds = GetEnrolledCourseIds(studentId);
+        var decks = _repo.GetPublishedDecks(enrolledCourseIds, courseId, search, category);
+        var vm = new FlashcardLibraryViewModel
+        {
+            Search = search,
+            Category = category,
+            CourseId = courseId,
+            Courses = _context.Courses
+                .Where(c => c.DeletedAt == null && enrolledCourseIds.Contains(c.Id))
+                .OrderBy(c => c.Title)
+                .Select(c => new CourseOptionViewModel { Id = c.Id, Title = c.Title })
+                .ToList()
+        };
 
         foreach (var deck in decks)
         {
@@ -267,6 +278,8 @@ public class FlashcardService : IFlashcardService
         var deck = _repo.GetDeckWithCards(deckId);
         if (deck == null || deck.Status != DbStatus.FlashcardDeck.Published)
             throw new InvalidOperationException("Bộ flashcard không khả dụng.");
+
+        EnsureEnrolledInCourse(studentId, deck.CourseId);
 
         var cards = deck.Flashcards.Where(c => c.Status == DbStatus.Flashcard.Active).ToList();
         var cardIds = cards.Select(c => c.Id).ToList();
@@ -301,6 +314,10 @@ public class FlashcardService : IFlashcardService
 
     public FlashcardPracticeSummaryViewModel RecordReview(long deckId, long flashcardId, long studentId, bool remembered)
     {
+        var deck = _repo.GetDeckWithCards(deckId)
+            ?? throw new InvalidOperationException("Bộ flashcard không khả dụng.");
+        EnsureEnrolledInCourse(studentId, deck.CourseId);
+
         var latest = _repo.GetLatestReviewLog(studentId, flashcardId);
         var newState = ComputeNextState(latest?.MemoryState, remembered);
 
@@ -327,6 +344,56 @@ public class FlashcardService : IFlashcardService
             TotalCards = practice.TotalCards,
             IsComplete = practice.Cards.All(c => c.MemoryState == "MASTERED")
         };
+    }
+
+    private List<long> GetEnrolledCourseIds(long studentId)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var enrollments = _context.Enrollments
+            .Include(e => e.Class)
+            .Include(e => e.SubscriptionPackage)
+            .Where(e => e.StudentId == studentId
+                && (e.Status == "ACTIVE" || e.Status == "COMPLETED")
+                && (e.ExpiresAt == null || e.ExpiresAt > now))
+            .ToList();
+
+        var courseIds = new HashSet<long>();
+        foreach (var enrollment in enrollments)
+        {
+            switch (enrollment.EnrollmentType)
+            {
+                case "H1" when enrollment.CourseId.HasValue:
+                    courseIds.Add(enrollment.CourseId.Value);
+                    break;
+                case "H2" when enrollment.Class != null:
+                    courseIds.Add(enrollment.Class.CourseId);
+                    break;
+                case "H3" when enrollment.SubscriptionPackage != null:
+                {
+                    var groupId = enrollment.SubscriptionPackage.CourseGroupId;
+                    var packageCourseIds = _context.Courses
+                        .Where(c => c.CourseGroupId == groupId && c.DeletedAt == null)
+                        .Select(c => c.Id);
+                    foreach (var id in packageCourseIds)
+                        courseIds.Add(id);
+                    break;
+                }
+                default:
+                    if (enrollment.CourseId.HasValue)
+                        courseIds.Add(enrollment.CourseId.Value);
+                    else if (enrollment.Class != null)
+                        courseIds.Add(enrollment.Class.CourseId);
+                    break;
+            }
+        }
+
+        return courseIds.ToList();
+    }
+
+    private void EnsureEnrolledInCourse(long studentId, long courseId)
+    {
+        if (!GetEnrolledCourseIds(studentId).Contains(courseId))
+            throw new InvalidOperationException("Bạn chưa đăng ký khóa học này.");
     }
 
     private async Task EnsureAiQuotaAsync(long userId)

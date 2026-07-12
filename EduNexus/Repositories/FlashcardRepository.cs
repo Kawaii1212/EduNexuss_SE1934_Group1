@@ -12,8 +12,8 @@ public class FlashcardRepository : IFlashcardRepository
     public FlashcardDeck? GetDeckWithCards(long deckId)
         => FlashcardDAO.Instance.GetDeckWithCards(deckId);
 
-    public List<FlashcardDeck> GetPublishedDecks(long? courseId, string? search = null, string? category = null)
-        => FlashcardDAO.Instance.GetPublishedDecks(courseId, search, category);
+    public List<FlashcardDeck> GetPublishedDecks(IReadOnlyCollection<long> allowedCourseIds, long? courseId, string? search = null, string? category = null)
+        => FlashcardDAO.Instance.GetPublishedDecks(allowedCourseIds, courseId, search, category);
 
     public void AddDeck(FlashcardDeck deck) => FlashcardDAO.Instance.AddDeck(deck);
     public void UpdateDeck(FlashcardDeck deck) => FlashcardDAO.Instance.UpdateDeck(deck);
