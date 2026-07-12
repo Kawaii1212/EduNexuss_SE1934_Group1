@@ -33,5 +33,7 @@ public partial class Lesson
 
     public virtual ICollection<LessonViewEvent> LessonViewEvents { get; set; } = new List<LessonViewEvent>();
 
+    public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+
     public virtual Module Module { get; set; } = null!;
 }

@@ -1,4 +1,4 @@
-﻿/* =====================================================================
+/* =====================================================================
    EduNexus — Database Schema for Microsoft SQL Server (T-SQL)
    Engine: SQL Server 2019+ / Azure SQL
 
@@ -374,6 +374,7 @@ GO
 CREATE TABLE assignment (
     id              BIGINT IDENTITY(1,1) PRIMARY KEY,
     class_id        BIGINT NOT NULL REFERENCES class(id),
+    lesson_id       BIGINT NULL REFERENCES lesson(id),
     title           NVARCHAR(255) NOT NULL,
     description_md  NVARCHAR(MAX) NULL,
     max_score       DECIMAL(5,2) NOT NULL CHECK (max_score > 0),

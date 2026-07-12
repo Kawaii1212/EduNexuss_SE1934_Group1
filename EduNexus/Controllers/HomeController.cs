@@ -61,9 +61,9 @@ namespace EduNexus.Controllers
             return View();
         }
 
-        public IActionResult EssaySubmit()
+        public IActionResult EssaySubmit(long? lessonId)
         {
-            return RedirectToAction("SubmitEssay", "Assignment", new { assignmentId = 1 });
+            return RedirectToAction("SubmitEssay", "Assignment", new { assignmentId = 1, lessonId = lessonId });
         }
 
         public IActionResult EssayResults()

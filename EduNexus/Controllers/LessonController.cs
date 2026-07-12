@@ -194,6 +194,7 @@ Chỉ trả về nội dung Markdown.";
             if (!id.HasValue) return RedirectToAction("Index", "Home");
             
             var lesson = _context.Lessons
+                .Include(l => l.Assignments)
                 .Include(l => l.Module)
                 .ThenInclude(m => m.Course)
                 .FirstOrDefault(l => l.Id == id.Value);
@@ -211,15 +212,99 @@ Chỉ trả về nội dung Markdown.";
                 m.Lessons = m.Lessons.OrderBy(l => l.OrderNo).ToList();
             }
 
+            bool isCompleted = false;
+            decimal progressPercent = 0;
+            var studentIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (studentIdClaim != null)
+            {
+                long studentId = long.Parse(studentIdClaim.Value);
+                isCompleted = _context.LearningProgresses.Any(lp => lp.StudentId == studentId && lp.LessonId == lesson.Id && lp.ActivityType == "LESSON" && lp.CompletionStatus == "COMPLETED");
+                
+                var enrollment = _context.Enrollments.FirstOrDefault(e => e.StudentId == studentId && (e.CourseId == lesson.Module.CourseId || (e.Class != null && e.Class.CourseId == lesson.Module.CourseId)));
+                if (enrollment != null)
+                {
+                    progressPercent = enrollment.ProgressPercent;
+                }
+            }
+
             var model = new EduNexus.ViewModels.LessonViewModel
             {
                 CurrentLesson = lesson,
                 Course = lesson.Module.Course,
                 Modules = modules,
-                IsPreview = false
+                IsPreview = false,
+                IsCompleted = isCompleted,
+                ProgressPercent = progressPercent
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkAsComplete(long lessonId)
+        {
+            var studentIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (studentIdClaim == null) return Unauthorized();
+
+            long studentId = long.Parse(studentIdClaim.Value);
+            
+            var lesson = await _context.Lessons.Include(l => l.Module).FirstOrDefaultAsync(l => l.Id == lessonId);
+            if (lesson == null) return NotFound();
+
+            var courseId = lesson.Module.CourseId;
+
+            var progress = await _context.LearningProgresses
+                .FirstOrDefaultAsync(lp => lp.StudentId == studentId && lp.LessonId == lessonId && lp.ActivityType == "LESSON");
+
+            if (progress == null)
+            {
+                progress = new LearningProgress
+                {
+                    StudentId = studentId,
+                    LessonId = lessonId,
+                    ActivityType = "LESSON",
+                    CompletionStatus = "COMPLETED",
+                    TimeSpentSeconds = 0,
+                    LastActiveAt = DateTimeOffset.Now
+                };
+                _context.LearningProgresses.Add(progress);
+            }
+            else
+            {
+                progress.CompletionStatus = "COMPLETED";
+                progress.LastActiveAt = DateTimeOffset.Now;
+                _context.LearningProgresses.Update(progress);
+            }
+            await _context.SaveChangesAsync();
+
+            var totalLessons = await _context.Lessons
+                .CountAsync(l => l.Module.CourseId == courseId);
+
+            var completedLessons = await _context.LearningProgresses
+                .CountAsync(lp => lp.StudentId == studentId && 
+                                  lp.ActivityType == "LESSON" && 
+                                  lp.CompletionStatus == "COMPLETED" && 
+                                  lp.Lesson != null && lp.Lesson.Module.CourseId == courseId);
+
+            decimal progressPercent = 0;
+            if (totalLessons > 0)
+            {
+                progressPercent = Math.Min(100, (decimal)completedLessons / totalLessons * 100);
+            }
+
+            var enrollments = await _context.Enrollments
+                .Include(e => e.Class)
+                .Where(e => e.StudentId == studentId && (e.CourseId == courseId || (e.Class != null && e.Class.CourseId == courseId)))
+                .ToListAsync();
+
+            foreach (var enrollment in enrollments)
+            {
+                enrollment.ProgressPercent = progressPercent;
+                _context.Enrollments.Update(enrollment);
+            }
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("LessonView", new { id = lessonId });
         }
 
         [HttpGet]
@@ -228,6 +313,7 @@ Chỉ trả về nội dung Markdown.";
             if (!id.HasValue) return RedirectToAction("Index", "Home");
             
             var lesson = _context.Lessons
+                .Include(l => l.Assignments)
                 .Include(l => l.Module)
                 .ThenInclude(m => m.Course)
                 .FirstOrDefault(l => l.Id == id.Value);

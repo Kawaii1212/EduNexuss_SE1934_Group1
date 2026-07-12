@@ -498,9 +498,18 @@
     <!-- Topbar -->
     <header class="topbar">
         <div class="topbar-left">
-            <a href="@Url.Action("AllCourses", "Common")" class="back-btn" title="Back to Courses">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a>
+            @if (User.IsInRole("SME"))
+            {
+                <span class="back-btn" title="Back disabled for SME" style="opacity: 0.5; cursor: not-allowed;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </span>
+            }
+            else
+            {
+                <a href="@Url.Action("AllCourses", "Common")" class="back-btn" title="Back to Courses">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            }
             <div class="course-title-top">
                 @Model.Course.Title
                 <span>|</span>

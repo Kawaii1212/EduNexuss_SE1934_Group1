@@ -394,9 +394,6 @@
                 <a href="@Url.Action("StudentLibrary", "Common")" class="nav-item">
                     <i class="fa-solid fa-folder-open"></i> Library
                 </a>
-                <a href="#" class="nav-item">
-                    <i class="fa-solid fa-users"></i> Community
-                </a>
                 <div style="flex: 1;"></div>
                 <a href="@Url.Action("StudentSettings", "Common")" class="nav-item">
                     <i class="fa-solid fa-gear"></i> Settings
@@ -514,7 +511,14 @@
                                     }
                                     else
                                     {
-                                        <a href="#" class="btn-enroll">Explore</a>
+                                        if (course.FirstLessonId.HasValue)
+                                        {
+                                            <a href="@Url.Action("LessonPreview", "Lesson", new { id = course.FirstLessonId })" class="btn-enroll">Explore</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="#" class="btn-enroll">Explore</a>
+                                        }
                                     }
                                 </div>
                             </div>

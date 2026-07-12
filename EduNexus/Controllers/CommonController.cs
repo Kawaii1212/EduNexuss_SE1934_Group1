@@ -389,22 +389,28 @@ namespace EduNexus.Controllers
 
             foreach (var e in enrollments)
             {
-                if (e.ProgressPercent < 100)
+                var actualCourse = e.Course ?? e.Class?.Course;
+                if (actualCourse != null)
                 {
-                    var actualCourse = e.Course ?? e.Class?.Course;
-                    if (actualCourse != null)
+                    var courseVm = new OngoingCourseViewModel
                     {
-                        viewModel.OngoingCourses.Add(new OngoingCourseViewModel
-                        {
-                            CourseId = actualCourse.Id,
-                            CourseName = actualCourse.Title,
-                            CurrentModuleOrLesson = e.Class != null ? "Enrolled in Class: " + e.Class.Name : "Self-paced Course", 
-                            ProgressPercent = e.ProgressPercent,
-                            IconClass = "fa-brands " + defaultIcons[i % defaultIcons.Length],
-                            IconColorHex = defaultColors[i % defaultColors.Length]
-                        });
-                        i++;
+                        CourseId = actualCourse.Id,
+                        CourseName = actualCourse.Title,
+                        CurrentModuleOrLesson = e.Class != null ? "Enrolled in Class: " + e.Class.Name : "Self-paced Course", 
+                        ProgressPercent = e.ProgressPercent,
+                        IconClass = "fa-brands " + defaultIcons[i % defaultIcons.Length],
+                        IconColorHex = defaultColors[i % defaultColors.Length]
+                    };
+
+                    if (e.ProgressPercent < 100)
+                    {
+                        viewModel.OngoingCourses.Add(courseVm);
                     }
+                    else
+                    {
+                        viewModel.CompletedCourses.Add(courseVm);
+                    }
+                    i++;
                 }
             }
 
@@ -524,6 +530,25 @@ namespace EduNexus.Controllers
             if (!string.IsNullOrEmpty(search))
             {
                 coursesQuery = coursesQuery.Where(c => c.Title.Contains(search) || c.Description.Contains(search));
+            }
+
+            if (!isGuest)
+            {
+                long studentId = long.Parse(studentIdClaim.Value);
+                
+                var enrolledCourseIds = _context.Enrollments
+                    .Include(e => e.Class)
+                    .Where(e => e.StudentId == studentId)
+                    .Select(e => e.CourseId ?? (e.Class != null ? e.Class.CourseId : null))
+                    .Where(id => id != null)
+                    .Select(id => id.Value)
+                    .Distinct()
+                    .ToList();
+
+                if (enrolledCourseIds.Any())
+                {
+                    coursesQuery = coursesQuery.Where(c => !enrolledCourseIds.Contains(c.Id));
+                }
             }
 
             // We need to fetch modules and lessons to find the first lesson ID.
