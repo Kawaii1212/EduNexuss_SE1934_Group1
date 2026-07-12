@@ -19,7 +19,7 @@ public class GeminiService
         _httpClient = httpClient;
         _apiKey = config["Gemini:ApiKey"]
             ?? throw new InvalidOperationException("Thi?u Gemini:ApiKey trong appsettings.json");
-        _model = config["Gemini:Model"] ?? "gemini-2.5-flash";
+        _model = config["Gemini:Model"] ?? "gemini-2.0-flash";
         _httpClient.Timeout = TimeSpan.FromSeconds(30); // NFR timeout 30s
     }
 

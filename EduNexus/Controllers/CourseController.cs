@@ -178,15 +178,7 @@ namespace EduNexus.Controllers
         [HttpGet]
         public IActionResult Flashcards(long courseId)
         {
-            var course = _context.Courses.FirstOrDefault(c => c.Id == courseId && c.DeletedAt == null);
-            if (course == null) return NotFound("Khóa học không tồn tại.");
-
-            ViewBag.ActiveCourseId = course.Id;
-            ViewBag.ActiveCourseTitle = course.Title;
-            ViewData["ActiveMenu"] = "MyCourses";
-            ViewData["ActiveSubMenu"] = "Flashcards";
-
-            return View("Placeholder", "Flashcard");
+            return RedirectToAction("Index", "Flashcard", new { courseId });
         }
 
         // GET: /Course/CreateModule

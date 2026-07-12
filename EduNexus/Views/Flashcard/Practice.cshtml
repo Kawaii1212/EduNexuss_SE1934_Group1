@@ -1,0 +1,113 @@
+@model EduNexus.ViewModels.FlashcardPracticeViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Practice - @Model.DeckName</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5c24ff; --primary-lighter: #f0edff; --bg: #f3f4f6; --surface: #fff;
+            --text: #111827; --muted: #6b7280; --border: #e5e7eb; --success: #10b981; --danger: #ef4444;
+        }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { margin: 0; background: var(--bg); min-height: 100vh; color: var(--text); }
+        .wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px; }
+        .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .back { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); }
+        .back:hover { color: var(--primary); border-color: #c4b5fd; }
+        .progress-badge { font-size: 14px; color: var(--muted); font-weight: 600; }
+        h1 { font-size: 22px; margin: 0 0 4px; }
+        .sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+        .fc-card {
+            min-height: 300px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            padding: 2.5rem; cursor: pointer; transition: all .25s; font-size: 1.2rem; line-height: 1.6;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+        }
+        .fc-card:hover { border-color: #c4b5fd; transform: translateY(-2px); }
+        .fc-card.flipped { background: var(--primary-lighter); border-color: #9b8cf8; }
+        .hint { text-align: center; color: var(--muted); font-size: 13px; margin: 16px 0; }
+        .rating { display: flex; gap: 12px; justify-content: center; }
+        .rating button { padding: 12px 28px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; border: 1px solid transparent; display: flex; align-items: center; gap: 8px; }
+        .btn-forgot { background: #fff; color: var(--danger); border-color: #fecaca; }
+        .btn-forgot:hover { background: #fef2f2; }
+        .btn-remember { background: var(--success); color: #fff; }
+        .btn-remember:hover { background: #059669; }
+        .d-none { display: none !important; }
+        .alert-success { background: #ecfdf5; color: #065f46; padding: 20px; border-radius: 12px; text-align: center; }
+        .alert-success a { color: var(--primary); font-weight: 600; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="top">
+        <a href="@Url.Action("Library", "Flashcard")" class="back"><i class="fa-solid fa-arrow-left"></i> Library</a>
+        <span class="progress-badge" id="progressText">0 / @Model.Cards.Count</span>
+    </div>
+    <h1>@Model.DeckName</h1>
+    <p class="sub">Mastered: @Model.MasteredCards / @Model.TotalCards thẻ</p>
+
+    <div id="sessionComplete" class="alert-success d-none">
+        Hoàn thành phiên ôn luyện! <a href="@Url.Action("Library", "Flashcard")">Quay lại thư viện</a>
+    </div>
+
+    <div id="practiceArea">
+        <div class="fc-card mb-3" id="fcCard" onclick="flipCard()">
+            <div id="fcContent"></div>
+        </div>
+        <p class="hint" id="hintText">Nhấn vào thẻ để lật xem đáp án</p>
+        <div class="rating d-none" id="ratingBtns">
+            <button class="btn-forgot" onclick="rate(false)"><i class="fa-solid fa-xmark"></i> Quên</button>
+            <button class="btn-remember" onclick="rate(true)"><i class="fa-solid fa-check"></i> Đã nhớ</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const cards = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Cards));
+    const deckId = @Model.DeckId;
+    let index = 0, flipped = false;
+
+    function renderCard() {
+        flipped = false;
+        document.getElementById('fcCard').classList.remove('flipped');
+        document.getElementById('ratingBtns').classList.add('d-none');
+        document.getElementById('hintText').classList.remove('d-none');
+        if (index >= cards.length) {
+            document.getElementById('practiceArea').classList.add('d-none');
+            document.getElementById('sessionComplete').classList.remove('d-none');
+            return;
+        }
+        document.getElementById('fcContent').textContent = cards[index].FrontText;
+        document.getElementById('progressText').textContent = `${index + 1} / ${cards.length}`;
+    }
+
+    function flipCard() {
+        if (index >= cards.length || flipped) return;
+        document.getElementById('fcContent').textContent = cards[index].BackText;
+        document.getElementById('fcCard').classList.add('flipped');
+        document.getElementById('ratingBtns').classList.remove('d-none');
+        document.getElementById('hintText').classList.add('d-none');
+        flipped = true;
+    }
+
+    async function rate(remembered) {
+        await fetch('@Url.Action("RecordReview", "Flashcard")', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ deckId, flashcardId: cards[index].FlashcardId, remembered })
+        });
+        index++;
+        renderCard();
+    }
+
+    renderCard();
+</script>
+</body>
+</html>

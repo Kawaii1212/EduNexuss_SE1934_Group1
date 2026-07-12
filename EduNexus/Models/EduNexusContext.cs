@@ -192,6 +192,7 @@ public partial class EduNexusContext : DbContext
             entity.ToTable("assignment");
 
             entity.HasIndex(e => e.ClassId, "idx_assignment_class");
+            entity.HasIndex(e => e.LessonId, "idx_assignment_lesson");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ClassId).HasColumnName("class_id");

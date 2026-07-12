@@ -1,0 +1,154 @@
+@model EduNexus.ViewModels.AdminCourseGroupDetailViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Course Group Detail";
+}
+
+<div class="admin-header mb-4">
+    <div>
+        <a href="@Url.Action("CourseGroupList", "Admin")" class="text-decoration-none text-muted mb-2 d-inline-block">
+            <i class="fa-solid fa-arrow-left me-1"></i> Quay lại Course Groups
+        </a>
+        <h1>@Model.Name</h1>
+        <p style="color: var(--text-muted);">@Model.CourseCount khóa học · Tạo @Model.CreatedAt.ToString("dd/MM/yyyy")</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="glass-card mb-4">
+            <div class="card-body p-4">
+                <h5 class="mb-4">Thông tin nhóm</h5>
+                <form asp-action="UpdateCourseGroup" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tên nhóm</label>
+                        <input name="Name" class="form-control" value="@Model.Name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mô tả</label>
+                        <textarea name="Description" class="form-control" rows="3">@Model.Description</textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Trạng thái</label>
+                        <select name="Status" class="form-select">
+                            <option value="ACTIVE" selected="@(Model.Status == "ACTIVE")">ACTIVE</option>
+                            <option value="ARCHIVED" selected="@(Model.Status == "ARCHIVED")">ARCHIVED</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="background: var(--admin-primary); border-color: var(--admin-primary);">
+                        <i class="fa-solid fa-save"></i> Lưu thay đổi
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-body p-4">
+                <h5 class="mb-3">Gán thành viên</h5>
+                <form asp-action="AssignGroupMember" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="AssignForm.CourseGroupId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label class="form-label">Vai trò trong nhóm</label>
+                        <select asp-for="AssignForm.RoleInGroup" class="form-select" id="roleSelect">
+                            <option value="COURSE_MANAGER">Course Manager</option>
+                            <option value="SME">SME</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Chọn user</label>
+                        <select asp-for="AssignForm.UserId" class="form-select" id="userSelect">
+                            <option value="">-- Chọn user --</option>
+                            <optgroup label="Course Managers" id="cmGroup">
+                                @foreach (var u in Model.AvailableCourseManagers)
+                                {
+                                    <option value="@u.Id" data-role="COURSE_MANAGER">@u.FullName (@u.Email)</option>
+                                }
+                            </optgroup>
+                            <optgroup label="SMEs" id="smeGroup">
+                                @foreach (var u in Model.AvailableSmes)
+                                {
+                                    <option value="@u.Id" data-role="SME">@u.FullName (@u.Email)</option>
+                                }
+                            </optgroup>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="fa-solid fa-user-plus"></i> Gán vào nhóm
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="glass-card">
+            <div class="card-body p-4">
+                <h5 class="mb-3">Thành viên (@Model.Members.Count)</h5>
+                @if (!Model.Members.Any())
+                {
+                    <p class="text-muted">Chưa có thành viên nào.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Họ tên</th>
+                                    <th>Email</th>
+                                    <th>Vai trò</th>
+                                    <th>Gán lúc</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var m in Model.Members)
+                                {
+                                    <tr>
+                                        <td><a href="@Url.Action("UserDetail", "Admin", new { id = m.UserId })">@m.FullName</a></td>
+                                        <td class="text-muted">@m.Email</td>
+                                        <td><span class="badge @(m.RoleInGroup == "COURSE_MANAGER" ? "bg-primary" : "bg-info text-dark")">@m.RoleInGroup</span></td>
+                                        <td class="text-muted small">@m.AssignedAt.ToString("dd/MM/yyyy")</td>
+                                        <td class="text-end">
+                                            <form asp-action="RemoveGroupMember" method="post" class="d-inline" onsubmit="return confirm('Gỡ thành viên này?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="memberId" value="@m.MemberId" />
+                                                <input type="hidden" name="courseGroupId" value="@Model.Id" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Gỡ</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('roleSelect')?.addEventListener('change', function () {
+        const role = this.value;
+        document.querySelectorAll('#userSelect option[data-role]').forEach(opt => {
+            opt.hidden = opt.getAttribute('data-role') !== role;
+            if (opt.hidden && opt.selected) opt.selected = false;
+        });
+    });
+    document.getElementById('roleSelect')?.dispatchEvent(new Event('change'));
+</script>
+}

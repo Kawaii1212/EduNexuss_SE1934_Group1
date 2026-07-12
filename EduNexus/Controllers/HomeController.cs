@@ -35,20 +35,17 @@ namespace EduNexus.Controllers
 
         public IActionResult QuizBuilder()
         {
-            return View();
+            return RedirectToAction("New", "Quiz");
         }
-
-
 
         public IActionResult FlashcardLibrary()
         {
-            return View();
+            return RedirectToAction("Library", "Flashcard");
         }
-
 
         public IActionResult QuizTaking()
         {
-            return View();
+            return RedirectToAction("New", "Quiz");
         }
 
         public IActionResult QuizResults()
@@ -100,12 +97,12 @@ namespace EduNexus.Controllers
 
         public IActionResult FlashcardEditor()
         {
-            return View();
+            return RedirectToAction("Index", "Flashcard", new { courseId = 1L });
         }
 
         public IActionResult AIFlashcardStaging()
         {
-            return View();
+            return RedirectToAction("Index", "Flashcard", new { courseId = 1L });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

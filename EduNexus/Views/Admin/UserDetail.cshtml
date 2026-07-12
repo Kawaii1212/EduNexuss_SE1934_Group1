@@ -1,0 +1,123 @@
+@model EduNexus.ViewModels.AdminUserDetailViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "User Detail";
+}
+
+<div class="admin-header mb-4">
+    <div>
+        <a href="@Url.Action("UserList", "Admin")" class="text-decoration-none text-muted mb-2 d-inline-block">
+            <i class="fa-solid fa-arrow-left me-1"></i> Quay lại User List
+        </a>
+        <h1>@Model.FullName</h1>
+        <p style="color: var(--text-muted);">@Model.Email</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="glass-card">
+            <div class="card-body p-4">
+                <h5 class="mb-4">Thông tin tài khoản</h5>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">ID</dt><dd class="col-sm-8">@Model.Id</dd>
+                    <dt class="col-sm-4 text-muted">Vai trò</dt><dd class="col-sm-8"><span class="badge bg-secondary">@Model.Role</span></dd>
+                    <dt class="col-sm-4 text-muted">Trạng thái</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge @(Model.Status == "ACTIVE" ? "bg-success" : Model.Status == "LOCKED" ? "bg-warning text-dark" : "bg-danger")">@Model.Status</span>
+                    </dd>
+                    <dt class="col-sm-4 text-muted">Điện thoại</dt><dd class="col-sm-8">@(Model.Phone ?? "—")</dd>
+                    <dt class="col-sm-4 text-muted">Đăng nhập sai</dt><dd class="col-sm-8">@Model.FailedLoginCount lần</dd>
+                    <dt class="col-sm-4 text-muted">Khóa đến</dt><dd class="col-sm-8">@(Model.LockedUntil?.ToString("dd/MM/yyyy HH:mm") ?? "—")</dd>
+                    <dt class="col-sm-4 text-muted">Tạo lúc</dt><dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                </dl>
+
+                <hr class="my-4" />
+                <h6 class="mb-3">Thao tác</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    @if (Model.Status != "ACTIVE")
+                    {
+                        <form asp-action="UpdateUserStatus" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <input type="hidden" name="status" value="ACTIVE" />
+                            <button type="submit" class="btn btn-sm btn-success">Kích hoạt</button>
+                        </form>
+                    }
+                    @if (Model.Status != "LOCKED")
+                    {
+                        <form asp-action="UpdateUserStatus" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <input type="hidden" name="status" value="LOCKED" />
+                            <button type="submit" class="btn btn-sm btn-warning">Khóa tài khoản</button>
+                        </form>
+                    }
+                    @if (Model.Role != "ADMIN")
+                    {
+                        <form asp-action="DeleteUser" method="post" class="d-inline" onsubmit="return confirm('Vô hiệu hóa tài khoản này?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Vô hiệu hóa</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @if (Model.GroupMemberships.Any())
+        {
+            <div class="glass-card mt-4">
+                <div class="card-body p-4">
+                    <h5 class="mb-3">Nhóm khóa học</h5>
+                    @foreach (var g in Model.GroupMemberships)
+                    {
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <a href="@Url.Action("CourseGroupDetail", "Admin", new { id = g.GroupId })">@g.GroupName</a>
+                            <span class="badge bg-light text-dark">@g.RoleInGroup</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-7">
+        <div class="glass-card">
+            <div class="card-body p-4">
+                <h5 class="mb-3">Lịch sử đăng nhập</h5>
+                @if (!Model.LoginHistories.Any())
+                {
+                    <p class="text-muted mb-0">Chưa có lịch sử đăng nhập.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead><tr><th>Thời gian</th><th>IP</th><th>Trạng thái</th></tr></thead>
+                            <tbody>
+                                @foreach (var log in Model.LoginHistories)
+                                {
+                                    <tr>
+                                        <td>@log.LoginAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@(log.IpAddress ?? "—")</td>
+                                        <td><span class="badge @(log.Status == "SUCCESS" ? "bg-success" : "bg-danger")">@log.Status</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

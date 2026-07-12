@@ -1,0 +1,160 @@
+@model EduNexus.ViewModels.FlashcardLibraryViewModel
+@{
+    Layout = null;
+    var iconClasses = new[] { "icon-purple", "icon-blue", "icon-green", "icon-orange" };
+    var totalDue = Model.Decks.Sum(d => d.DueCards);
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Library - EduNexus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5c24ff; --primary-light: #9b8cf8; --primary-lighter: #f0edff; --primary-hover: #481ce0;
+            --bg-color: #fafafa; --surface: #fff; --text-main: #111827; --text-muted: #6b7280; --text-light: #9ca3af;
+            --border: #e5e7eb; --success: #10b981; --warning: #f59e0b;
+            --radius-md: 8px; --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,.05); --shadow-md: 0 4px 6px -1px rgba(0,0,0,.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-color); color: var(--text-main); display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px; position: fixed; height: 100vh; }
+        .logo { font-size: 24px; font-weight: 800; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .logo span { color: var(--primary); }
+        .nav-item { padding: 12px 16px; margin-bottom: 8px; border-radius: var(--radius-md); color: var(--text-muted); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 12px; }
+        .nav-item:hover { background: var(--bg-color); color: var(--text-main); }
+        .nav-item.active { background: var(--primary-lighter); color: var(--primary); }
+        .main-content { flex: 1; margin-left: 260px; padding: 40px; max-width: 1200px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .header p { color: var(--text-muted); font-size: 14px; }
+        .review-banner { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border-radius: var(--radius-lg); padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; color: #fff; margin-bottom: 32px; box-shadow: 0 10px 25px -5px rgba(92,36,255,.3); }
+        .review-banner h2 { font-size: 20px; margin-bottom: 6px; }
+        .btn-review { background: #fff; color: var(--primary); padding: 12px 24px; border-radius: 999px; font-weight: 700; text-decoration: none; }
+        .toolbar { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+        .toolbar input, .toolbar select { padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); font-size: 14px; outline: none; }
+        .toolbar input:focus, .toolbar select:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px var(--primary-lighter); }
+        .toolbar .search { flex: 1; min-width: 200px; }
+        .btn { padding: 12px 20px; border-radius: var(--radius-md); font-weight: 600; font-size: 14px; border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary-light); color: #fff; }
+        .btn-primary:hover { background: var(--primary); }
+        .section-title { font-size: 20px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+        .decks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 28px; }
+        .deck-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm); transition: .2s; display: flex; flex-direction: column; height: 100%; }
+        .deck-card:hover { transform: translateY(-2px); border-color: var(--primary-light); box-shadow: var(--shadow-md); }
+        .deck-header { display: flex; gap: 16px; margin-bottom: 16px; }
+        .deck-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .icon-purple { background: var(--primary-lighter); color: var(--primary); }
+        .icon-blue { background: #eff6ff; color: #3b82f6; }
+        .icon-green { background: #ecfdf5; color: #10b981; }
+        .icon-orange { background: #fffbeb; color: #f59e0b; }
+        .deck-info h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .deck-info p { font-size: 13px; color: var(--text-muted); }
+        .deck-stats { display: flex; justify-content: space-between; margin-bottom: 16px; padding: 12px; background: var(--bg-color); border-radius: var(--radius-md); }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 16px; font-weight: 700; }
+        .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+        .progress-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
+        .progress-fill { height: 100%; background: var(--success); }
+        .btn-study { flex: 1; padding: 10px; border-radius: var(--radius-md); background: var(--primary-lighter); color: var(--primary); font-weight: 600; font-size: 13px; text-align: center; text-decoration: none; border: 1px solid transparent; }
+        .btn-study.due { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+        .btn-study:hover { background: var(--primary); color: #fff; }
+        .empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty i { font-size: 48px; margin-bottom: 16px; opacity: .4; }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-graduation-cap" style="color:var(--primary)"></i> Edu<span>Nexus</span></div>
+    <nav>
+        <a href="@Url.Action("StudentDashboard", "Student")" class="nav-item"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+        <a href="@Url.Action("StudentLibrary", "Student")" class="nav-item"><i class="fa-solid fa-folder-open"></i> Library</a>
+        <a href="@Url.Action("Library", "Flashcard")" class="nav-item active"><i class="fa-solid fa-layer-group"></i> Flashcards</a>
+        <a href="@Url.Action("History", "Quiz")" class="nav-item"><i class="fa-solid fa-clipboard-check"></i> Quiz History</a>
+        <a href="@Url.Action("PersonalProgress", "Student")" class="nav-item"><i class="fa-solid fa-bullseye"></i> Personal Progress</a>
+        <a href="@Url.Action("StudentSettings", "Student")" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <header class="header">
+        <div>
+            <h1>Flashcard Library</h1>
+            <p>Danh sách bộ thẻ đã publish và tiến độ ghi nhớ</p>
+        </div>
+    </header>
+
+    @if (totalDue > 0)
+    {
+        <div class="review-banner">
+            <div>
+                <h2>Sẵn sàng ôn tập hôm nay?</h2>
+                <p>Bạn có <strong>@totalDue thẻ</strong> cần ôn trong @Model.Decks.Count(d => d.DueCards > 0) bộ thẻ.</p>
+            </div>
+            @{
+                var firstDue = Model.Decks.FirstOrDefault(d => d.DueCards > 0);
+            }
+            @if (firstDue != null)
+            {
+                <a href="@Url.Action("Practice", "Flashcard", new { deckId = firstDue.DeckId })" class="btn-review">Ôn ngay</a>
+            }
+        </div>
+    }
+
+    <form method="get" class="toolbar">
+        <select name="courseId" class="filter-select">
+            <option value="">Tất cả khóa học</option>
+            @foreach (var c in Model.Courses)
+            {
+                <option value="@c.Id" selected="@(Model.CourseId == c.Id)">@c.Title</option>
+            }
+        </select>
+        <input type="text" name="search" value="@Model.Search" class="search" placeholder="Tìm theo tên bộ thẻ..." />
+        <input type="text" name="category" value="@Model.Category" placeholder="Chủ đề" style="width:140px" />
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-filter"></i> Lọc</button>
+    </form>
+
+    <div class="section-title"><i class="fa-solid fa-layer-group" style="color:var(--primary)"></i> Bộ thẻ của tôi</div>
+
+    @if (!Model.Decks.Any())
+    {
+        <div class="empty"><div><i class="fa-regular fa-folder-open"></i></div><p>Chưa có bộ flashcard nào.</p></div>
+    }
+    else
+    {
+        <div class="decks-grid">
+            @{ var idx = 0; }
+            @foreach (var deck in Model.Decks)
+            {
+                var iconClass = iconClasses[idx % iconClasses.Length];
+                idx++;
+                <div class="deck-card">
+                    <div class="deck-header">
+                        <div class="deck-icon @iconClass"><i class="fa-solid fa-clone"></i></div>
+                        <div class="deck-info">
+                            <h3>@deck.Name</h3>
+                            <p>@deck.CourseName · @deck.Category</p>
+                        </div>
+                    </div>
+                    <div class="deck-stats">
+                        <div class="stat-item"><div class="stat-value">@deck.TotalCards</div><div class="stat-label">Tổng</div></div>
+                        <div class="stat-item"><div class="stat-value" style="color:var(--success)">@deck.MasteredCards</div><div class="stat-label">Mastered</div></div>
+                        <div class="stat-item"><div class="stat-value" style="color:@(deck.DueCards > 0 ? "var(--warning)" : "var(--text-muted)")">@deck.DueCards</div><div class="stat-label">Due</div></div>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill" style="width:@deck.MasteryPercent%"></div></div>
+                    <a href="@Url.Action("Practice", "Flashcard", new { deckId = deck.DeckId })"
+                       class="btn-study @(deck.DueCards > 0 ? "due" : "")">
+                        <i class="fa-solid fa-brain"></i>
+                        @(deck.DueCards > 0 ? $"Ôn {deck.DueCards} thẻ" : "Luyện tập")
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</main>
+</body>
+</html>

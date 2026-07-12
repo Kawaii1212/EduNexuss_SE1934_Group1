@@ -1,0 +1,123 @@
+@model EduNexus.ViewModels.FlashcardEditorViewModel
+@{
+    Layout = "~/Views/Shared/_SmeLayout.cshtml";
+    ViewData["Title"] = ViewData["Title"] ?? "Flashcard Editor";
+    ViewData["ActiveMenu"] = "MyCourses";
+    ViewData["ActiveSubMenu"] = "Flashcards";
+}
+
+<div class="container-fluid py-3">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a asp-action="Index" asp-route-courseId="@Model.CourseId" class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </a>
+        @if (Model.DeckId > 0)
+        {
+            <a asp-action="Staging" asp-route-deckId="@Model.DeckId" class="btn btn-outline-info btn-sm">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Staging
+            </a>
+        }
+    </div>
+
+    <form asp-action="Editor" method="post" id="editorForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="DeckId" />
+        <input type="hidden" asp-for="CourseId" />
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label">Tên bộ thẻ *</label>
+                        <input asp-for="Name" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="ModuleId" class="form-label">Module</label>
+                        <select asp-for="ModuleId" class="form-select">
+                            <option value="0">-- Chọn module --</option>
+                            @foreach (var m in Model.Modules)
+                            {
+                                <option value="@m.Id">@m.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Category" class="form-label">Chủ đề</label>
+                        <input asp-for="Category" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="cardsContainer">
+            @for (var i = 0; i < Model.Cards.Count; i++)
+            {
+                <div class="card mb-3 card-row">
+                    <div class="card-header d-flex justify-content-between">
+                        <span>Thẻ @(i + 1)</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-card">Xóa</button>
+                    </div>
+                    <div class="card-body row g-3">
+                        <input type="hidden" asp-for="Cards[i].Id" />
+                        <div class="col-md-6">
+                            <label class="form-label">Mặt trước (Thuật ngữ)</label>
+                            <textarea asp-for="Cards[i].FrontText" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Mặt sau (Định nghĩa)</label>
+                            <textarea asp-for="Cards[i].BackText" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <button type="button" id="addCardBtn" class="btn btn-outline-primary mb-4">
+            <i class="fa-solid fa-plus"></i> Thêm thẻ
+        </button>
+
+        <div class="d-flex gap-2">
+            <button type="submit" name="action" value="draft" class="btn btn-secondary">Lưu nháp</button>
+            <button type="submit" name="action" value="publish" class="btn btn-primary">Publish (≥5 thẻ)</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    let cardIndex = @Model.Cards.Count;
+    document.getElementById('addCardBtn').addEventListener('click', () => {
+        const html = `
+        <div class="card mb-3 card-row">
+            <div class="card-header d-flex justify-content-between">
+                <span>Thẻ ${cardIndex + 1}</span>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-card">Xóa</button>
+            </div>
+            <div class="card-body row g-3">
+                <input type="hidden" name="Cards[${cardIndex}].Id" value="0" />
+                <div class="col-md-6">
+                    <label class="form-label">Mặt trước (Thuật ngữ)</label>
+                    <textarea name="Cards[${cardIndex}].FrontText" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Mặt sau (Định nghĩa)</label>
+                    <textarea name="Cards[${cardIndex}].BackText" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+        </div>`;
+        document.getElementById('cardsContainer').insertAdjacentHTML('beforeend', html);
+        cardIndex++;
+    });
+    document.getElementById('cardsContainer').addEventListener('click', e => {
+        if (e.target.classList.contains('remove-card')) {
+            e.target.closest('.card-row').remove();
+        }
+    });
+</script>
+}
