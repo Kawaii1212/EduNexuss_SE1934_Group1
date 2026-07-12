@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - EduNexus Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        :root {
+            --admin-bg: #f8fafc;
+            --admin-sidebar-bg: #0b0f19;
+            --admin-sidebar-gradient: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+            --admin-primary: #6366f1;
+            --admin-primary-glow: rgba(99, 102, 241, 0.4);
+            --admin-accent: #38bdf8;
+            --admin-text-light: #f1f5f9;
+            --admin-text-muted: #94a3b8;
+            --admin-border: rgba(255, 255, 255, 0.05);
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--admin-bg);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--admin-sidebar-gradient);
+            border-right: 1px solid var(--admin-border);
+            padding: 32px 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--admin-text-light);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo i {
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 28px;
+        }
+
+        .logo span {
+            color: var(--admin-primary);
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .nav-section {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 12px;
+            margin-top: 32px;
+            letter-spacing: 1px;
+            padding-left: 16px;
+        }
+
+        .nav-item {
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            color: var(--admin-text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--admin-primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            transform-origin: left;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--admin-text-light);
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0) 100%);
+            color: var(--admin-text-light);
+            font-weight: 600;
+        }
+
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+
+        .nav-item.active i {
+            color: var(--admin-primary);
+            text-shadow: 0 0 12px var(--admin-primary-glow);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 40px 48px;
+            max-width: 1400px;
+        }
+        
+        .admin-topbar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .admin-profile:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transform: translateY(-1px);
+        }
+
+        .admin-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-accent));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .admin-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        
+        .glass-card {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+    </style>
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-shield-halved"></i>
+            Edu<span>Admin</span>
+        </div>
+        <nav>
+            <div class="nav-section">Overview</div>
+            <a href="@Url.Action("Dashboard", "Admin")" class="nav-item @(ViewData["ActiveMenu"]?.ToString() == "Dashboard" ? "active" : "")">
+                <i class="fa-solid fa-gauge"></i> Dashboard
+            </a>
+            
+            <div class="nav-section">Management</div>
+            <a href="#" class="nav-item" onclick="alert('Module đang phát triển'); return false;">
+                <i class="fa-solid fa-users"></i> Users
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Module đang phát triển'); return false;">
+                <i class="fa-solid fa-book"></i> Courses
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Module đang phát triển'); return false;">
+                <i class="fa-solid fa-chalkboard-user"></i> Classes
+            </a>
+
+            <div class="nav-section">System Control</div>
+            <a href="@Url.Action("SystemConfig", "Admin")" class="nav-item @(ViewData["ActiveMenu"]?.ToString() == "SystemConfig" ? "active" : "")">
+                <i class="fa-solid fa-sliders"></i> Configuration
+            </a>
+            <a href="@Url.Action("AuditLog", "Admin")" class="nav-item @(ViewData["ActiveMenu"]?.ToString() == "AuditLog" ? "active" : "")">
+                <i class="fa-solid fa-clock-rotate-left"></i> Audit Logs
+            </a>
+
+            <div style="flex: 1;"></div>
+            <a href="@Url.Action("SignOut", "Common")" class="nav-item" style="color: var(--danger); margin-top: auto;">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="admin-topbar">
+            <div class="admin-profile">
+                <div class="admin-avatar">AD</div>
+                <div style="font-weight: 600; font-size: 14px; color: var(--text-main);">Administrator</div>
+                <i class="fa-solid fa-chevron-down ms-2 text-muted" style="font-size: 12px;"></i>
+            </div>
+        </div>
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

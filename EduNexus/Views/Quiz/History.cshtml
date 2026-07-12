@@ -471,9 +471,14 @@
             <a href="@Url.Action("PersonalProgress", "Common")" class="nav-item">
                 <i class="fa-solid fa-bullseye"></i> Personal Progress
             </a>
-            <a href="@Url.Action("History", "Quiz")" class="nav-item active" style="padding-left: 40px; font-size: 14px;">
-                <i class="fa-solid fa-clipboard-check"></i> Quiz History
-            </a>
+            <div class="course-submenu" style="margin-left: 20px; padding-left: 12px; border-left: 2px solid var(--border); margin-top: -4px; margin-bottom: 12px;">
+                <a href="@Url.Action("History", "Quiz")" class="nav-item active" style="padding: 8px 12px; margin-bottom: 4px; font-size: 14px; gap: 10px;">
+                    <i class="fa-solid fa-clipboard-check" style="font-size: 12px; color: var(--primary);"></i> Quiz
+                </a>
+                <a href="#" class="nav-item" style="padding: 8px 12px; margin-bottom: 4px; font-size: 14px; gap: 10px;">
+                    <i class="fa-solid fa-clone" style="font-size: 12px; color: #10b981;"></i> Flashcard
+                </a>
+            </div>
             <a href="@Url.Action("StudentLibrary", "Common")" class="nav-item">
                 <i class="fa-solid fa-folder-open"></i> Library
             </a>
@@ -628,42 +633,15 @@
                             </div>
 
                             <div class="col-action">
-                                <a href="#" class="btn-text" onclick="alert('Chức năng Review chi tiết sẽ được cập nhật sau!'); return false;">Review</a>
+                                <a href="/Quiz/Review?attemptId=@item.QuizAttemptId" class="btn-text">Review Answers</a>
                             </div>
                         </div>
-<<<<<<<< Updated upstream:EduNexus/Views/Quiz/QuizHistory.cshtml
                     }
                 }
                 else
                 {
                     <div style="padding: 40px; text-align: center; color: var(--text-muted);" id="noDataMessage">
                         You haven't taken any quizzes yet.
-========
-                        <div class="col-date">
-                            @item.DateTaken.LocalDateTime.ToString("MMM dd, yyyy")
-                            <span>@item.DateTaken.LocalDateTime.ToString("hh:mm tt")</span>
-                        </div>
-                        <div class="col-score @(item.Score >= 80 ? "score-high" : (item.Score >= 60 ? "score-medium" : "score-low"))">
-                            @(item.Score.HasValue ? item.Score.Value.ToString("0.0") : "-")
-                        </div>
-                        <div class="col-status">
-                            @if (item.Status == "PASSED")
-                            {
-                                <span class="badge badge-passed">Passed</span>
-                            }
-                            else if (item.Status == "FAILED")
-                            {
-                                <span class="badge badge-failed">Failed</span>
-                            }
-                            else
-                            {
-                                <span class="badge" style="background: #f3f4f6; color: var(--text-muted);">@item.Status</span>
-                            }
-                        </div>
-                        <div class="col-action">
-                            <a href="/Quiz/Review?attemptId=@item.QuizAttemptId" class="btn-text">Review Answers</a>
-                        </div>
->>>>>>>> Stashed changes:EduNexus/Views/Quiz/History.cshtml
                     </div>
                 }
             </div>

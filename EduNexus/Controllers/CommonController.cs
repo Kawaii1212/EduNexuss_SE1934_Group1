@@ -114,6 +114,10 @@ namespace EduNexus.Controllers
             {
                 return RedirectToAction("MyCourses", "Course");
             }
+            if (user.Role?.Equals("ADMIN", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return RedirectToAction("Dashboard", "Admin");
+            }
             
             return RedirectToAction("Index", "Home");
         }
