@@ -1,0 +1,130 @@
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="admin-header mb-5">
+    <div>
+        <h1>Welcome back, Administrator</h1>
+        <p style="color: var(--text-muted); font-size: 15px; margin-top: 6px;">Here's what's happening with EduNexus today.</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="glass-card">
+            <div class="card-body p-4 d-flex align-items-center">
+                <div class="me-4 text-white d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #6366f1, #a855f7); box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);">
+                    <i class="fa-solid fa-users fa-xl"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1" style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Users</h6>
+                    <h3 class="mb-0" style="font-weight: 800; font-size: 28px; color: var(--text-main);">@ViewBag.TotalUsers</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="glass-card">
+            <div class="card-body p-4 d-flex align-items-center">
+                <div class="me-4 text-white d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #10b981, #34d399); box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);">
+                    <i class="fa-solid fa-book fa-xl"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1" style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Courses</h6>
+                    <h3 class="mb-0" style="font-weight: 800; font-size: 28px; color: var(--text-main);">@ViewBag.TotalCourses</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="glass-card">
+            <div class="card-body p-4 d-flex align-items-center">
+                <div class="me-4 text-white d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #f59e0b, #fbbf24); box-shadow: 0 8px 16px rgba(245, 158, 11, 0.25);">
+                    <i class="fa-solid fa-chalkboard-user fa-xl"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1" style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Classes</h6>
+                    <h3 class="mb-0" style="font-weight: 800; font-size: 28px; color: var(--text-main);">@ViewBag.TotalClasses</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="glass-card">
+            <div class="card-body p-4 d-flex align-items-center">
+                <div class="me-4 text-white d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #38bdf8, #0ea5e9); box-shadow: 0 8px 16px rgba(56, 189, 248, 0.25);">
+                    <i class="fa-solid fa-sliders fa-xl"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1" style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Active Configs</h6>
+                    <h3 class="mb-0" style="font-weight: 800; font-size: 28px; color: var(--text-main);">@ViewBag.ActiveSettings</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="glass-card h-100">
+            <div class="card-header bg-transparent border-0 pt-4 pb-2 px-4">
+                <h5 style="font-weight: 700; color: var(--text-main); font-size: 18px;">Quick Management Links</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <a href="@Url.Action("SystemConfig", "Admin")" class="text-decoration-none">
+                            <div class="p-4 rounded border" style="background: rgba(255,255,255,0.5); transition: all 0.3s ease; border-color: rgba(99, 102, 241, 0.2) !important;">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 40px; height: 40px; background: rgba(99, 102, 241, 0.1); color: var(--admin-primary);">
+                                        <i class="fa-solid fa-sliders"></i>
+                                    </div>
+                                    <span style="font-weight: 700; color: var(--text-main); font-size: 16px;">System Configurations</span>
+                                </div>
+                                <p class="mb-0 text-muted" style="font-size: 14px; line-height: 1.5;">Manage global settings, AI quotas, file limits, and system toggles to ensure smooth operation.</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="@Url.Action("AuditLog", "Admin")" class="text-decoration-none">
+                            <div class="p-4 rounded border" style="background: rgba(255,255,255,0.5); transition: all 0.3s ease; border-color: rgba(56, 189, 248, 0.2) !important;">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle me-3" style="width: 40px; height: 40px; background: rgba(56, 189, 248, 0.1); color: var(--admin-accent);">
+                                        <i class="fa-solid fa-clock-rotate-left"></i>
+                                    </div>
+                                    <span style="font-weight: 700; color: var(--text-main); font-size: 16px;">Audit Logs & History</span>
+                                </div>
+                                <p class="mb-0 text-muted" style="font-size: 14px; line-height: 1.5;">Monitor all critical system activities, data modifications, and check user login attempts.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card h-100">
+            <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
+                <h5 style="font-weight: 700; color: var(--text-main); font-size: 18px;">Recent System Activity</h5>
+            </div>
+            <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 250px;">
+                <div class="p-4 rounded-circle mb-3" style="background: rgba(241, 245, 249, 0.8);">
+                    <i class="fa-solid fa-chart-line fa-3x" style="color: #cbd5e1;"></i>
+                </div>
+                <p class="text-muted" style="font-weight: 500;">Activity metrics will be visualized here shortly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded.border:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+        background: white !important;
+    }
+</style>

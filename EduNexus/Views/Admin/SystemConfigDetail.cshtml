@@ -1,0 +1,67 @@
+@model EduNexus.Models.SystemSetting
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Edit Setting: " + Model.SettingKey;
+}
+
+<div class="admin-header mb-5">
+    <div>
+        <a href="@Url.Action("SystemConfig", "Admin")" class="text-decoration-none text-muted mb-2 d-inline-block" style="font-weight: 500;">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Configurations
+        </a>
+        <h1>Edit System Setting</h1>
+        <p style="color: var(--text-muted); font-size: 15px; margin-top: 6px;">Update value and properties for @Model.SettingKey</p>
+    </div>
+</div>
+
+<div class="glass-card" style="max-width: 800px;">
+    <div class="card-body p-4 p-md-5">
+        <form asp-action="UpdateSystemConfig" method="post">
+            <input type="hidden" asp-for="SettingKey" />
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label" style="font-weight: 600; color: var(--text-main);">Setting Name</label>
+                    <input type="text" class="form-control bg-light" value="@Model.SettingKey" readonly />
+                    <div class="form-text">Key is immutable and used internally by the system.</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" style="font-weight: 600; color: var(--text-main);">Setting Type</label>
+                    <input type="text" class="form-control bg-light" value="@Model.SettingType" readonly />
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="SettingValue" class="form-label" style="font-weight: 600; color: var(--text-main);">Setting Value <span class="text-danger">*</span></label>
+                <input asp-for="SettingValue" class="form-control" style="font-family: monospace;" required />
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="DisplayOrder" class="form-label" style="font-weight: 600; color: var(--text-main);">Display Order <span class="text-danger">*</span></label>
+                <input asp-for="DisplayOrder" type="number" class="form-control" min="0" required />
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Description" class="form-label" style="font-weight: 600; color: var(--text-main);">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label" style="font-weight: 600; color: var(--text-main);">Status</label>
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="IsActiveSwitch" name="IsActive" value="true" @(Model.IsActive == true ? "checked" : "")>
+                    <label class="form-check-label ms-2" for="IsActiveSwitch" style="font-weight: 500;">Active</label>
+                </div>
+            </div>
+
+            <hr class="my-4 text-muted">
+
+            <div class="d-flex justify-content-end gap-3">
+                <a href="@Url.Action("SystemConfig", "Admin")" class="btn btn-light" style="font-weight: 500;">Cancel</a>
+                <button type="submit" class="btn btn-primary" style="font-weight: 500; background-color: var(--admin-primary); border-color: var(--admin-primary);">
+                    <i class="fa-solid fa-save me-1"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

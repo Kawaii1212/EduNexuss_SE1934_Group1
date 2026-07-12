@@ -1,0 +1,160 @@
+@model List<EduNexus.Models.SystemSetting>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "System Configurations";
+}
+
+<div class="admin-header mb-5">
+    <div>
+        <h1>System Configurations</h1>
+        <p style="color: var(--text-muted); font-size: 15px; margin-top: 6px;">Manage system limits, quotas, and global features</p>
+    </div>
+</div>
+
+<div class="glass-card mb-4">
+    <div class="card-body p-4 d-flex justify-content-between align-items-center">
+        <div class="d-flex gap-3">
+            <select class="form-select" id="typeFilter" style="width: 200px;">
+                <option value="all">All Types</option>
+                @foreach (var type in Model.Select(m => m.SettingType).Distinct().OrderBy(t => t))
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+            <select class="form-select" id="statusFilter" style="width: 150px;">
+                <option value="all">All Status</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+            <div class="position-relative">
+                <i class="fa-solid fa-magnifying-glass position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
+                <input type="text" id="searchInput" class="form-control ps-5" placeholder="Search setting..." style="width: 250px;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="background: transparent;">
+            <thead class="bg-light">
+                <tr>
+                    <th class="border-bottom-0 py-3 px-4 text-muted" style="font-weight: 600; font-size: 13px; text-transform: uppercase;">Setting Name</th>
+                    <th class="border-bottom-0 py-3 px-4 text-muted" style="font-weight: 600; font-size: 13px; text-transform: uppercase;">Type</th>
+                    <th class="border-bottom-0 py-3 px-4 text-muted" style="font-weight: 600; font-size: 13px; text-transform: uppercase;">Value</th>
+                    <th class="border-bottom-0 py-3 px-4 text-muted" style="font-weight: 600; font-size: 13px; text-transform: uppercase;">Order</th>
+                    <th class="border-bottom-0 py-3 px-4 text-muted" style="font-weight: 600; font-size: 13px; text-transform: uppercase;">Status</th>
+                    <th class="border-bottom-0 py-3 px-4 text-muted text-end" style="font-weight: 600; font-size: 13px; text-transform: uppercase;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="configTableBody">
+                @foreach (var setting in Model)
+                {
+                    <tr class="config-row" data-type="@setting.SettingType" data-status="@(setting.IsActive == true ? "true" : "false")" data-name="@setting.SettingKey.ToLower()">
+                        <td class="py-3 px-4">
+                            <div style="font-weight: 600; color: var(--text-main);">@setting.SettingKey</div>
+                            <div style="font-size: 12px; color: var(--text-muted); max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@setting.Description</div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="badge bg-secondary">@setting.SettingType</span>
+                        </td>
+                        <td class="py-3 px-4">
+                            <div style="font-family: monospace; font-size: 14px;">@setting.SettingValue</div>
+                        </td>
+                        <td class="py-3 px-4">@setting.DisplayOrder</td>
+                        <td class="py-3 px-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input status-toggle" type="checkbox" role="switch" id="switch_@setting.SettingKey" data-key="@setting.SettingKey" @(setting.IsActive == true ? "checked" : "")>
+                                <label class="form-check-label" for="switch_@setting.SettingKey">
+                                    <span class="badge @(setting.IsActive == true ? "bg-success" : "bg-danger")" id="badge_@setting.SettingKey">
+                                        @(setting.IsActive == true ? "Active" : "Inactive")
+                                    </span>
+                                </label>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-end">
+                            <a href="@Url.Action("SystemConfigDetail", "Admin", new { key = setting.SettingKey })" class="btn btn-sm btn-outline-primary" style="font-weight: 500;">
+                                Edit <i class="fa-solid fa-pen-to-square ms-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const typeFilter = document.getElementById('typeFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const rows = document.querySelectorAll('.config-row');
+
+            function filterTable() {
+                const search = searchInput.value.toLowerCase();
+                const type = typeFilter.value;
+                const status = statusFilter.value;
+
+                rows.forEach(row => {
+                    const rowName = row.getAttribute('data-name');
+                    const rowType = row.getAttribute('data-type');
+                    const rowStatus = row.getAttribute('data-status');
+
+                    const matchSearch = rowName.includes(search);
+                    const matchType = type === 'all' || rowType === type;
+                    const matchStatus = status === 'all' || rowStatus === status;
+
+                    if (matchSearch && matchType && matchStatus) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            searchInput.addEventListener('input', filterTable);
+            typeFilter.addEventListener('change', filterTable);
+            statusFilter.addEventListener('change', filterTable);
+
+            // Toggle switch logic via AJAX
+            const toggles = document.querySelectorAll('.status-toggle');
+            toggles.forEach(toggle => {
+                toggle.addEventListener('change', async function() {
+                    const key = this.getAttribute('data-key');
+                    const isActive = this.checked;
+                    const badge = document.getElementById('badge_' + key);
+                    const row = this.closest('.config-row');
+                    
+                    row.setAttribute('data-status', isActive ? "true" : "false");
+                    
+                    if(isActive) {
+                        badge.className = 'badge bg-success';
+                        badge.innerText = 'Active';
+                    } else {
+                        badge.className = 'badge bg-danger';
+                        badge.innerText = 'Inactive';
+                    }
+
+                    try {
+                        const response = await fetch('@Url.Action("ToggleSystemConfig", "Admin")', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ key: key, isActive: isActive })
+                        });
+                        if(!response.ok) {
+                            alert("Failed to update status");
+                            this.checked = !isActive; // revert
+                        }
+                    } catch (err) {
+                        alert("Network error");
+                        this.checked = !isActive; // revert
+                    }
+                });
+            });
+        });
+    </script>
+}
