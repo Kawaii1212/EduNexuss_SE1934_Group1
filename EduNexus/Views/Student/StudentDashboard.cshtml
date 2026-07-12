@@ -596,15 +596,7 @@
                     <p>@(Model?.TotalLearningHours ?? 0) Hours</p>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon icon-orange">
-                    <i class="fa-solid fa-fire"></i>
-                </div>
-                <div class="stat-info">
-                    <h4>Current Streak</h4>
-                    <p>@(Model?.CurrentStreak ?? 0) Days</p>
-                </div>
-            </div>
+
         </div>
 
         <div class="dashboard-grid">
@@ -630,7 +622,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="@Url.Action("LessonView", "Lesson", new { id = 1 })" class="btn-white">
+                        <a href="@Url.Action("LessonView", "Lesson", new { id = Model.LastAccessedCourse.TargetLessonId })" class="btn-white">
                             <i class="fa-solid fa-play"></i> Continue
                         </a>
                     </div>
@@ -660,7 +652,7 @@
                         {
                             @foreach (var course in Model.OngoingCourses)
                             {
-                                <a href="@Url.Action("LessonView", "Lesson", new { id = 1 })" class="course-item">
+                                <a href="@Url.Action("LessonView", "Lesson", new { id = course.TargetLessonId })" class="course-item">
                                     <div class="course-icon" style="color: @course.IconColorHex; background: @course.IconColorHex; background-color: rgba(0,0,0,0.05);">
                                         <i class="@course.IconClass"></i>
                                     </div>

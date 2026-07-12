@@ -19,6 +19,7 @@ namespace EduNexus.ViewModels
         public string CourseName { get; set; } = string.Empty;
         public string CurrentModuleOrLesson { get; set; } = string.Empty;
         public decimal ProgressPercent { get; set; }
+        public long? TargetLessonId { get; set; }
         
         // Mock icons for UI flair
         public string IconClass { get; set; } = "fa-book";
