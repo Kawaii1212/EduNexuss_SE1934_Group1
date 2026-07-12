@@ -33,6 +33,7 @@ public class QuizAttemptDAO : BaseDAO<QuizAttempt>
         return context.QuizAttempts
             .Include(qa => qa.Quiz)
             .ThenInclude(q => q.Course)
+            .Include(qa => qa.QuizAttemptAnswers)
             .Where(qa => qa.StudentId == studentId)
             .OrderByDescending(qa => qa.StartTime)
             .ToList();

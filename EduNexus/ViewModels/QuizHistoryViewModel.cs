@@ -11,6 +11,9 @@ public class QuizHistoryItemViewModel
     public DateTimeOffset DateTaken { get; set; }
     public decimal? Score { get; set; }
     public string Status { get; set; } = string.Empty;
+    public int CorrectAnswers { get; set; }
+    public int TotalQuestions { get; set; }
+    public string AccuracyRatio => TotalQuestions > 0 ? $"{CorrectAnswers}/{TotalQuestions}" : "0/0";
 }
 
 public class QuizHistoryViewModel

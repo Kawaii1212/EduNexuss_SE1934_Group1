@@ -71,9 +71,15 @@
             align-items: center;
             gap: 10px;
         }
-        
-        .logo span {
-            color: var(--primary);
+
+            .logo span {
+                color: var(--primary);
+            }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
 
         .nav-item {
@@ -89,15 +95,15 @@
             transition: all 0.2s ease;
         }
 
-        .nav-item:hover {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-        }
+            .nav-item:hover {
+                background-color: var(--bg-color);
+                color: var(--text-main);
+            }
 
-        .nav-item.active {
-            background-color: var(--primary-lighter);
-            color: var(--primary);
-        }
+            .nav-item.active {
+                background-color: var(--primary-lighter);
+                color: var(--primary);
+            }
 
         /* Main Content */
         .main-content {
@@ -145,10 +151,10 @@
             color: var(--text-main);
         }
 
-        .btn-outline:hover {
-            background-color: var(--bg-color);
-            border-color: var(--border-hover);
-        }
+            .btn-outline:hover {
+                background-color: var(--bg-color);
+                border-color: var(--border-hover);
+            }
 
         .btn-primary {
             background-color: var(--primary-light);
@@ -156,11 +162,11 @@
             box-shadow: 0 4px 12px rgba(155, 140, 248, 0.3);
         }
 
-        .btn-primary:hover {
-            background-color: var(--primary);
-            box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
-            transform: translateY(-1px);
-        }
+            .btn-primary:hover {
+                background-color: var(--primary);
+                box-shadow: 0 6px 16px rgba(92, 36, 255, 0.4);
+                transform: translateY(-1px);
+            }
 
         /* Stats Grid */
         .stats-grid {
@@ -191,10 +197,25 @@
             font-size: 20px;
         }
 
-        .icon-blue { background: #eff6ff; color: #3b82f6; }
-        .icon-green { background: #ecfdf5; color: var(--success); }
-        .icon-orange { background: #fffbeb; color: var(--warning); }
-        .icon-purple { background: var(--primary-lighter); color: var(--primary); }
+        .icon-blue {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .icon-green {
+            background: #ecfdf5;
+            color: var(--success);
+        }
+
+        .icon-orange {
+            background: #fffbeb;
+            color: var(--warning);
+        }
+
+        .icon-purple {
+            background: var(--primary-lighter);
+            color: var(--primary);
+        }
 
         .stat-info h4 {
             color: var(--text-muted);
@@ -224,11 +245,11 @@
             align-items: center;
         }
 
-        .search-box i {
-            position: absolute;
-            left: 16px;
-            color: var(--text-light);
-        }
+            .search-box i {
+                position: absolute;
+                left: 16px;
+                color: var(--text-light);
+            }
 
         .search-input {
             width: 100%;
@@ -241,9 +262,9 @@
             transition: all 0.2s ease;
         }
 
-        .search-input:focus {
-            border-color: var(--primary-light);
-        }
+            .search-input:focus {
+                border-color: var(--primary-light);
+            }
 
         .filter-select {
             padding: 12px 16px;
@@ -267,7 +288,7 @@
 
         .history-header {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 2fr 1.5fr 1fr 1fr 1.5fr 1fr 1fr;
             padding: 16px 24px;
             background: #fcfcfc;
             border-bottom: 1px solid var(--border);
@@ -278,22 +299,39 @@
             letter-spacing: 0.5px;
         }
 
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+            .sortable:hover {
+                color: var(--primary);
+            }
+
+            .sortable i {
+                font-size: 10px;
+                color: var(--border-hover);
+            }
+
         .history-row {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 2fr 1.5fr 1fr 1fr 1.5fr 1fr 1fr;
             padding: 20px 24px;
             border-bottom: 1px solid var(--border);
             align-items: center;
             transition: 0.2s;
         }
 
-        .history-row:last-child {
-            border-bottom: none;
-        }
+            .history-row:last-child {
+                border-bottom: none;
+            }
 
-        .history-row:hover {
-            background: var(--bg-color);
-        }
+            .history-row:hover {
+                background: var(--bg-color);
+            }
 
         /* Columns */
         .col-quiz {
@@ -319,12 +357,7 @@
             font-size: 15px;
             font-weight: 600;
             color: var(--text-main);
-            margin-bottom: 4px;
-        }
-
-        .quiz-details p {
-            font-size: 13px;
-            color: var(--text-muted);
+            margin-bottom: 0px;
         }
 
         .col-date {
@@ -332,23 +365,31 @@
             color: var(--text-main);
             font-weight: 500;
         }
-        
-        .col-date span {
-            display: block;
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 400;
-            margin-top: 2px;
-        }
+
+            .col-date span {
+                display: block;
+                font-size: 12px;
+                color: var(--text-muted);
+                font-weight: 400;
+                margin-top: 2px;
+            }
 
         .col-score {
             font-size: 18px;
             font-weight: 700;
         }
 
-        .score-high { color: var(--success); }
-        .score-medium { color: var(--warning); }
-        .score-low { color: var(--danger); }
+        .score-high {
+            color: var(--success);
+        }
+
+        .score-medium {
+            color: var(--warning);
+        }
+
+        .score-low {
+            color: var(--danger);
+        }
 
         .col-status {
             display: flex;
@@ -388,22 +429,25 @@
             transition: 0.2s;
         }
 
-        .btn-text:hover {
-            background: var(--primary-lighter);
-        }
+            .btn-text:hover {
+                background: var(--primary-lighter);
+            }
 
         /* Responsive */
-        media (max-width: 1024px) {
+        @@media (max-width: 1024px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
             .history-header {
                 display: none; /* Hide table header on mobile */
             }
+
             .history-row {
                 grid-template-columns: 1fr;
                 gap: 16px;
             }
+
             .col-action {
                 justify-content: flex-start;
             }
@@ -412,37 +456,42 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">
             <i class="fa-solid fa-graduation-cap" style="color: var(--primary)"></i>
             Edu<span>Nexus</span>
         </div>
         <nav>
-            <a href="#" class="nav-item">
+            <a href="@Url.Action("StudentDashboard", "Common")" class="nav-item">
                 <i class="fa-solid fa-chart-line"></i> Dashboard
             </a>
-            <a href="#" class="nav-item">
+            <a href="@Url.Action("AllCourses", "Common")" class="nav-item">
                 <i class="fa-solid fa-book-open"></i> All Courses
             </a>
-            <a href="#" class="nav-item">
-                <i class="fa-solid fa-layer-group"></i> Flashcards
-            </a>
-            <a href="#" class="nav-item">
+            <a href="@Url.Action("PersonalProgress", "Common")" class="nav-item">
                 <i class="fa-solid fa-bullseye"></i> Personal Progress
             </a>
-            <a href="#" class="nav-item active">
+            <a href="@Url.Action("History", "Quiz")" class="nav-item active" style="padding-left: 40px; font-size: 14px;">
                 <i class="fa-solid fa-clipboard-check"></i> Quiz History
             </a>
+            <a href="@Url.Action("StudentLibrary", "Common")" class="nav-item">
+                <i class="fa-solid fa-folder-open"></i> Library
+            </a>
             <a href="#" class="nav-item">
+                <i class="fa-solid fa-users"></i> Community
+            </a>
+            <div style="flex: 1;"></div>
+            <a href="@Url.Action("StudentSettings", "Common")" class="nav-item">
                 <i class="fa-solid fa-gear"></i> Settings
+            </a>
+            <a href="@Url.Action("SignOut", "Common")" class="nav-item" style="color: var(--danger);">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
             </a>
         </nav>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
-        
+
         <header class="header">
             <div class="header-title">
                 <h1>Quiz History & Results</h1>
@@ -453,7 +502,6 @@
             </button>
         </header>
 
-        <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon icon-purple">
@@ -493,47 +541,104 @@
             </div>
         </div>
 
-        <!-- Toolbar -->
         <div class="toolbar">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" class="search-input" placeholder="Search by quiz name or course...">
             </div>
-            <select class="filter-select">
+            <select class="filter-select" id="courseFilter">
                 <option value="all">All Courses</option>
-                <option value="c1">Advanced Full-Stack</option>
-                <option value="c2">React Mastery</option>
-                <option value="c3">UI/UX Basics</option>
+                @foreach (var course in Model.Attempts.Select(a => a.CourseName).Distinct().OrderBy(c => c))
+                {
+                    <option value="@course">@course</option>
+                }
             </select>
-            <select class="filter-select">
+
+            <select class="filter-select" id="statusFilter">
                 <option value="all">All Statuses</option>
                 <option value="passed">Passed</option>
                 <option value="failed">Failed</option>
+                <option value="in_progress">In Progress</option>
             </select>
         </div>
 
-        <!-- History Table -->
         <div class="history-container">
             <div class="history-header">
-                <div>Quiz Details</div>
-                <div>Date Taken</div>
-                <div>Score</div>
-                <div>Status</div>
-                <div></div>
+                <div class="sortable" data-sort="name">Quiz Name <i class="fa-solid fa-sort"></i></div>
+                <div class="sortable" data-sort="course">Course <i class="fa-solid fa-sort"></i></div>
+                <div class="sortable" data-sort="score">Score <i class="fa-solid fa-sort"></i></div>
+                <div class="sortable" data-sort="accuracy">Accuracy Ratio <i class="fa-solid fa-sort"></i></div>
+                <div class="sortable" data-sort="date">Date <i class="fa-solid fa-sort"></i></div>
+                <div class="sortable" data-sort="status">Status <i class="fa-solid fa-sort"></i></div>
+                <div>Action</div>
             </div>
 
-            @if (Model.Attempts.Any())
-            {
-                foreach (var item in Model.Attempts)
+            <div id="tableBody">
+                @if (Model.Attempts.Any())
                 {
-                    <div class="history-row">
-                        <div class="col-quiz">
-                            <div class="quiz-icon" style="@(item.Status == "FAILED" ? "background: #fef2f2; color: var(--danger);" : "")"><i class="fa-solid fa-code"></i></div>
-                            <div class="quiz-details">
-                                <h4>@item.QuizTitle</h4>
-                                <p>@item.CourseName</p>
+                    foreach (var item in Model.Attempts)
+                    {
+                        var accuracyValue = item.TotalQuestions > 0 ? ((float)item.CorrectAnswers / item.TotalQuestions) : 0;
+
+                        // ĐÃ FIX: Tính toán chuỗi trạng thái phù hợp để gán vào data-status cho bộ lọc JS (Tránh lỗi biên dịch)
+                        var uiStatus = item.Status == "SUBMITTED" ? (item.Score >= 50 ? "passed" : "failed") : item.Status.ToLower();
+                        var rowIsFailed = uiStatus == "failed";
+
+                        <div class="history-row" data-name="@item.QuizTitle.ToLower()" data-course="@item.CourseName" data-status="@uiStatus" data-date="@item.DateTaken.ToUnixTimeSeconds()" data-score="@(item.Score ?? 0)" data-accuracy="@accuracyValue">
+                            <div class="col-quiz">
+                                <div class="quiz-icon" style="@(rowIsFailed ? "background: #fef2f2; color: var(--danger);" : "")"><i class="fa-solid fa-code"></i></div>
+                                <div class="quiz-details" style="display: flex; align-items: center;">
+                                    <h4>@item.QuizTitle</h4>
+                                </div>
+                            </div>
+                            <div class="col-course" style="font-size: 14px; font-weight: 500; color: var(--text-main);">
+                                @item.CourseName
+                            </div>
+                            <div class="col-score @(item.Score >= 80 ? "score-high" : (item.Score >= 60 ? "score-medium" : "score-low"))">
+                                @(item.Score.HasValue? item.Score.Value.ToString("0.0") : "-")
+                            </div>
+                            <div class="col-accuracy" style="font-size: 16px; font-weight: 600; color: var(--text-main);">
+                                @(item.CorrectAnswers)/@(item.TotalQuestions)
+                            </div>
+                            <div class="col-date">
+                                @item.DateTaken.LocalDateTime.ToString("MMM dd, yyyy")
+                                <span>@item.DateTaken.LocalDateTime.ToString("hh:mm tt")</span>
+                            </div>
+
+                            <div class="col-status">
+                                @if (item.Status == "SUBMITTED")
+                                {
+                                    if (item.Score >= 50)
+                                    {
+                                        <span class="badge badge-passed">Passed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-failed">Failed</span>
+                                    }
+                                }
+                                else if (item.Status == "IN_PROGRESS")
+                                {
+                                    <span class="badge" style="background: #f3f4f6; color: var(--text-muted);">In Progress</span>
+                                }
+                                else
+                                {
+                                    <span class="badge" style="background: #f3f4f6; color: var(--text-muted);">@item.Status</span>
+                                }
+                            </div>
+
+                            <div class="col-action">
+                                <a href="#" class="btn-text" onclick="alert('Chức năng Review chi tiết sẽ được cập nhật sau!'); return false;">Review</a>
                             </div>
                         </div>
+<<<<<<<< Updated upstream:EduNexus/Views/Quiz/QuizHistory.cshtml
+                    }
+                }
+                else
+                {
+                    <div style="padding: 40px; text-align: center; color: var(--text-muted);" id="noDataMessage">
+                        You haven't taken any quizzes yet.
+========
                         <div class="col-date">
                             @item.DateTaken.LocalDateTime.ToString("MMM dd, yyyy")
                             <span>@item.DateTaken.LocalDateTime.ToString("hh:mm tt")</span>
@@ -556,21 +661,100 @@
                             }
                         </div>
                         <div class="col-action">
-                            <a href="#" class="btn-text">Review Answers</a>
+                            <a href="/Quiz/Review?attemptId=@item.QuizAttemptId" class="btn-text">Review Answers</a>
                         </div>
+>>>>>>>> Stashed changes:EduNexus/Views/Quiz/History.cshtml
                     </div>
                 }
-            }
-            else
-            {
-                <div style="padding: 40px; text-align: center; color: var(--text-muted);">
-                    You haven't taken any quizzes yet.
-                </div>
-            }
+            </div>
 
         </div>
 
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.querySelector('.search-input');
+            const courseFilter = document.getElementById('courseFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const tableBody = document.getElementById('tableBody');
+            const rows = Array.from(tableBody.querySelectorAll('.history-row'));
+            const sortableHeaders = document.querySelectorAll('.sortable');
+
+            let currentSort = { column: null, asc: true };
+
+            function filterRows() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const courseTerm = courseFilter.value;
+                const statusTerm = statusFilter.value;
+
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-name');
+                    const course = row.getAttribute('data-course');
+                    const status = row.getAttribute('data-status');
+
+                    const matchName = name.includes(searchTerm);
+                    const matchCourse = courseTerm === 'all' || course === courseTerm;
+                    const matchStatus = statusTerm === 'all' || status === statusTerm;
+
+                    if (matchName && matchCourse && matchStatus) {
+                        row.style.display = 'grid';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            function sortRows(column) {
+                if (currentSort.column === column) {
+                    currentSort.asc = !currentSort.asc;
+                } else {
+                    currentSort.column = column;
+                    currentSort.asc = true;
+                }
+
+                // Update icons
+                sortableHeaders.forEach(th => {
+                    const icon = th.querySelector('i');
+                    if (th.getAttribute('data-sort') === column) {
+                        icon.className = currentSort.asc ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down';
+                        icon.style.color = 'var(--primary)';
+                    } else {
+                        icon.className = 'fa-solid fa-sort';
+                        icon.style.color = 'var(--border-hover)';
+                    }
+                });
+
+                const sortedRows = [...rows].sort((a, b) => {
+                    let valA = a.getAttribute('data-' + column);
+                    let valB = b.getAttribute('data-' + column);
+
+                    // Numeric sorts
+                    if (['score', 'accuracy', 'date'].includes(column)) {
+                        valA = parseFloat(valA);
+                        valB = parseFloat(valB);
+                        return currentSort.asc ? valA - valB : valB - valA;
+                    } else {
+                        // String sorts
+                        return currentSort.asc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                    }
+                });
+
+                // Re-append sorted rows
+                sortedRows.forEach(row => tableBody.appendChild(row));
+            }
+
+            searchInput.addEventListener('input', filterRows);
+            courseFilter.addEventListener('change', filterRows);
+            statusFilter.addEventListener('change', filterRows);
+
+            sortableHeaders.forEach(th => {
+                th.addEventListener('click', () => {
+                    const column = th.getAttribute('data-sort');
+                    sortRows(column);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

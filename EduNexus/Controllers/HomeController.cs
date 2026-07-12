@@ -45,35 +45,11 @@ namespace EduNexus.Controllers
             return View();
         }
 
-        public IActionResult QuizHistory()
-        {
-            long studentId = 2; // Mock Student ID
-            var attempts = _quizAttemptService.GetHistoryForStudent(studentId);
+<<<<<<< Updated upstream
 
-            var model = new QuizHistoryViewModel();
-            model.QuizzesTaken = attempts.Count;
-            
-            if (attempts.Any(a => a.Score.HasValue))
-            {
-                model.AverageScore = attempts.Where(a => a.Score.HasValue).Average(a => a.Score.Value);
-            }
 
-            model.PassedCount = attempts.Count(a => a.Status == "PASSED");
-            model.FailedCount = attempts.Count(a => a.Status == "FAILED");
-
-            model.Attempts = attempts.Select(a => new QuizHistoryItemViewModel
-            {
-                QuizAttemptId = a.Id,
-                QuizTitle = a.Quiz?.Name ?? "Unknown Quiz",
-                CourseName = a.Quiz?.Course?.Title ?? "Unknown Course",
-                DateTaken = a.StartTime,
-                Score = a.Score,
-                Status = a.Status
-            }).ToList();
-
-            return View(model);
-        }
-
+=======
+>>>>>>> Stashed changes
         public IActionResult QuizTaking()
         {
             return View();
